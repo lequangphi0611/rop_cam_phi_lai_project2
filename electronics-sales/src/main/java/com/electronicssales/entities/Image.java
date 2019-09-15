@@ -8,12 +8,14 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
     name = "images"
 )
 @Data
+@NoArgsConstructor
 public class Image {
 
     @Id
@@ -22,5 +24,9 @@ public class Image {
 
     @Lob
     private byte[] data;
+
+    public Image(long id) {
+        this.id = id;
+    }
     
 }

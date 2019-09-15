@@ -1,13 +1,17 @@
 package com.electronicssales.services;
 
 import com.electronicssales.entities.User;
+import com.electronicssales.models.dtos.UserDto;
+import com.electronicssales.models.responses.UserInfo;
 
-public interface UserService {
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-    User saveUser(User user);
+public interface UserService extends UserDetailsService {
 
-    User findByUsername(String username);
+    User saveUser(UserDto userDto);
 
     boolean existByUsername(String username);
+
+    UserInfo getUserInfoByUsername(String username);
     
 }

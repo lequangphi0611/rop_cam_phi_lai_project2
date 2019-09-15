@@ -1,66 +1,43 @@
 package com.electronicssales.configurations;
 
-import java.util.Arrays;
-
-import com.electronicssales.entities.Role;
-import com.electronicssales.entities.User;
-import com.electronicssales.repositories.RoleRepository;
+import com.electronicssales.models.dtos.UserDto;
+import com.electronicssales.models.types.Role;
 import com.electronicssales.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class CustomizeConfiguration {
 
     @Autowired UserService userService;
 
-    @Autowired RoleRepository roleRepository;
+    @Autowired PasswordEncoder passwordEncoder;
 
-    private static final String ADMIN_ROLE = "ADMIN";
-
-    private static final String CUSTOMER_ROLE = "CUSTOMER";
-
-    private void initAndSaveRole() {
-        if(roleRepository.count() > 0) {
-            return;
-        }
-
-        Role admin = new Role();
-        admin.setRoleName(ADMIN_ROLE);
-
-        Role customer = new Role();
-        customer.setRoleName(CUSTOMER_ROLE);
-
-        roleRepository.saveAll(Arrays.asList(admin, customer));
-    }
-
-    private User getAdminInfo() {
-        User user = new User();
+    private UserDto getAdminInfo() {
+        UserDto user = new UserDto();
         user.setActived(true);
-        user.setPassword("123");
+        user.setPassword(passwordEncoder.encode("123"));
         user.setUsername("admin");
         user.setAddress("admin address");
-        user.setFirstName("Admintrator");
+        user.setFirstname("Admintrator");
+        user.setLastname("Admintrator");
         user.setPhoneNumber("xxxxxxxxx");
-        
+        user.setRoleName(Role.ADMIN.toString());
         return user;
     }
 
     @Bean
     public void createAdminAccount(){
         new Thread(()-> {
-            User initUser = getAdminInfo();
+            UserDto initUser = getAdminInfo();
 
-            if(userService.existByUsername(initUser.getUsername())) {
-                return; 
+            if(!userService.existByUsername(initUser.getUsername())) {
+                userService.saveUser(initUser);
             }
 
-            initAndSaveRole();
-            Role role = roleRepository.findByRoleName(ADMIN_ROLE);
-            initUser.setRole(role);
-            userService.saveUser(initUser);
         })
         .start();
     }
