@@ -11,12 +11,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class UserDto extends UserInfo {
 
-    private String username;
-
     private String password;
 
     private boolean actived = true;
-
-    private String roleName;
-    
+        
 }

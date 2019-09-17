@@ -104,12 +104,13 @@ public class JwtTokenProvinder implements JwtTokenService {
     @Override
     public String getJwtTokenFrom(HttpServletRequest req) {
         String token = req.getHeader(HEADER_AUTHORIZATION);
-        if(StringUtils.hasText(token) && token.startsWith(TOKEN_PREFIX)) {
-            return token
-                .substring(TOKEN_PREFIX.length())
-                .trim();
+        if(!StringUtils.hasText(token) || !token.startsWith(TOKEN_PREFIX)){
+            return null;            
         }
-        return null;
+
+        return token
+            .substring(TOKEN_PREFIX.length())
+            .trim();
     }
 
     @Override

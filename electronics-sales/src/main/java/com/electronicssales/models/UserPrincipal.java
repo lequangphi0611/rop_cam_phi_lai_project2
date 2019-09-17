@@ -47,13 +47,13 @@ public class UserPrincipal implements UserDetails {
         userPrincipal.setAuthorities(authorities);
         userPrincipal.setId(user.getId());
         StringBuilder fullname = new StringBuilder();
-        if(user.getLastName() != null || user.getLastName() != "") {
+        if(user.getLastname() != null || user.getLastname() != "") {
             fullname
-                .append(user.getLastName())
+                .append(user.getLastname())
                 .append(" ");
         }
 
-        fullname.append(user.getFirstName());
+        fullname.append(user.getFirstname());
         userPrincipal.setName(fullname.toString());
         userPrincipal.setUsername(user.getUsername());
         userPrincipal.setEmail(user.getEmail());

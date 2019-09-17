@@ -43,12 +43,12 @@ public class User {
         columnDefinition = "nvarchar(255)",
         nullable = false
     )
-    private String firstName;
+    private String firstname;
 
     @Column(
         columnDefinition = "nvarchar(255)"
     )
-    private String lastName;
+    private String lastname;
 
     @Column(nullable = false)
     private String username;

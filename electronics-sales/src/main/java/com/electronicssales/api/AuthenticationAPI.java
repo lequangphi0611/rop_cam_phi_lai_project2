@@ -1,9 +1,17 @@
 package com.electronicssales.api;
 
+import javax.validation.Valid;
+
+import com.electronicssales.entities.User;
 import com.electronicssales.models.LoginRequest;
 import com.electronicssales.models.UserPrincipal;
+import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.responses.UserAuthenticationResponse;
+import com.electronicssales.models.responses.UserInfo;
+import com.electronicssales.models.types.Role;
 import com.electronicssales.services.JwtTokenService;
+import com.electronicssales.services.UserService;
+import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +25,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthenticationAPI {
 
     private static final String TOKEN_PREFIX = "Bearer";
 
     private static final long JWT_EXPIRATION_TIME = 604800000L;
 
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtTokenService jwtTokenService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private Mapper<UserInfo, User> userInfoMapper;
 
     @PostMapping("/login")
     public ResponseEntity<UserAuthenticationResponse> login(
@@ -54,9 +67,16 @@ public class AuthenticationAPI {
         return ResponseEntity
             .ok(new UserAuthenticationResponse(
                 accessToken, 
-                userPrincipal.getUsername(), 
-                userPrincipal.getRole()
+                userPrincipal.getUsername()
             ));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto) {
+        User userSaved = userService.createUser(userDto, Role.CUSTOMER);
+        return ResponseEntity
+            .created(null)
+            .body(userInfoMapper.map(userSaved));
     }
     
 }

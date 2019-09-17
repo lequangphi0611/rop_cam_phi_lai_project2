@@ -1,5 +1,7 @@
 package com.electronicssales.configurations;
 
+import java.util.Date;
+
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.types.Role;
 import com.electronicssales.services.UserService;
@@ -19,13 +21,14 @@ public class CustomizeConfiguration {
     private UserDto getAdminInfo() {
         UserDto user = new UserDto();
         user.setActived(true);
-        user.setPassword(passwordEncoder.encode("123"));
+        user.setPassword(passwordEncoder.encode("admin"));
         user.setUsername("admin");
         user.setAddress("admin address");
         user.setFirstname("Admintrator");
         user.setLastname("Admintrator");
-        user.setPhoneNumber("xxxxxxxxx");
-        user.setRoleName(Role.ADMIN.toString());
+        user.setPhoneNumber("012345678");
+        user.setEmail("admintrator@gmail.com");
+        user.setBirthday(new Date());
         return user;
     }
 
@@ -35,7 +38,7 @@ public class CustomizeConfiguration {
             UserDto initUser = getAdminInfo();
 
             if(!userService.existByUsername(initUser.getUsername())) {
-                userService.saveUser(initUser);
+                userService.createUser(initUser, Role.ADMIN);
             }
 
         })

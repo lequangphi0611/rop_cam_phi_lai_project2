@@ -8,7 +8,7 @@ public enum Role {
 
     public static Role of(String roleString) {
         for(Role role : Role.values()) {
-            if(role.toString() == roleString)
+            if(role.toString().equals(roleString.toUpperCase()))
                 return role;
         }
 

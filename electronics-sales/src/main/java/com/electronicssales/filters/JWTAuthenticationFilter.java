@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.electronicssales.models.UserPrincipal;
 import com.electronicssales.services.JwtTokenService;
 import com.electronicssales.services.UserService;
+import com.electronicssales.utils.AuthenticateUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -33,7 +33,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String jwtToken = jwtTokenService.getJwtTokenFrom(request);
         if(!StringUtils.hasText(jwtToken) || !jwtTokenService.validateToken(jwtToken)) {
-            SecurityContextHolder.getContext().setAuthentication(null);
+            AuthenticateUtils.clear();
         } else {
             String username = jwtTokenService.getUsernameFromToken(jwtToken);
 
@@ -42,7 +42,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 new UsernamePasswordAuthenticationToken(userPrincipal, userPrincipal.getPassword(), userPrincipal.getAuthorities());
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            AuthenticateUtils.setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);

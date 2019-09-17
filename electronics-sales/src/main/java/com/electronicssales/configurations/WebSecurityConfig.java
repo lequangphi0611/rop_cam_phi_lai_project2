@@ -6,6 +6,7 @@ import com.electronicssales.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -41,18 +42,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .csrf()
-            .disable()
+                .disable()
             .exceptionHandling()
-            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            .and()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and()
             .authorizeRequests()
-            .antMatchers("/api/auth/**")
-            .permitAll()
+            .antMatchers(
+                "/api/login", 
+                "/api/register"
+            )
+                .permitAll()
             .antMatchers("/api/images/**")
-            .permitAll()
+                .permitAll()
+            .antMatchers(HttpMethod.GET, "/api/categories/**")
+                .permitAll()
             .anyRequest()
             .authenticated()
-            .and()
+                .and()
             .addFilterBefore(jwtAuthentication, UsernamePasswordAuthenticationFilter.class);
     }
 
