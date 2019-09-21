@@ -5,6 +5,6 @@ package com.electronicssales.utils;
  */
 public interface Mapper<T, S> {
 
-    T map(S args);
+    T mapping(S args);
     
 }

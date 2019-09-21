@@ -1,6 +1,11 @@
 package com.electronicssales.models.dtos;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.validation.constraints.NotBlank;
+
+import com.electronicssales.entities.ParameterType;
 
 import lombok.Data;
 
@@ -11,6 +16,8 @@ public class CategoryDto {
 
     @NotBlank
     private String categoryName;
+
+    private Collection<ParameterType> parameterTypes = new ArrayList<>();
 
     public CategoryDto() {
         super();

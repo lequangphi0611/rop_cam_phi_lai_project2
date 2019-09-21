@@ -54,14 +54,12 @@ public class Product {
     private Date updatedTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
-
-    @OneToMany(
-        mappedBy = "product",
-        fetch = FetchType.LAZY
-    )
-    private Collection<ProductCategory> productCategories;
 
     @OneToMany(
         mappedBy = "product",

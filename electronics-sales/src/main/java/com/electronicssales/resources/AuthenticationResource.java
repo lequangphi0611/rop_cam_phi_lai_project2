@@ -1,4 +1,4 @@
-package com.electronicssales.api;
+package com.electronicssales.resources;
 
 import javax.validation.Valid;
 
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class AuthenticationAPI {
+public class AuthenticationResource {
 
     private static final String TOKEN_PREFIX = "Bearer";
 
@@ -76,7 +76,7 @@ public class AuthenticationAPI {
         User userSaved = userService.createUser(userDto, Role.CUSTOMER);
         return ResponseEntity
             .created(null)
-            .body(userInfoMapper.map(userSaved));
+            .body(userInfoMapper.mapping(userSaved));
     }
     
 }

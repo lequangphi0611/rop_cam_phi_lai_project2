@@ -1,4 +1,4 @@
-package com.electronicssales.api;
+package com.electronicssales.resources;
 
 import java.io.IOException;
 import java.net.URI;
@@ -24,7 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/images")
-public class ImageAPI {
+public class ImageResource {
 
     @Autowired
     ImageService imageService;

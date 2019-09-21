@@ -1,6 +1,7 @@
 package com.electronicssales.configurations;
 
 import com.electronicssales.filters.JWTAuthenticationFilter;
+import com.electronicssales.models.types.Role;
 import com.electronicssales.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private static final String ADMIN_ROLE = Role.ADMIN.toString();
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -54,8 +57,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
             .antMatchers("/api/images/**")
                 .permitAll()
-            .antMatchers(HttpMethod.GET, "/api/categories/**")
+            .antMatchers(
+                HttpMethod.GET, 
+                "/api/categories/**"
+            ).permitAll()
+            .antMatchers(HttpMethod.GET, "/api/manufacturers/**")
                 .permitAll()
+            .antMatchers(HttpMethod.POST, "/api/accounts")
+                .hasRole(ADMIN_ROLE)            
             .anyRequest()
             .authenticated()
                 .and()

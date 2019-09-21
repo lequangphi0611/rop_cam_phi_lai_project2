@@ -11,7 +11,7 @@ public class AppUtil {
         return page
             .getContent()
             .stream()
-            .map(mapper::map)
+            .map(mapper::mapping)
             .collect(Collectors.toList());
     }
 }

@@ -1,4 +1,4 @@
-package com.electronicssales.api;
+package com.electronicssales.resources;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/categories")
-public class CategoryApi {
+public class CategoryResource {
 
     @Autowired
     private CategoryService categoryService;
@@ -41,7 +41,7 @@ public class CategoryApi {
     private Mapper<CategoryResponse, Category> categoryResponseMapper;
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<?> createCategory(@RequestBody @Valid CategoryDto categoryDto) {
 
         if(categoryService.existsByCategoryName(categoryDto.getCategoryName())) {
             throw new EntityExistsException(

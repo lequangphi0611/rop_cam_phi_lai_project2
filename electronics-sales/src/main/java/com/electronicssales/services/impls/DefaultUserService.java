@@ -1,5 +1,7 @@
 package com.electronicssales.services.impls;
 
+import javax.persistence.EntityExistsException;
+
 import com.electronicssales.entities.Image;
 import com.electronicssales.entities.User;
 import com.electronicssales.exceptions.UserExistsException;
@@ -46,19 +48,72 @@ public class DefaultUserService implements UserService {
             throw new UserExistsException(UserExistsException.Field.PHONE_NUMBER);
         }
 
-        User user = userDtoToUserMapper.map(userDto);
+        User user = userDtoToUserMapper.mapping(userDto);
         user.setRole(role);
         return userRepository.save(user);
     }
 
     @Override
+    public User saveUser(UserDto userDto) {
+        return userRepository
+            .save(userDtoToUserMapper.mapping(userDto));
+    }
+
+    @Override
+    public User updateUser(UserDto newUserDto) {
+        User oldUser = userRepository.findById(newUserDto.getId()).get();
+        
+        if(!newUserDto.getUsername().equals(oldUser.getUsername()) && existByUsername(newUserDto.getUsername())) {
+            throw new EntityExistsException(
+                new StringBuilder()
+                .append(User.class.getSimpleName().toUpperCase())
+                .append(" with USERNAME = \"")
+                .append(newUserDto.getUsername())
+                .append("\" is already exists !")
+                .toString()
+            );
+        }
+
+        if(!newUserDto.getEmail().equals(oldUser.getEmail()) && existsByEmail(newUserDto.getEmail())) {
+            throw new EntityExistsException(
+                new StringBuilder()
+                .append(User.class.getSimpleName().toUpperCase())
+                .append(" with EMAIL = \"")
+                .append(newUserDto.getEmail())
+                .append("\" is already exists !")
+                .toString()
+            );
+        }
+
+        if(!newUserDto.getPhoneNumber().equals(oldUser.getPhoneNumber()) 
+            && existsByPhoneNumber(newUserDto.getPhoneNumber())) 
+        {
+            throw new EntityExistsException(
+                new StringBuilder()
+                .append(User.class.getSimpleName().toUpperCase())
+                .append(" with PHONE_NUMBER = \"")
+                .append(newUserDto.getPhoneNumber())
+                .append("\" is already exists !")
+                .toString()
+            );
+        }
+
+        return saveUser(newUserDto);
+    }
+
+    @Override
     public UserInfo getUserInfoByUsername(String username) {
-        return userInfoMapper.map(userRepository.findByUsername(username));
+        return userInfoMapper.mapping(userRepository.findByUsername(username));
     }
 
     @Override
     public boolean existByUsername(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsById(long userId) {
+        return userRepository.existsById(userId);
     }
     
     @Override
@@ -82,13 +137,13 @@ public class DefaultUserService implements UserService {
     }
 
     @Component
-    public static class UserDtoMapper implements Mapper<User, UserDto> {
+    class UserDtoMapper implements Mapper<User, UserDto> {
 
         @Autowired
         private PasswordEncoder passwordEncoder;
 
         @Override
-        public User map(UserDto dto) {
+        public User mapping(UserDto dto) {
             User user = new User();
 
             user.setActived(dto.isActived());
@@ -110,10 +165,10 @@ public class DefaultUserService implements UserService {
     }
 
     @Component
-    public static class UserInfoMapper implements Mapper<UserInfo, User> {
+    class UserInfoMapper implements Mapper<UserInfo, User> {
 
         @Override
-        public UserInfo map(User user) {
+        public UserInfo mapping(User user) {
             UserInfo userInfo = new UserInfo();
             userInfo.setId(user.getId());
             userInfo.setUsername(user.getUsername());

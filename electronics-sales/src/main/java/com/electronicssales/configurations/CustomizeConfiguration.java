@@ -9,19 +9,15 @@ import com.electronicssales.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 @Configuration
 public class CustomizeConfiguration {
 
     @Autowired UserService userService;
 
-    @Autowired PasswordEncoder passwordEncoder;
-
     private UserDto getAdminInfo() {
         UserDto user = new UserDto();
         user.setActived(true);
-        user.setPassword(passwordEncoder.encode("admin"));
+        user.setPassword("admin");
         user.setUsername("admin");
         user.setAddress("admin address");
         user.setFirstname("Admintrator");

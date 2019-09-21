@@ -11,7 +11,13 @@ public interface UserService extends UserDetailsService {
 
     User createUser(UserDto userDto, Role role);
 
+    User saveUser(UserDto userDto);
+
+    User updateUser(UserDto userDto);
+
     boolean existByUsername(String username);
+
+    boolean existsById(long userId);
 
     UserInfo getUserInfoByUsername(String username);
 

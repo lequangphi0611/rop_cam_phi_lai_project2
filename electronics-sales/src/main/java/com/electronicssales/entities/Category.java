@@ -32,9 +32,9 @@ public class Category {
     private String categoryName;
 
     @OneToMany(
-        mappedBy = "category",
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        mappedBy = "category"
     )
-    private Collection<ProductCategory> productCategories;
+    private Collection<Product> products;
     
 }

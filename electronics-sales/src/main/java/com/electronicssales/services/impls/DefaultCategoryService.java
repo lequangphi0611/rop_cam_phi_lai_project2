@@ -1,12 +1,15 @@
 package com.electronicssales.services.impls;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Category;
+import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.repositories.CategoryRepository;
+import com.electronicssales.repositories.ParameterTypeRepository;
 import com.electronicssales.services.CategoryService;
 import com.electronicssales.utils.Mapper;
 
@@ -23,6 +26,9 @@ public class DefaultCategoryService implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private ParameterTypeRepository parameterTypeRepository;
+
+    @Autowired
     private Mapper<Category, CategoryDto> categoryMapper;
 
     @Autowired
@@ -30,8 +36,22 @@ public class DefaultCategoryService implements CategoryService {
 
     @Override
     public Category saveCategory(CategoryDto categoryDto) {
+
+        List<ParameterType> parameterTypes = parameterTypeRepository
+            .saveAll(categoryDto.getParameterTypes()
+                .stream()
+                .map((parameterType) -> {
+                    if(!parameterTypeRepository.existsByParameterTypeName(parameterType.getParameterTypeName())){
+                        return parameterType;
+                    }
+                    return  parameterTypeRepository
+                        .findByParameterTypeName(parameterType.getParameterTypeName())
+                        .get();
+                })
+                .collect(Collectors.toList()));
+            
         return categoryRepository
-            .save(categoryMapper.map(categoryDto));
+            .save(categoryMapper.mapping(categoryDto));
     }
 
     @Override
@@ -40,7 +60,7 @@ public class DefaultCategoryService implements CategoryService {
             .saveAll(
                 categoryDtos
                     .stream()
-                    .map(categoryMapper::map)
+                    .map(categoryMapper::mapping)
                     .collect(Collectors.toList())
             );
     }
@@ -50,7 +70,7 @@ public class DefaultCategoryService implements CategoryService {
         return categoryRepository
             .findAll()
             .stream()
-            .map(categoryResponseMapper::map)
+            .map(categoryResponseMapper::mapping)
             .collect(Collectors.toList());
     }
 
@@ -64,7 +84,7 @@ public class DefaultCategoryService implements CategoryService {
         return categoryRepository
             .findByCategoryNameContaining(query)
             .stream()
-            .map(categoryResponseMapper::map)
+            .map(categoryResponseMapper::mapping)
             .collect(Collectors.toList());
     }
 
@@ -89,10 +109,10 @@ public class DefaultCategoryService implements CategoryService {
     }
 
     @Component
-    static class CategoryMapper implements Mapper<Category, CategoryDto> {
+    class CategoryMapper implements Mapper<Category, CategoryDto> {
 
         @Override
-        public Category map(CategoryDto categoryDto) {
+        public Category mapping(CategoryDto categoryDto) {
             Category category = new Category();
             category.setId(categoryDto.getId());
             category.setCategoryName(categoryDto.getCategoryName());
@@ -102,10 +122,10 @@ public class DefaultCategoryService implements CategoryService {
     }
 
     @Component
-    static class CategoryResponseMapper implements Mapper<CategoryResponse, Category> {
+    class CategoryResponseMapper implements Mapper<CategoryResponse, Category> {
 
         @Override
-        public CategoryResponse map(Category category) {
+        public CategoryResponse mapping(Category category) {
             return new CategoryResponse(
                 category.getId(), 
                 category.getCategoryName(), 

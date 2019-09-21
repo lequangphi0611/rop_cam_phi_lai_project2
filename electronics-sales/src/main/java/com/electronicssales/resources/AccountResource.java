@@ -1,5 +1,6 @@
-package com.electronicssales.api;
+package com.electronicssales.resources;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 import com.electronicssales.entities.User;
@@ -13,7 +14,9 @@ import com.electronicssales.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +26,7 @@ import lombok.Data;
 
 @RestController
 @RequestMapping("/api/accounts")
-public class AccountAPI {
+public class AccountResource {
 
     @Autowired
     private UserService userService;
@@ -51,8 +54,23 @@ public class AccountAPI {
         return ResponseEntity
             .created(null)
             .body(userInfoMapper
-                .map(userService.createUser(userDto, Role.ADMIN))
+                .mapping(userService.createUser(userDto, Role.ADMIN))
             );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAccount(
+        @RequestBody @Valid UserDto userDto,
+        @PathVariable long id
+    ) 
+    {
+        if(!userService.existsById(id)) {
+            throw new EntityNotFoundException("User not found !");
+        }
+        userDto.setId(id);
+        return ResponseEntity
+            .ok()
+            .body(userInfoMapper.mapping(userService.updateUser(userDto)));
     }
 
     @Data

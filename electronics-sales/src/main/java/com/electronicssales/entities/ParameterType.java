@@ -2,34 +2,27 @@ package com.electronicssales.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
 
 @Entity
-@Table(name = "manufacturers")
+@Table(name = "parameter_types")
 @Data
-public class Manufacturer {
+public class ParameterType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @Column(
-        columnDefinition = "nvarchar(50)",
+        columnDefinition = "nvarchar(255)",
         nullable = false,
         unique = true
     )
-    private String manufacturerName;
+    private String parameterTypeName;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "logo_id")
-    private Image manufacturerLogo;
-    
 }
