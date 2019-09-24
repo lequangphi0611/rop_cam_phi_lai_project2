@@ -10,11 +10,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "manufacturers")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Manufacturer {
 
     @Id
@@ -31,5 +35,9 @@ public class Manufacturer {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "logo_id")
     private Image manufacturerLogo;
+
+    public Manufacturer(long id) {
+        this.id = id;
+    }
     
 }

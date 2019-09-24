@@ -11,13 +11,17 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
     name = "categories"
 )
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category {
 
     @Id
@@ -36,5 +40,9 @@ public class Category {
         mappedBy = "category"
     )
     private Collection<Product> products;
+
+    public Category(long id) {
+        this.id = id;
+    }
     
 }

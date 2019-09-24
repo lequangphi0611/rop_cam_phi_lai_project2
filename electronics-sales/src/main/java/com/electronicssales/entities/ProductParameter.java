@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "product_parameter_values")
+@Table(name = "product_parameters")
 @Data
 public class ProductParameter {
 
@@ -23,7 +23,7 @@ public class ProductParameter {
     private long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_parameter_type_id")
+    @JoinColumn(name = "parameter_type_id")
     private ParameterType parameterType;
 
     @ManyToOne(fetch = FetchType.LAZY)

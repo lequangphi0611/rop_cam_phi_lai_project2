@@ -57,14 +57,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
             .antMatchers("/api/images/**")
                 .permitAll()
-            .antMatchers(
-                HttpMethod.GET, 
-                "/api/categories/**"
-            ).permitAll()
+            .antMatchers(HttpMethod.GET,"/api/categories/**")
+                .permitAll()
             .antMatchers(HttpMethod.GET, "/api/manufacturers/**")
                 .permitAll()
             .antMatchers(HttpMethod.POST, "/api/accounts")
-                .hasRole(ADMIN_ROLE)            
+                .hasRole(ADMIN_ROLE)  
+            .antMatchers(HttpMethod.GET, "/api/products/**")
+                .permitAll()          
             .anyRequest()
             .authenticated()
                 .and()

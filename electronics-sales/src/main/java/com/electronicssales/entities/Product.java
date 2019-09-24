@@ -19,13 +19,17 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
     name = "products"
 )
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
 
     @Id
@@ -84,5 +88,9 @@ public class Product {
         fetch = FetchType.LAZY
     )
     private Collection<Discount> discounts;
+
+    public Product(long id) {
+        this.id = id;
+    }
 
 }
