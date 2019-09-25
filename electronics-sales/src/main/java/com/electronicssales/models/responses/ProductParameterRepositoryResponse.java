@@ -1,6 +1,8 @@
 package com.electronicssales.models.responses;
 
-public interface ProductParameterResponsitoryResponse {
+public interface ProductParameterRepositoryResponse {
+
+    long getProductParameterId();
 
     String getParameterType();
 

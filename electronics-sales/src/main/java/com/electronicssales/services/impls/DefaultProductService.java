@@ -16,7 +16,7 @@ import com.electronicssales.models.dtos.ParagraphDto;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.dtos.ProductParameterDto;
 import com.electronicssales.models.responses.ProductParameterResponse;
-import com.electronicssales.models.responses.ProductParameterResponsitoryResponse;
+import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
 import com.electronicssales.repositories.ParagraphRepository;
 import com.electronicssales.repositories.ProductDescriptionRepository;
 import com.electronicssales.repositories.ProductImageRepository;
@@ -125,13 +125,14 @@ public class DefaultProductService implements ProductService {
 
         return productSaved;
     }
-
-    private ProductParameterResponse parseFrom(ProductParameterResponsitoryResponse repoResponse) {
+   private ProductParameterResponse parseFrom(ProductParameterRepositoryResponse repoResponse) {
         ProductParameterResponse productParameterResponse = new ProductParameterResponse();
         productParameterResponse.setParameterType(repoResponse.getParameterType());
         productParameterResponse.setParameterValue(repoResponse.getParameterValue());
+        productParameterResponse.setProductParameterId(repoResponse.getProductParameterId());
         return productParameterResponse;
     }
+ 
 
     @Override
     public Collection<ProductParameterResponse> getProductParametersByProductId(long productId) {

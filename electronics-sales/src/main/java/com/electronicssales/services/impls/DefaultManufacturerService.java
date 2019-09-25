@@ -66,6 +66,15 @@ public class DefaultManufacturerService implements ManufacturerService {
     }
 
     @Override
+    public Collection<ManufacturerDto> findByCategoryId(long categoryId) {
+        return manufacturerRepository
+            .findByCategoryId(categoryId)
+            .stream()
+            .map(manufacturerMapper::mapping)
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean existsById(long id) {
         return existsById(id);
     }

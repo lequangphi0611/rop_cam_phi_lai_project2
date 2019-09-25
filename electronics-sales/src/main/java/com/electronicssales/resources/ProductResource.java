@@ -32,5 +32,5 @@ public class ProductResource {
     public ResponseEntity<?> fetchProductParameters(@PathVariable long id) {
         return ResponseEntity.ok(productService.getProductParametersByProductId(id));
     }
-    
+
 }

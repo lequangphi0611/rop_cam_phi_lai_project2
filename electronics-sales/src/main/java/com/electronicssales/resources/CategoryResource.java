@@ -12,6 +12,7 @@ import com.electronicssales.entities.Category;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.services.CategoryService;
+import com.electronicssales.services.ManufacturerService;
 import com.electronicssales.utils.AppUtil;
 import com.electronicssales.utils.Mapper;
 
@@ -36,6 +37,9 @@ public class CategoryResource {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private ManufacturerService manufacturerService;
 
     @Autowired
     private Mapper<CategoryResponse, Category> categoryResponseMapper;
@@ -88,6 +92,11 @@ public class CategoryResource {
                 categoryResponseMapper
         );
         return ResponseEntity.ok(categoryResponses);
+    }
+
+    @GetMapping("/{categoryId}/manufacturers")
+    public ResponseEntity<?> fetchManufacturers(@PathVariable long categoryId) {
+        return ResponseEntity.ok(manufacturerService.findByCategoryId(categoryId));
     }
 
     @PutMapping("/{id}")

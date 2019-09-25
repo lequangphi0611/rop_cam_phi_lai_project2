@@ -1,16 +1,14 @@
 package com.electronicssales.models.responses;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ProductParameterResponse {
 
-    String parameterType;
+    private long productParameterId;
 
-    String parameterValue;
+    private String parameterType;
+
+    private String parameterValue;
     
 }
