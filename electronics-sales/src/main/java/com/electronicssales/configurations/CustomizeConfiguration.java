@@ -34,7 +34,7 @@ public class CustomizeConfiguration {
             UserDto initUser = getAdminInfo();
 
             if(!userService.existByUsername(initUser.getUsername())) {
-                userService.createUser(initUser, Role.ADMIN);
+                userService.createUser(initUser, Role.MANAGER);
             }
 
         })

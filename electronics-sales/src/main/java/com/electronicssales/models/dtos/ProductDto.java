@@ -17,7 +17,7 @@ public class ProductDto {
 
     private long price;
 
-    private long categoryId;
+    Collection<CategoryDto> categories;
 
     private long manufacturerId;
 

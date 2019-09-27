@@ -2,18 +2,23 @@ package com.electronicssales.entities;
 
 import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(
@@ -22,6 +27,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Category {
 
     @Id
@@ -33,14 +39,33 @@ public class Category {
         unique = true,
         nullable = false
     )
-    private String categoryName;
+    String categoryName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    Category parent;
 
     @OneToMany(
+        mappedBy = "category", 
         fetch = FetchType.LAZY,
-        mappedBy = "category"
+        cascade = CascadeType.REMOVE
     )
-    private Collection<Product> products;
+    Collection<ProductCategory> productCategories;
 
+    @OneToMany(
+        mappedBy = "category",
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
+    )
+    Collection<CategoryParameterType> categoryParameters;
+
+    @OneToMany(
+        mappedBy = "parent", 
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
+    )
+    Collection<Category> childrens;
+ 
     public Category(long id) {
         this.id = id;
     }

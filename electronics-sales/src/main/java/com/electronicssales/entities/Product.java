@@ -19,9 +19,11 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(
@@ -30,64 +32,64 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    long id;
 
     @Column(
         columnDefinition = "nvarchar(max)",
         nullable = false,
         unique = true
     )
-    private String productName;
+    String productName;
 
-    private long price;
+    long price;
 
-    private int quantity;
+    int quantity;
 
-    private boolean salable;
+    boolean salable;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    private Date createdTime;
+    Date createdTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Date updatedTime;
+    Date updatedTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    Collection<ProductCategory> productCategories;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manufacturer_id")
-    private Manufacturer manufacturer;
+    Manufacturer manufacturer;
 
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY
     )
-    private Collection<ProductDescription> productDescriptions;
+    Collection<ProductDescription> productDescriptions;
 
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY
     )
-    private Collection<ProductImage> productImages;
+    Collection<ProductImage> productImages;
 
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY
     )
-    private Collection<Review> reviews;
+    Collection<Review> reviews;
 
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY
     )
-    private Collection<Discount> discounts;
+    Collection<Discount> discounts;
 
     public Product(long id) {
         this.id = id;

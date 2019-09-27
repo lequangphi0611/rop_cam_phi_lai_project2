@@ -1,8 +1,10 @@
 package com.electronicssales.services;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.electronicssales.entities.Category;
+import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.responses.CategoryResponse;
 
@@ -28,5 +30,9 @@ public interface CategoryService {
     boolean existsById(long id);
 
     void deleteCategoryById(long id);
+
+    List<CategoryResponse> fetchChildrensOf(long parentId);
+
+    List<ParameterType> fetchParameterTypeByCategoryId(long categoryId);
 
 }

@@ -1,6 +1,7 @@
 package com.electronicssales.services.impls;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,7 +13,7 @@ import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.repositories.CategoryParameterTypeRepository;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParameterTypeRepository;
-import com.electronicssales.repositories.ProductRepository;
+import com.electronicssales.repositories.ProductCategoryRepository;
 import com.electronicssales.services.CategoryService;
 import com.electronicssales.utils.Mapper;
 
@@ -64,7 +65,7 @@ public class DefaultCategoryService implements CategoryService {
             .orElseGet(() -> categoryParameterTypeRepository.save(categoryParameterType));
     }
 
-    private Collection<CategoryParameterType> processAfterSaveCategory(Collection<ParameterType> parameterTypes, Category categorySaved) {
+    private Collection<CategoryParameterType> saveCategoryParameterTypes(Collection<ParameterType> parameterTypes, Category categorySaved) {
         return parameterTypes
             .stream()
             .map(this::saveParameterType)
@@ -73,11 +74,27 @@ public class DefaultCategoryService implements CategoryService {
             .collect(Collectors.toList());
     }
 
+    private Collection<Category> saveChildrens(Collection<CategoryDto> childrensDtos) {
+        return childrensDtos
+            .stream()
+            .map(this::saveCategory)
+            .collect(Collectors.toList());
+    }
+
     @Override
     @Transactional
     public Category saveCategory(CategoryDto categoryDto) {
         Category categorySaved = categoryRepository.save(categoryMapper.mapping(categoryDto));
-        processAfterSaveCategory(categoryDto.getParameterTypes(), categorySaved);
+
+        saveCategoryParameterTypes(categoryDto.getParameterTypes(), categorySaved);
+
+        saveChildrens(categoryDto
+            .getChildrens()
+            .stream()
+            .peek(children -> children.setParentId(categorySaved.getId()))
+            .collect(Collectors.toList())
+        );
+
         return categorySaved;
     }
 
@@ -99,11 +116,23 @@ public class DefaultCategoryService implements CategoryService {
     }
 
     @Override
+    @Transactional
+    public List<CategoryResponse> fetchChildrensOf(long parentId) {
+        return categoryRepository
+            .findByParentId(parentId)
+            .stream()
+            .map(categoryResponseMapper::mapping)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
     public Page<Category> findAll(Pageable pageable) {
         return categoryRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public Collection<CategoryResponse> findByCategoryNameContaining(String query) {
         return categoryRepository
             .findByCategoryNameContaining(query)
@@ -112,7 +141,9 @@ public class DefaultCategoryService implements CategoryService {
             .collect(Collectors.toList());
     }
 
+    
     @Override
+    @Transactional
     public Page<Category> findByCategoryNameContainingAndPageable(String categoryName, Pageable pageable) {
         return categoryRepository.findByCategoryNameContaining(categoryName, pageable);
     }
@@ -132,6 +163,15 @@ public class DefaultCategoryService implements CategoryService {
         categoryRepository.deleteById(id);
     }
 
+    @Override
+    public List<ParameterType> fetchParameterTypeByCategoryId(long categoryId) {
+        return categoryParameterTypeRepository
+            .findAllByCategoryId(categoryId)
+            .stream()
+            .map(categoryParameter -> categoryParameter.getParameterType())
+            .collect(Collectors.toList());
+    }
+
     @Component
     class CategoryMapper implements Mapper<Category, CategoryDto> {
 
@@ -140,6 +180,9 @@ public class DefaultCategoryService implements CategoryService {
             Category category = new Category();
             category.setId(categoryDto.getId());
             category.setCategoryName(categoryDto.getCategoryName());
+            if(categoryDto.getParentId() > 0) {
+                category.setParent(new Category(categoryDto.getParentId()));
+            }
             return category;
         }
 
@@ -149,15 +192,16 @@ public class DefaultCategoryService implements CategoryService {
     class CategoryResponseMapper implements Mapper<CategoryResponse, Category> {
 
         @Autowired
-        private ProductRepository productRepository;
+        private ProductCategoryRepository productCategoryRepository;
 
         @Override
         public CategoryResponse mapping(Category category) {
-            return new CategoryResponse(
-                category.getId(), 
-                category.getCategoryName(), 
-                productRepository.countByCategoryId(category.getId())
-            );
+            CategoryResponse categoryResponse = new CategoryResponse();
+            categoryResponse.setId(category.getId());
+            categoryResponse.setCategoryName(category.getCategoryName());
+            categoryResponse.setProductCount(productCategoryRepository.countByCategoryId(category.getId()));
+            categoryResponse.setParentId(category.getParent() != null ? category.getParent().getId() : 0);
+            return categoryResponse;
         }
         
     }

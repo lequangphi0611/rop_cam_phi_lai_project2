@@ -121,6 +121,16 @@ public class CategoryResource {
             .body(categoryService.saveCategory(categoryDto));
     }
 
+    @GetMapping("/{id}/childrens")
+    public ResponseEntity<?> fetchChildrensOf(@PathVariable("id") long parentId) {
+        return ResponseEntity.ok(categoryService.fetchChildrensOf(parentId));
+    } 
+
+    @GetMapping("/{id}/parameter-types")
+    public ResponseEntity<?> fetchParametersByCategoryId(@PathVariable("id") long categoryId) {
+        return ResponseEntity.ok(categoryService.fetchParameterTypeByCategoryId(categoryId));
+    } 
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable long id) {
         categoryService.deleteCategoryById(id);

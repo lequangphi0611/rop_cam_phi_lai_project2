@@ -34,6 +34,14 @@ public class ManufacturerResource {
         return ResponseEntity.ok(manufacturerService.findAll());
     }
 
+    private boolean requiredManufacturerId(long productId) {
+        if(manufacturerService.existsById(productId)) {
+            return true;
+        }
+
+        throw new EntityNotFoundException(Manufacturer.class.getSimpleName() + " with id not found !");
+    }
+
     @PostMapping
     public ResponseEntity<?> createManufacturer(@RequestBody @Valid ManufacturerDto manufacturerDto) {
         final String manufacturerName = manufacturerDto.getManufacturerName();
@@ -83,9 +91,7 @@ public class ManufacturerResource {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteManufacturer(@PathVariable long id) {
-        if(!manufacturerService.existsById(id)) {
-            throw new EntityNotFoundException("Manufacturer not found !");
-        }
+        requiredManufacturerId(id);
         manufacturerService.deleteById(id);
         return ResponseEntity.ok().build();
     }

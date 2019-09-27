@@ -6,7 +6,6 @@ import java.util.Collection;
 import javax.validation.constraints.NotBlank;
 
 import com.electronicssales.entities.ParameterType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -18,8 +17,11 @@ public class CategoryDto {
     @NotBlank
     private String categoryName;
 
-    @JsonIgnore
+    private long parentId;
+
     private Collection<ParameterType> parameterTypes = new ArrayList<>();
+
+    private Collection<CategoryDto> childrens = new ArrayList<>();
 
     public CategoryDto() {
     }

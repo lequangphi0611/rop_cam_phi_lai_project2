@@ -54,7 +54,7 @@ public class AccountResource {
         return ResponseEntity
             .created(null)
             .body(userInfoMapper
-                .mapping(userService.createUser(userDto, Role.ADMIN))
+                .mapping(userService.createUser(userDto, Role.EMPLOYEE))
             );
     }
 

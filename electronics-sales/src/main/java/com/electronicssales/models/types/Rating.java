@@ -1,15 +1,26 @@
 package com.electronicssales.models.types;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public enum Rating {
 
-    VERY_BAD,
+    VERY_BAD(0),
 
-    BAD,
+    BAD(1),
 
-    OKAY,
+    OKAY(2),
 
-    GOOD,
+    GOOD(3),
 
-    GREAT;
+    GREAT(4);
+
+    @Getter 
+    @Setter
+    private int value;    
+
+    Rating(int value) {
+        this.value = value;
+    }
 
 }

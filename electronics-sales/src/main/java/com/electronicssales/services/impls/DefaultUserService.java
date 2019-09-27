@@ -103,7 +103,11 @@ public class DefaultUserService implements UserService {
 
     @Override
     public UserInfo getUserInfoByUsername(String username) {
-        return userInfoMapper.mapping(userRepository.findByUsername(username));
+        User userFinded = userRepository
+            .findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
+
+        return userInfoMapper.mapping(userFinded);
     }
 
     @Override
@@ -118,11 +122,10 @@ public class DefaultUserService implements UserService {
     
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
-        if(user == null) {
-            throw new UsernameNotFoundException("User not found !");
-        }
+    public UserDetails loadUserByUsername(String usernameOrEmailOrPhoneNumber) throws UsernameNotFoundException {
+        User user = userRepository
+            .findByUsernameOrEmailOrPhoneNumber(usernameOrEmailOrPhoneNumber)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
         return UserPrincipal.of(user);
     }
 

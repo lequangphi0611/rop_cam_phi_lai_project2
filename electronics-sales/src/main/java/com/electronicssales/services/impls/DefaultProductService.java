@@ -1,6 +1,9 @@
 package com.electronicssales.services.impls;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Category;
@@ -9,15 +12,18 @@ import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.entities.Paragraph;
 import com.electronicssales.entities.ParameterType;
 import com.electronicssales.entities.Product;
+import com.electronicssales.entities.ProductCategory;
 import com.electronicssales.entities.ProductDescription;
 import com.electronicssales.entities.ProductImage;
 import com.electronicssales.entities.ProductParameter;
+import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.dtos.ParagraphDto;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.dtos.ProductParameterDto;
 import com.electronicssales.models.responses.ProductParameterResponse;
 import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
 import com.electronicssales.repositories.ParagraphRepository;
+import com.electronicssales.repositories.ProductCategoryRepository;
 import com.electronicssales.repositories.ProductDescriptionRepository;
 import com.electronicssales.repositories.ProductImageRepository;
 import com.electronicssales.repositories.ProductParameterRepository;
@@ -47,6 +53,12 @@ public class DefaultProductService implements ProductService {
 
     @Autowired
     private ProductParameterRepository productParameterRepository;
+
+    @Autowired
+    private ProductCategoryRepository productCategoryRepository;
+
+    @Autowired
+    private Mapper<Category, CategoryDto> categoryMapper;
 
     @Autowired
     private Mapper<Product, ProductDto> productMapper;
@@ -79,6 +91,13 @@ public class DefaultProductService implements ProductService {
         return productImage; 
     }
 
+    private ProductCategory getProductCategoryFrom(long productId, long categoryId) {
+        ProductCategory productCategory = new ProductCategory();
+        productCategory.setCategory(new Category(categoryId));
+        productCategory.setProduct(new Product(productId));
+        return productCategory;
+    }
+
     private Collection<ProductDescription> saveProductDescriptionsFrom(long productId, Collection<ParagraphDto> paragraphDtos) {
         return paragraphDtos
             .stream()
@@ -106,12 +125,58 @@ public class DefaultProductService implements ProductService {
             .collect(Collectors.toList());
     }
 
+    private ProductCategory findOrSaveProductCategory(long productId, long categoryId) {
+        return productCategoryRepository
+            .findByCategoryIdAndProductId(categoryId, productId)
+            .orElseGet(() -> {
+                return productCategoryRepository.save(getProductCategoryFrom(productId, categoryId));
+            });
+    }
+
+    private Collection<ProductCategory> saveProductCategoryByCategory(long productId, Category category) {
+        List<ProductCategory> productCategories = new ArrayList<>();
+        productCategories.add(findOrSaveProductCategory(productId, category.getId()));
+        long parentId = category.getParent().getId();
+        if(parentId > 0) {
+            productCategories.add(findOrSaveProductCategory(productId, parentId));
+        }
+        return productCategories;
+    }
+
+    private void removeProductCategoriesNotIn(Collection<ProductCategory> productCategoriesStandard) {
+        long productId =((List<ProductCategory>) productCategoriesStandard)
+            .get(0)
+            .getProduct()
+            .getId();
+        List<Long> productCategoryIds = productCategoriesStandard
+            .stream()
+            .map(productCategory -> productCategory.getId())
+            .collect(Collectors.toList());
+        List<ProductCategory> productCategoriesRemovable =  productCategoryRepository.findByProductCategoryNotIn(productId, productCategoryIds);
+        productCategoryRepository.deleteAll(productCategoriesRemovable);
+    }
+
+    private Collection<ProductCategory> saveProductCategoryFrom(long productId, Collection<CategoryDto> categoryDtos) {
+        List<ProductCategory>  productCategories = new ArrayList<>();
+        categoryDtos
+            .stream()
+            .map(categoryMapper::mapping)
+            .forEach((category) -> {
+                saveProductCategoryByCategory(productId, category)
+                    .forEach(productCategories::add);
+            });
+        removeProductCategoriesNotIn(productCategories);
+        return productCategories;
+    }
+
     @Override
     @Transactional
     public Product saveProduct(ProductDto productDto) {
         Product productSaved = productRepository.save(productMapper.mapping(productDto));
 
         final long productSavedId = productSaved.getId();
+
+        saveProductCategoryFrom(productSavedId, productDto.getCategories());
 
         saveProductDescriptionsFrom(productSavedId, productDto.getParagraphDtos());
         
@@ -142,6 +207,21 @@ public class DefaultProductService implements ProductService {
             .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean existsById(long productId) {
+        return productRepository.existsById(productId);
+    }
+
+    @Override
+    public boolean existsByProductName(String productName) {
+        return productRepository.existsByProductName(productName);
+    }
+
+    @Override
+    public Optional<Product> findByProductId(long id) {
+        return productRepository.findById(id);
+    }
+
     @Component
     class ProductMapper implements Mapper<Product, ProductDto> {
 
@@ -151,7 +231,6 @@ public class DefaultProductService implements ProductService {
             product.setId(productDto.getId());
             product.setPrice(productDto.getPrice());
             product.setManufacturer(new Manufacturer(productDto.getManufacturerId()));
-            product.setCategory(new Category(productDto.getCategoryId()));
             product.setProductName(productDto.getProductName());
             product.setSalable(true);
             return product;
