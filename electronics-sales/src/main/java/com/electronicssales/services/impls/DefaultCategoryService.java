@@ -18,27 +18,34 @@ import com.electronicssales.services.CategoryService;
 import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Lazy
 @Service
 public class DefaultCategoryService implements CategoryService {
 
+    @Lazy
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Lazy
     @Autowired
     private ParameterTypeRepository parameterTypeRepository;
 
+    @Lazy
     @Autowired
     private CategoryParameterTypeRepository categoryParameterTypeRepository;
 
+    @Lazy
     @Autowired
     private Mapper<Category, CategoryDto> categoryMapper;
 
+    @Lazy
     @Autowired
     private Mapper<CategoryResponse, Category> categoryResponseMapper;
 
@@ -172,6 +179,7 @@ public class DefaultCategoryService implements CategoryService {
             .collect(Collectors.toList());
     }
 
+    @Lazy
     @Component
     class CategoryMapper implements Mapper<Category, CategoryDto> {
 
@@ -188,9 +196,11 @@ public class DefaultCategoryService implements CategoryService {
 
     }
 
+    @Lazy
     @Component
     class CategoryResponseMapper implements Mapper<CategoryResponse, Category> {
 
+        @Lazy
         @Autowired
         private ProductCategoryRepository productCategoryRepository;
 

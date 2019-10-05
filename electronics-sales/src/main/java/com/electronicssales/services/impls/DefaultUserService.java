@@ -1,19 +1,21 @@
 package com.electronicssales.services.impls;
 
+
 import javax.persistence.EntityExistsException;
 
 import com.electronicssales.entities.Image;
 import com.electronicssales.entities.User;
-import com.electronicssales.exceptions.UserExistsException;
+import com.electronicssales.entities.UserInfo;
 import com.electronicssales.models.UserPrincipal;
 import com.electronicssales.models.dtos.UserDto;
-import com.electronicssales.models.responses.UserInfo;
+import com.electronicssales.models.responses.UserInfoResponse;
 import com.electronicssales.models.types.Role;
 import com.electronicssales.repositories.UserRepository;
 import com.electronicssales.services.UserService;
 import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,48 +24,44 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+@Lazy
 @Service
-@Transactional
 public class DefaultUserService implements UserService {
 
-    @Autowired UserRepository userRepository;
-
+    @Lazy
     @Autowired
-    private Mapper<UserInfo, User> userInfoMapper;
+    private UserRepository userRepository;
 
+    @Lazy
+    @Autowired
+    private Mapper<UserInfoResponse, User> userInfoResponseMapper;
+
+    @Lazy
     @Autowired
     private Mapper<User, UserDto> userDtoToUserMapper;
 
+    @Transactional
     @Override
     public User createUser(UserDto userDto, Role role) {
         if(existByUsername(userDto.getUsername())) {
-            throw new UserExistsException(UserExistsException.Field.USERNAME);
-        }
-
-        if(existsByEmail(userDto.getEmail())) {
-            throw new UserExistsException(UserExistsException.Field.EMAIL);
-        }        
-
-        if(existsByPhoneNumber(userDto.getPhoneNumber())) {
-            throw new UserExistsException(UserExistsException.Field.PHONE_NUMBER);
+            throw new EntityExistsException("User is already exists !");
         }
 
         User user = userDtoToUserMapper.mapping(userDto);
         user.setRole(role);
-        return userRepository.save(user);
+        return userRepository.persist(user);
     }
 
-    @Override
-    public User saveUser(UserDto userDto) {
-        return userRepository
-            .save(userDtoToUserMapper.mapping(userDto));
-    }
-
+    @Transactional
     @Override
     public User updateUser(UserDto newUserDto) {
-        User oldUser = userRepository.findById(newUserDto.getId()).get();
+        User userPersisted = userRepository
+            .findByIdAndFetchUserInfo(newUserDto.getId())
+            .orElseThrow(() -> new EntityExistsException("User not found"));
         
-        if(!newUserDto.getUsername().equals(oldUser.getUsername()) && existByUsername(newUserDto.getUsername())) {
+        if(!userPersisted.getUsername().equals(newUserDto.getUsername())
+            && userRepository.existsByUsername(newUserDto.getUsername()))
+        {
             throw new EntityExistsException(
                 new StringBuilder()
                 .append(User.class.getSimpleName().toUpperCase())
@@ -74,47 +72,29 @@ public class DefaultUserService implements UserService {
             );
         }
 
-        if(!newUserDto.getEmail().equals(oldUser.getEmail()) && existsByEmail(newUserDto.getEmail())) {
-            throw new EntityExistsException(
-                new StringBuilder()
-                .append(User.class.getSimpleName().toUpperCase())
-                .append(" with EMAIL = \"")
-                .append(newUserDto.getEmail())
-                .append("\" is already exists !")
-                .toString()
-            );
-        }
-
-        if(!newUserDto.getPhoneNumber().equals(oldUser.getPhoneNumber()) 
-            && existsByPhoneNumber(newUserDto.getPhoneNumber())) 
-        {
-            throw new EntityExistsException(
-                new StringBuilder()
-                .append(User.class.getSimpleName().toUpperCase())
-                .append(" with PHONE_NUMBER = \"")
-                .append(newUserDto.getPhoneNumber())
-                .append("\" is already exists !")
-                .toString()
-            );
-        }
-
-        return saveUser(newUserDto);
+        User userTransient = userDtoToUserMapper.mapping(newUserDto);
+        userTransient.getUserInfo().setId(userPersisted.getUserInfo().getId());
+        userTransient.setRole(userPersisted.getRole());
+        userRepository.merge(userTransient);
+        return userTransient;
     }
 
+    @Transactional
     @Override
-    public UserInfo getUserInfoByUsername(String username) {
-        User userFinded = userRepository
-            .findByUsername(username)
+    public UserInfoResponse getUserInfoByUsername(String username) {
+        User user = userRepository
+            .findByUsernameAndFetchUserInfo(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
-
-        return userInfoMapper.mapping(userFinded);
+        return userInfoResponseMapper.mapping(user);
     }
 
+    @Transactional
     @Override
     public boolean existByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
 
+    @Transactional
     @Override
     public boolean existsById(long userId) {
         return userRepository.existsById(userId);
@@ -122,69 +102,84 @@ public class DefaultUserService implements UserService {
     
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String usernameOrEmailOrPhoneNumber) throws UsernameNotFoundException {
-        User user = userRepository
-            .findByUsernameOrEmailOrPhoneNumber(usernameOrEmailOrPhoneNumber)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+         User user =  userRepository
+            .findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
         return UserPrincipal.of(user);
     }
 
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    @Lazy
+    @Component
+    public class UserInfoMapper implements Mapper<UserInfo, UserDto> {
+
+
+        @Override
+        public UserInfo mapping(UserDto userDto) {
+            UserInfo userInfo = new UserInfo();
+
+            userInfo.setFirstname(userDto.getFirstname());
+            userInfo.setLastname(userDto.getLastname());
+            userInfo.setPhoneNumber(userDto.getPhoneNumber());
+            userInfo.setEmail(userDto.getEmail());
+            userInfo.setAddress(userDto.getAddress());
+            userInfo.setBirthday(userDto.getBirthday());
+            userInfo.setGender(userDto.isGender());
+            return userInfo;
+        }
+    
+        
     }
 
-    @Override
-    public boolean existsByPhoneNumber(String phoneNumber) {
-        return userRepository.existsByPhoneNumber(phoneNumber);
-    }
-
+    @Lazy
     @Component
     class UserDtoMapper implements Mapper<User, UserDto> {
 
+        @Lazy
         @Autowired
         private PasswordEncoder passwordEncoder;
+
+        @Lazy
+        @Autowired
+        private Mapper<UserInfo, UserDto> userInfoMapper;
 
         @Override
         public User mapping(UserDto dto) {
             User user = new User();
-
-            user.setActived(dto.isActived());
-            user.setFirstname(dto.getFirstname());
-            user.setLastname(dto.getLastname());
             user.setId(dto.getId());
+            user.setActived(true);
             user.setUsername(dto.getUsername());
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
-            user.setAddress(dto.getAddress());
-            user.setAvartar(dto.getAvartarId() > 0 ? new Image(dto.getAvartarId()) : null);
-            user.setPhoneNumber(dto.getPhoneNumber());
-            user.setEmail(dto.getEmail());
-            user.setGender(dto.isGender());
-            user.setBirthday(dto.getBirthday());
-
+            if(dto.getAvartarId() > 0) {
+                user.setAvartar(new Image(dto.getAvartarId()));
+            }
+            user.setUserInfo(userInfoMapper.mapping(dto));
             return user;
         }
         
     }
 
+    @Lazy
     @Component
-    class UserInfoMapper implements Mapper<UserInfo, User> {
+    class UserInfoResponseMapper implements Mapper<UserInfoResponse, User> {
 
         @Override
-        public UserInfo mapping(User user) {
-            UserInfo userInfo = new UserInfo();
-            userInfo.setId(user.getId());
-            userInfo.setUsername(user.getUsername());
-            userInfo.setFirstname(user.getFirstname());
-            userInfo.setLastname(user.getLastname());
-            userInfo.setBirthday(user.getBirthday());
-            userInfo.setGender(user.isGender());
-            userInfo.setEmail(user.getEmail());
-            userInfo.setPhoneNumber(user.getPhoneNumber());
-            userInfo.setAddress(user.getAddress());
-            userInfo.setAvartarId(user.getAvartar() != null ? user.getAvartar().getId() : 0);
+        public UserInfoResponse mapping(User user) {
+            UserInfoResponse userInfoResponse = new UserInfoResponse();
 
-            return userInfo;
+            UserInfo userInfo = user.getUserInfo();
+
+            userInfoResponse.setId(user.getId());
+            userInfoResponse.setUsername(user.getUsername());
+            userInfoResponse.setFirstname(userInfo.getFirstname());
+            userInfoResponse.setLastname(userInfo.getLastname());
+            userInfoResponse.setBirthday(userInfo.getBirthday());
+            userInfoResponse.setGender(userInfo.isGender());
+            userInfoResponse.setEmail(userInfo.getEmail());
+            userInfoResponse.setPhoneNumber(userInfo.getPhoneNumber());
+            userInfoResponse.setAddress(userInfo.getAddress());
+            userInfoResponse.setAvartarId(user.getAvartar() != null ? user.getAvartar().getId() : 0);
+            return userInfoResponse;
         }
         
     }

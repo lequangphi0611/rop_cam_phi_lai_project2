@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.Image;
 import com.electronicssales.entities.Manufacturer;
@@ -16,12 +18,12 @@ import com.electronicssales.entities.ProductCategory;
 import com.electronicssales.entities.ProductDescription;
 import com.electronicssales.entities.ProductImage;
 import com.electronicssales.entities.ProductParameter;
-import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.dtos.ParagraphDto;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.dtos.ProductParameterDto;
 import com.electronicssales.models.responses.ProductParameterResponse;
 import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
+import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParagraphRepository;
 import com.electronicssales.repositories.ProductCategoryRepository;
 import com.electronicssales.repositories.ProductDescriptionRepository;
@@ -31,38 +33,53 @@ import com.electronicssales.repositories.ProductRepository;
 import com.electronicssales.services.ProductService;
 import com.electronicssales.utils.Mapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Lazy
 @Service
 public class DefaultProductService implements ProductService {
 
+    private final static Logger LOG = LoggerFactory.getLogger(DefaultProductService.class);
+
+    @Lazy
     @Autowired
     private ProductRepository productRepository;
-
+    
+    @Lazy
     @Autowired
     private ParagraphRepository paragraphRepository;
 
+    @Lazy
     @Autowired
     private ProductDescriptionRepository productDescriptionRepository;
 
+    @Lazy
     @Autowired
     private ProductImageRepository productImageRepository;
 
+    @Lazy
     @Autowired
     private ProductParameterRepository productParameterRepository;
 
+    @Lazy
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
 
+    @Lazy
     @Autowired
-    private Mapper<Category, CategoryDto> categoryMapper;
+    private CategoryRepository categoryRepository;
 
+    @Lazy
     @Autowired
     private Mapper<Product, ProductDto> productMapper;
 
+    @Lazy
     @Autowired
     private Mapper<ProductParameter, ProductParameterDto> productParameterMapper;
 
@@ -136,9 +153,15 @@ public class DefaultProductService implements ProductService {
     private Collection<ProductCategory> saveProductCategoryByCategory(long productId, Category category) {
         List<ProductCategory> productCategories = new ArrayList<>();
         productCategories.add(findOrSaveProductCategory(productId, category.getId()));
-        long parentId = category.getParent().getId();
-        if(parentId > 0) {
+        try {
+            long parentId = categoryRepository
+                .findById(category.getId())
+                .map(categoryLocal -> (Long)(categoryLocal.getParent().getId()))
+                .orElseThrow(() ->  new EntityNotFoundException("Category not found !"));
             productCategories.add(findOrSaveProductCategory(productId, parentId));
+
+        } catch (NullPointerException e) {
+            LOG.error("Parent not found !");
         }
         return productCategories;
     }
@@ -156,11 +179,11 @@ public class DefaultProductService implements ProductService {
         productCategoryRepository.deleteAll(productCategoriesRemovable);
     }
 
-    private Collection<ProductCategory> saveProductCategoryFrom(long productId, Collection<CategoryDto> categoryDtos) {
+    private Collection<ProductCategory> saveProductCategoryFrom(long productId, Collection<Long> categoriesId) {
         List<ProductCategory>  productCategories = new ArrayList<>();
-        categoryDtos
+        categoriesId
             .stream()
-            .map(categoryMapper::mapping)
+            .map(categoryId -> new Category(categoryId))
             .forEach((category) -> {
                 saveProductCategoryByCategory(productId, category)
                     .forEach(productCategories::add);
@@ -176,7 +199,7 @@ public class DefaultProductService implements ProductService {
 
         final long productSavedId = productSaved.getId();
 
-        saveProductCategoryFrom(productSavedId, productDto.getCategories());
+        saveProductCategoryFrom(productSavedId, productDto.getCategoriesId());
 
         saveProductDescriptionsFrom(productSavedId, productDto.getParagraphDtos());
         
@@ -222,6 +245,7 @@ public class DefaultProductService implements ProductService {
         return productRepository.findById(id);
     }
 
+    @Lazy
     @Component
     class ProductMapper implements Mapper<Product, ProductDto> {
 
@@ -238,6 +262,7 @@ public class DefaultProductService implements ProductService {
 
     }
 
+    @Lazy
     @Component
     class ProductParameterMapper implements Mapper<ProductParameter, ProductParameterDto> {
 

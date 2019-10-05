@@ -12,20 +12,20 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "user_product_favorite")
+@Table(name = "category_manufacturers")
 @Data
-public class UserProductFavorite {
+public class CategoryManufacturer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "manufacturer_id")
+    private Manufacturer manufacturer;
     
 }

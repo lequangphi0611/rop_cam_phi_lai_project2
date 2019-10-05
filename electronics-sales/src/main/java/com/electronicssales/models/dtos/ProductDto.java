@@ -17,7 +17,7 @@ public class ProductDto {
 
     private long price;
 
-    Collection<CategoryDto> categories;
+    Collection<Long> categoriesId = new ArrayList<>();
 
     private long manufacturerId;
 

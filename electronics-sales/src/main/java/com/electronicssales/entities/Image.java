@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +25,7 @@ public class Image {
     private Long id;
 
     @Lob
+    @JsonIgnore
     private byte[] data;
 
     public Image(long id) {

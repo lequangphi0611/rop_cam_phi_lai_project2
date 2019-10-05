@@ -80,7 +80,7 @@ public class ManufacturerResource {
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Manufacturer not found !"));
 
-        if(!manufacturer.getManufacturerName().equals(manufacturerDto.getManufacturerName())
+        if(!manufacturer.getManufacturerName().equalsIgnoreCase(manufacturerDto.getManufacturerName())
             && manufacturerService.existsByManufacturerName(manufacturerDto.getManufacturerName())) {
                 throw new EntityExistsException("Manufacturer Name is already exists !");
         }

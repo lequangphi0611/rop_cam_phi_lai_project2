@@ -1,28 +1,17 @@
 package com.electronicssales.models.responses;
 
-import java.util.Date;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 
 @Data
-public class UserInfo {
-
-    private long id;
+public class RequiredUserInfoDto {
 
     @NotBlank
     private String firstname;
 
     private String lastname;
-
-    @NotBlank
-    private String username;
-
-    private Date birthday;
-
-    private long avartarId;
 
     @Pattern(regexp = "[0]([0-9]{9,11})")
     private String phoneNumber;

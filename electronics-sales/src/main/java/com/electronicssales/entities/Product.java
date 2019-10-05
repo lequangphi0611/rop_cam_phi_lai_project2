@@ -3,6 +3,7 @@ package com.electronicssales.entities;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -60,7 +61,11 @@ public class Product {
     @UpdateTimestamp
     Date updatedTime;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(
+        mappedBy = "product",
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
+    )
     Collection<ProductCategory> productCategories;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -69,19 +74,22 @@ public class Product {
 
     @OneToMany(
         mappedBy = "product",
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
     )
     Collection<ProductDescription> productDescriptions;
 
     @OneToMany(
         mappedBy = "product",
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
     )
     Collection<ProductImage> productImages;
 
     @OneToMany(
         mappedBy = "product",
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
     )
     Collection<Review> reviews;
 
@@ -90,6 +98,13 @@ public class Product {
         fetch = FetchType.LAZY
     )
     Collection<Discount> discounts;
+
+    @OneToMany(
+        mappedBy = "product",
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
+    )
+    Collection<ProductParameter> productParameters;
 
     public Product(long id) {
         this.id = id;

@@ -2,7 +2,6 @@ package com.electronicssales.entities;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,9 +30,7 @@ public class ImportInvoice {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private int importQuantity;
-
-    private long importPrice;
+    private int quantity;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp   
@@ -42,10 +39,5 @@ public class ImportInvoice {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     private User creator;
-
-    @Column(
-        columnDefinition = "nvarchar(max)"
-    )
-    private String note;
 
 }

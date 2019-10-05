@@ -17,13 +17,7 @@ public class UserPrincipal implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 
-    private long id;
-
-    private String name;
-
     private String username;
-
-    private String email;
 
     private String password;
 
@@ -43,20 +37,11 @@ public class UserPrincipal implements UserDetails {
         List<GrantedAuthority> authorities = Arrays.asList(
             new SimpleGrantedAuthority(user.getRole().toString())
         );
-        UserPrincipal userPrincipal = new UserPrincipal();
-        userPrincipal.setAuthorities(authorities);
-        userPrincipal.setId(user.getId());
-        StringBuilder fullname = new StringBuilder();
-        if(user.getLastname() != null || user.getLastname() != "") {
-            fullname
-                .append(user.getLastname())
-                .append(" ");
-        }
 
-        fullname.append(user.getFirstname());
-        userPrincipal.setName(fullname.toString());
+        UserPrincipal userPrincipal = new UserPrincipal();
+
+        userPrincipal.setAuthorities(authorities);
         userPrincipal.setUsername(user.getUsername());
-        userPrincipal.setEmail(user.getEmail());
         userPrincipal.setPassword(user.getPassword());
         userPrincipal.setAccountNonExpired(user.isActived());
         userPrincipal.setAccountNonLocked(user.isActived());

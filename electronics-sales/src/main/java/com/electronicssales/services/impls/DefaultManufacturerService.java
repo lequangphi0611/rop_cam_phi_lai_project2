@@ -12,15 +12,19 @@ import com.electronicssales.services.ManufacturerService;
 import com.electronicssales.utils.TwoDimensionalMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+@Lazy
 @Service
 public class DefaultManufacturerService implements ManufacturerService {
 
+    @Lazy
     @Autowired
     private ManufacturerRepository manufacturerRepository;
 
+    @Lazy
     @Autowired
     private TwoDimensionalMapper<ManufacturerDto, Manufacturer> manufacturerMapper;
 
@@ -84,6 +88,7 @@ public class DefaultManufacturerService implements ManufacturerService {
         manufacturerRepository.deleteById(id);
     }
 
+    @Lazy
     @Component
     class ManufacturerMapper implements TwoDimensionalMapper<ManufacturerDto, Manufacturer> {
 
@@ -100,9 +105,8 @@ public class DefaultManufacturerService implements ManufacturerService {
         public Manufacturer secondMapping(ManufacturerDto manufacturerDto) {
             Manufacturer manufacturer = new Manufacturer();
             manufacturer.setId(manufacturerDto.getId());
-            if(manufacturerDto.getLogoId() > 0) {
-                manufacturer.setManufacturerLogo(new Image(manufacturerDto.getLogoId()));
-            }
+            Image image = manufacturerDto.getLogoId() > 0 ? new Image(manufacturerDto.getLogoId()) : null;
+            manufacturer.setManufacturerLogo(image);
             manufacturer.setManufacturerName(manufacturerDto.getManufacturerName());
             return manufacturer;
         }

@@ -1,11 +1,12 @@
 package com.electronicssales.resources;
 
-import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import com.electronicssales.entities.User;
 import com.electronicssales.models.dtos.UserDto;
-import com.electronicssales.models.responses.UserInfo;
+import com.electronicssales.models.responses.UserInfoResponse;
 import com.electronicssales.models.types.Role;
 import com.electronicssales.services.UserService;
 import com.electronicssales.utils.AuthenticateUtils;
@@ -32,9 +33,9 @@ public class AccountResource {
     private UserService userService;
 
     @Autowired
-    private Mapper<UserInfo, User> userInfoMapper;
+    private Mapper<UserInfoResponse, User> userInfoMapper;
 
-    @GetMapping
+    @GetMapping("/me")
     public ResponseEntity<?> fetchCurrentUserInfo() {
         String username = AuthenticateUtils.getUsernameAuthentecated();
         return ResponseEntity.ok(userService.getUserInfoByUsername(username));
@@ -64,13 +65,13 @@ public class AccountResource {
         @PathVariable long id
     ) 
     {
-        if(!userService.existsById(id)) {
-            throw new EntityNotFoundException("User not found !");
-        }
         userDto.setId(id);
-        return ResponseEntity
-            .ok()
-            .body(userInfoMapper.mapping(userService.updateUser(userDto)));
+        UserInfoResponse result = Optional
+            .of(userDto)
+            .map(userService::updateUser)
+            .map(userInfoMapper::mapping)
+            .get();
+        return ResponseEntity.ok(result);
     }
 
     @Data

@@ -23,6 +23,8 @@ public class CategoryDto {
 
     private Collection<CategoryDto> childrens = new ArrayList<>();
 
+    private Collection<Long> manufacturersId = new ArrayList<>();
+
     public CategoryDto() {
     }
 

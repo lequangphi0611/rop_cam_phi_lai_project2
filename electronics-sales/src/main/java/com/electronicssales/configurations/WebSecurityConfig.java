@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String ADMIN_ROLE = Role.MANAGER.toString();
+    private static final String CUSTOMER_ROLE = Role.MANAGER.toString();
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -62,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/api/manufacturers/**")
                 .permitAll()
             .antMatchers(HttpMethod.POST, "/api/accounts")
-                .hasRole(ADMIN_ROLE)  
+                .hasRole(CUSTOMER_ROLE)  
             .antMatchers(HttpMethod.GET, "/api/products/**")
                 .permitAll()          
             .anyRequest()

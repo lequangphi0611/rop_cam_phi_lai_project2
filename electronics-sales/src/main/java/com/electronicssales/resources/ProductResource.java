@@ -37,7 +37,7 @@ public class ProductResource {
             .findByProductId(productCheckable.getId())
             .orElseThrow(() -> new EntityNotFoundException("Product not found !"));
 
-        if(!productFinded.getProductName().equals(productCheckable.getProductName())
+        if(!productFinded.getProductName().equalsIgnoreCase(productCheckable.getProductName())
            && productService.existsByProductName(productCheckable.getProductName()) ) 
             throw new EntityExistsException("Product name is aleady exists !");
 

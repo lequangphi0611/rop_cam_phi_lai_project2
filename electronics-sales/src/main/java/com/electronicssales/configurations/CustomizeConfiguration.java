@@ -16,7 +16,6 @@ public class CustomizeConfiguration {
 
     private UserDto getAdminInfo() {
         UserDto user = new UserDto();
-        user.setActived(true);
         user.setPassword("admin");
         user.setUsername("admin");
         user.setAddress("admin address");

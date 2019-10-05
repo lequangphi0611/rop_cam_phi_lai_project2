@@ -7,7 +7,7 @@ import com.electronicssales.models.LoginRequest;
 import com.electronicssales.models.UserPrincipal;
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.responses.UserAuthenticationResponse;
-import com.electronicssales.models.responses.UserInfo;
+import com.electronicssales.models.responses.UserInfoResponse;
 import com.electronicssales.models.types.Role;
 import com.electronicssales.services.JwtTokenService;
 import com.electronicssales.services.UserService;
@@ -42,7 +42,7 @@ public class AuthenticationResource {
     private UserService userService;
 
     @Autowired
-    private Mapper<UserInfo, User> userInfoMapper;
+    private Mapper<UserInfoResponse, User> userInfoMapper;
 
     @PostMapping("/login")
     public ResponseEntity<UserAuthenticationResponse> login(

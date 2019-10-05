@@ -4,27 +4,24 @@ import java.util.Optional;
 
 import com.electronicssales.entities.User;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends MyCustomizeRepository<User, Long> {
 
-    String FIND_BY_USERNAME_OR_EMAIL_OR_PHONE_NUMBER_QUERY = "SELECT user FROM User user" 
-        +   " WHERE user.username = ?1"
-        +   " OR user.email = ?1"
-        +   " OR user.phoneNumber = ?1";
+    String FIND_BY_USERNAME_AND_FETCH_USERINFO_QUERY = "SELECT u FROM User u JOIN FETCH u.userInfo WHERE u.username = ?1";
+
+    String FIND_BY_ID_AND_FETCH_USERINFO_QUERY = "SELECT u FROM User u JOIN FETCH u.userInfo WHERE u.id = ?1";
     
     Optional<User> findByUsername(String username);
 
-    @Query(value = FIND_BY_USERNAME_OR_EMAIL_OR_PHONE_NUMBER_QUERY)
-    Optional<User> findByUsernameOrEmailOrPhoneNumber(String usernameOrEmailOrPhoneNumber);
-
     boolean existsByUsername(String username);
 
-    boolean existsByEmail(String email);
+    @Query(FIND_BY_USERNAME_AND_FETCH_USERINFO_QUERY)
+    Optional<User> findByUsernameAndFetchUserInfo(String username);
 
-    boolean existsByPhoneNumber(String phoneNumber);
+    @Query(FIND_BY_ID_AND_FETCH_USERINFO_QUERY)
+    Optional<User> findByIdAndFetchUserInfo(Long id);
 
 }
