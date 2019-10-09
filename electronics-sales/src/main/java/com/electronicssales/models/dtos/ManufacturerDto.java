@@ -1,8 +1,5 @@
 package com.electronicssales.models.dtos;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javax.validation.constraints.NotBlank;
 
 import lombok.Data;
@@ -16,7 +13,5 @@ public class ManufacturerDto {
     private String manufacturerName;
 
     private long logoId;
-
-    Collection<Long> categoriesId = new ArrayList<>();
     
 }

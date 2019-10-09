@@ -1,40 +1,25 @@
 package com.electronicssales.services.impls;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityNotFoundException;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.Image;
 import com.electronicssales.entities.Manufacturer;
-import com.electronicssales.entities.Paragraph;
-import com.electronicssales.entities.ParameterType;
 import com.electronicssales.entities.Product;
-import com.electronicssales.entities.ProductCategory;
-import com.electronicssales.entities.ProductDescription;
-import com.electronicssales.entities.ProductImage;
-import com.electronicssales.entities.ProductParameter;
-import com.electronicssales.models.dtos.ParagraphDto;
 import com.electronicssales.models.dtos.ProductDto;
-import com.electronicssales.models.dtos.ProductParameterDto;
-import com.electronicssales.models.responses.ProductParameterResponse;
 import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
+import com.electronicssales.models.responses.ProductParameterResponse;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParagraphRepository;
 import com.electronicssales.repositories.ProductCategoryRepository;
-import com.electronicssales.repositories.ProductDescriptionRepository;
 import com.electronicssales.repositories.ProductImageRepository;
 import com.electronicssales.repositories.ProductParameterRepository;
 import com.electronicssales.repositories.ProductRepository;
 import com.electronicssales.services.ProductService;
 import com.electronicssales.utils.Mapper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -45,8 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DefaultProductService implements ProductService {
 
-    private final static Logger LOG = LoggerFactory.getLogger(DefaultProductService.class);
-
     @Lazy
     @Autowired
     private ProductRepository productRepository;
@@ -54,10 +37,6 @@ public class DefaultProductService implements ProductService {
     @Lazy
     @Autowired
     private ParagraphRepository paragraphRepository;
-
-    @Lazy
-    @Autowired
-    private ProductDescriptionRepository productDescriptionRepository;
 
     @Lazy
     @Autowired
@@ -79,141 +58,49 @@ public class DefaultProductService implements ProductService {
     @Autowired
     private Mapper<Product, ProductDto> productMapper;
 
-    @Lazy
-    @Autowired
-    private Mapper<ProductParameter, ProductParameterDto> productParameterMapper;
-
-    private Paragraph parseParagraph(ParagraphDto paragraphDto) {
-        Paragraph paragraph = new Paragraph();
-        paragraph.setId(paragraphDto.getId());
-        if(paragraphDto.getImageId() > 0) {
-            paragraph.setImage(new Image(paragraphDto.getImageId()));
-        }
-        paragraph.setTitle(paragraphDto.getTitle());
-        paragraph.setText(paragraphDto.getText());
-        return paragraph;
-    }
-
-    private ProductDescription getProductDescriptionFrom(Paragraph paragraph, long productId){
-        ProductDescription productDescription = new ProductDescription();
-        productDescription.setParagraph(paragraph);
-        productDescription.setProduct(new Product(productId));
-        return productDescription;
-    };
-
-    private ProductImage getProductImageFrom(long productId, Image image) {
-        ProductImage productImage = new ProductImage();
-        productImage.setImage(image);
-        productImage.setProduct(new Product(productId));
-        return productImage; 
-    }
-
-    private ProductCategory getProductCategoryFrom(long productId, long categoryId) {
-        ProductCategory productCategory = new ProductCategory();
-        productCategory.setCategory(new Category(categoryId));
-        productCategory.setProduct(new Product(productId));
-        return productCategory;
-    }
-
-    private Collection<ProductDescription> saveProductDescriptionsFrom(long productId, Collection<ParagraphDto> paragraphDtos) {
-        return paragraphDtos
-            .stream()
-            .map(this::parseParagraph)
-            .map(paragraphRepository::save)
-            .map(paragraph -> this.getProductDescriptionFrom(paragraph, productId))
-            .map(productDescriptionRepository::save)
-            .collect(Collectors.toList());
-    }
-
-    private Collection<ProductImage> saveProductImagesFrom(long productId, Collection<Image> images) {
-        return images
-            .stream()
-            .map(image -> getProductImageFrom(productId, image))
-            .map(productImageRepository::save)
-            .collect(Collectors.toList());
-    }
-
-    private Collection<ProductParameter> saveProductParametersFrom(long productId, Collection<ProductParameterDto> productParameterDtos) {
-        return productParameterDtos
-            .stream()
-            .peek((parameterDto) -> parameterDto.setProductId(productId))
-            .map(productParameterMapper::mapping)
-            .map(productParameterRepository::save)
-            .collect(Collectors.toList());
-    }
-
-    private ProductCategory findOrSaveProductCategory(long productId, long categoryId) {
-        return productCategoryRepository
-            .findByCategoryIdAndProductId(categoryId, productId)
-            .orElseGet(() -> {
-                return productCategoryRepository.save(getProductCategoryFrom(productId, categoryId));
-            });
-    }
-
-    private Collection<ProductCategory> saveProductCategoryByCategory(long productId, Category category) {
-        List<ProductCategory> productCategories = new ArrayList<>();
-        productCategories.add(findOrSaveProductCategory(productId, category.getId()));
-        try {
-            long parentId = categoryRepository
-                .findById(category.getId())
-                .map(categoryLocal -> (Long)(categoryLocal.getParent().getId()))
-                .orElseThrow(() ->  new EntityNotFoundException("Category not found !"));
-            productCategories.add(findOrSaveProductCategory(productId, parentId));
-
-        } catch (NullPointerException e) {
-            LOG.error("Parent not found !");
-        }
-        return productCategories;
-    }
-
-    private void removeProductCategoriesNotIn(Collection<ProductCategory> productCategoriesStandard) {
-        long productId =((List<ProductCategory>) productCategoriesStandard)
-            .get(0)
-            .getProduct()
-            .getId();
-        List<Long> productCategoryIds = productCategoriesStandard
-            .stream()
-            .map(productCategory -> productCategory.getId())
-            .collect(Collectors.toList());
-        List<ProductCategory> productCategoriesRemovable =  productCategoryRepository.findByProductCategoryNotIn(productId, productCategoryIds);
-        productCategoryRepository.deleteAll(productCategoriesRemovable);
-    }
-
-    private Collection<ProductCategory> saveProductCategoryFrom(long productId, Collection<Long> categoriesId) {
-        List<ProductCategory>  productCategories = new ArrayList<>();
-        categoriesId
-            .stream()
-            .map(categoryId -> new Category(categoryId))
-            .forEach((category) -> {
-                saveProductCategoryByCategory(productId, category)
-                    .forEach(productCategories::add);
-            });
-        removeProductCategoriesNotIn(productCategories);
-        return productCategories;
-    }
-
     @Override
     @Transactional
     public Product saveProduct(ProductDto productDto) {
         Product productSaved = productRepository.save(productMapper.mapping(productDto));
 
-        final long productSavedId = productSaved.getId();
-
-        saveProductCategoryFrom(productSavedId, productDto.getCategoriesId());
-
-        saveProductDescriptionsFrom(productSavedId, productDto.getParagraphDtos());
-        
-        Collection<Image> images = productDto.getImageIds()
-            .stream()
-            .map(imageId -> new Image(imageId))
-            .collect(Collectors.toList());
-        saveProductImagesFrom(productSavedId, images);
-        
-        saveProductParametersFrom(productSavedId, productDto.getProductParameterDtos());
-
         return productSaved;
     }
-   private ProductParameterResponse parseFrom(ProductParameterRepositoryResponse repoResponse) {
+
+    @Transactional
+    @Override
+    public Product createProduct(ProductDto productDto) {
+        Product productTransient = productMapper.mapping(productDto);
+        Product productPersisted = productRepository.persist(productTransient);
+
+        productCategoryRepository.createAll(
+            productPersisted, 
+            productDto.getCategoriesId()
+                .stream()
+                .map(Category::new)
+                .collect(Collectors.toList())
+        );
+
+        productParameterRepository.createAll(productPersisted, productDto.getProductParameters());
+
+        productImageRepository.createAll(
+            productPersisted, 
+            productDto.getImageIds()
+                .stream()
+                .map(Image::new)
+                .collect(Collectors.toList())
+        );
+
+        return productPersisted;
+    }
+
+    @Transactional
+    @Override
+    public Product updateProduct(ProductDto productDto) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private ProductParameterResponse parseFrom(ProductParameterRepositoryResponse repoResponse) {
         ProductParameterResponse productParameterResponse = new ProductParameterResponse();
         productParameterResponse.setParameterType(repoResponse.getParameterType());
         productParameterResponse.setParameterValue(repoResponse.getParameterValue());
@@ -257,25 +144,10 @@ public class DefaultProductService implements ProductService {
             product.setManufacturer(new Manufacturer(productDto.getManufacturerId()));
             product.setProductName(productDto.getProductName());
             product.setSalable(true);
+            product.setDescriptions(productDto.getParagraphs());
             return product;
         }
 
     }
-
-    @Lazy
-    @Component
-    class ProductParameterMapper implements Mapper<ProductParameter, ProductParameterDto> {
-
-        @Override
-        public ProductParameter mapping(ProductParameterDto productParameterDto) {
-            ProductParameter productParameter = new ProductParameter();
-            productParameter.setProduct(new Product(productParameterDto.getProductId()));
-            productParameter.setId(productParameterDto.getId());
-            productParameter.setParameterType(new ParameterType(productParameterDto.getParameterTypeId()));
-            productParameter.setParameterValue(productParameterDto.getParameterValue());
-            return productParameter;
-        }
-
-    } 
     
 }

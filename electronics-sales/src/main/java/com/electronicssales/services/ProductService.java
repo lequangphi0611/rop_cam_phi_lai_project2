@@ -13,6 +13,10 @@ public interface ProductService {
 
     Collection<ProductParameterResponse> getProductParametersByProductId(long productId);
 
+    Product createProduct(ProductDto productDto);
+
+    Product updateProduct(ProductDto productDto);
+
     boolean existsById(long productId);
 
     boolean existsByProductName(String productName);

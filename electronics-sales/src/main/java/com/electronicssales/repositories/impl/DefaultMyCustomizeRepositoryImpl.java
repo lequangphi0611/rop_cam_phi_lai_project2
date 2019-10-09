@@ -14,6 +14,7 @@ public class DefaultMyCustomizeRepositoryImpl<T, ID extends Serializable> extend
 
     private EntityManager entityManager;
 
+
     public DefaultMyCustomizeRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
         this.entityManager = entityManager;
@@ -29,6 +30,5 @@ public class DefaultMyCustomizeRepositoryImpl<T, ID extends Serializable> extend
     public <S extends T> S merge(S entity) {
         return entityManager.merge(entity);
     }
-
     
 }

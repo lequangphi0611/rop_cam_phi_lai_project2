@@ -10,6 +10,7 @@ import com.electronicssales.entities.Image;
 import com.electronicssales.services.ImageService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/images")
 public class ImageResource {
 
+    @Lazy
     @Autowired
     ImageService imageService;
 

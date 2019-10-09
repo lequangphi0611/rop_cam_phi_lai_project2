@@ -1,7 +1,6 @@
 package com.electronicssales.resources;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -12,6 +11,7 @@ import com.electronicssales.models.dtos.ManufacturerDto;
 import com.electronicssales.services.ManufacturerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/manufacturers")
 public class ManufacturerResource {
 
+    @Lazy
     @Autowired
     private ManufacturerService manufacturerService;
 
@@ -61,13 +62,9 @@ public class ManufacturerResource {
 
     @PostMapping("/bulk")
     public ResponseEntity<?> createBulk(@RequestBody @Valid Collection<ManufacturerDto> manufacturerDtos) {
-        Collection<ManufacturerDto> manufacturers = manufacturerDtos
-            .stream()
-            .filter(manufacturerDto -> !manufacturerService.existsByManufacturerName(manufacturerDto.getManufacturerName()))
-            .collect(Collectors.toList());
         return ResponseEntity
             .created(null)
-            .body(manufacturerService.saveAll(manufacturers));
+            .body(manufacturerService.saveAll(manufacturerDtos));
     }
 
     @PutMapping("/{id}")

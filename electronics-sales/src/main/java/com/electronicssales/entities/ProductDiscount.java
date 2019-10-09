@@ -1,6 +1,5 @@
 package com.electronicssales.entities;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,9 +12,9 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "product_descriptions")
+@Table(name = "product_discounts")
 @Data
-public class ProductDescription {
+public class ProductDiscount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,11 +24,10 @@ public class ProductDescription {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne(
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
-    )
-    @JoinColumn(name = "paragraph_id")
-    private Paragraph paragraph;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
+
+    private boolean status;
     
 }

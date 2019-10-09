@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -77,13 +78,6 @@ public class Product {
         fetch = FetchType.LAZY,
         cascade = CascadeType.REMOVE
     )
-    Collection<ProductDescription> productDescriptions;
-
-    @OneToMany(
-        mappedBy = "product",
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
-    )
     Collection<ProductImage> productImages;
 
     @OneToMany(
@@ -95,16 +89,25 @@ public class Product {
 
     @OneToMany(
         mappedBy = "product",
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
     )
-    Collection<Discount> discounts;
+    Collection<ProductParameter> productParameters;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "product_descriptions",
+        joinColumns = @JoinColumn(name = "product_id"),
+        inverseJoinColumns = @JoinColumn(name = "paragraph_id")
+    )
+    Collection<Paragraph> descriptions;
 
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY,
         cascade = CascadeType.REMOVE
     )
-    Collection<ProductParameter> productParameters;
+    Collection<ProductDiscount> productDiscounts;
 
     public Product(long id) {
         this.id = id;

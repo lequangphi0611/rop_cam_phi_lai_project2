@@ -12,6 +12,8 @@ import com.electronicssales.services.JwtTokenService;
 import com.electronicssales.services.UserService;
 import com.electronicssales.utils.AuthenticateUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +25,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Lazy
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
 
     @Lazy
     @Autowired
@@ -42,6 +46,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String username = jwtTokenService.getUsernameFromToken(jwtToken);
 
             UserPrincipal userPrincipal = (UserPrincipal) userService.loadUserByUsername(username);
+
+            LOGGER.info("Authentication with User : ' {} '", userPrincipal);
+
             UsernamePasswordAuthenticationToken authentication = 
                 new UsernamePasswordAuthenticationToken(userPrincipal, userPrincipal.getPassword(), userPrincipal.getAuthorities());
 

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Lazy
 @Service
@@ -37,45 +38,39 @@ public class DefaultManufacturerService implements ManufacturerService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public Manufacturer save(ManufacturerDto manufacturerDto) {
         return manufacturerRepository
             .save(manufacturerMapper.secondMapping(manufacturerDto));
     }
 
+    @Transactional
     @Override
     public Collection<Manufacturer> saveAll(Collection<ManufacturerDto> manufacturerDtos) {
-        return manufacturerRepository
-            .saveAll(
-                manufacturerDtos
-                    .stream()
-                    .map(manufacturerMapper::secondMapping)
-                    .collect(Collectors.toList())
-            );
+        return manufacturerDtos
+            .stream()
+            .map(manufacturerMapper::secondMapping)
+            .map(manufacturerRepository::save)
+            .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public boolean existsByManufacturerName(String manufacturerName) {
         return manufacturerRepository.existsByManufacturerName(manufacturerName);
     }
 
+    @Transactional
     @Override
     public Optional<Manufacturer> findByManufacturerName(String manufacturerName) {
         return manufacturerRepository.findByManufacturerName(manufacturerName);
     }
 
+    @Transactional
     @Override
     public Optional<Manufacturer> findById(long id) {
         return manufacturerRepository.findById(id);
-    }
-
-    @Override
-    public Collection<ManufacturerDto> findByCategoryId(long categoryId) {
-        return manufacturerRepository
-            .findByCategoryId(categoryId)
-            .stream()
-            .map(manufacturerMapper::mapping)
-            .collect(Collectors.toList());
     }
 
     @Override
@@ -112,5 +107,7 @@ public class DefaultManufacturerService implements ManufacturerService {
         }
 
     }
+
+    
     
 }

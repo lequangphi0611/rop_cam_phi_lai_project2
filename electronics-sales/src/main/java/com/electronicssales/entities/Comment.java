@@ -1,5 +1,6 @@
 package com.electronicssales.entities;
 
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -54,5 +56,12 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private Date updatedTime;
+
+    @OneToMany(
+        mappedBy = "parentComment",
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE
+    )
+    private Collection<Comment> childrens;
     
 }

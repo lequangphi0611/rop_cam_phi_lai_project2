@@ -35,7 +35,7 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private User customer;
+    private UserInfo customerInfo;
 
     @OneToMany(
         fetch = FetchType.LAZY,

@@ -6,6 +6,7 @@ import com.electronicssales.models.dtos.ImportInvoiceDto;
 import com.electronicssales.services.ImportInvoiceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/import-invoices")
 public class ImportInvoiceResource {
 
+    @Lazy
     @Autowired
     private ImportInvoiceService importInvoiceService;
 

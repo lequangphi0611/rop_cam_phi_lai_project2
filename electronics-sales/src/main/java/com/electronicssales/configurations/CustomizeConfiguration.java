@@ -2,6 +2,8 @@ package com.electronicssales.configurations;
 
 import java.util.Date;
 
+import javax.persistence.EntityExistsException;
+
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.types.Role;
 import com.electronicssales.services.UserService;
@@ -12,7 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CustomizeConfiguration {
 
-    @Autowired UserService userService;
+    @Autowired 
+    UserService userService;
 
     private UserDto getAdminInfo() {
         UserDto user = new UserDto();
@@ -32,8 +35,9 @@ public class CustomizeConfiguration {
         new Thread(()-> {
             UserDto initUser = getAdminInfo();
 
-            if(!userService.existByUsername(initUser.getUsername())) {
+            try {
                 userService.createUser(initUser, Role.MANAGER);
+            } catch (EntityExistsException e) {
             }
 
         })

@@ -3,6 +3,7 @@ package com.electronicssales.entities;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,7 +44,8 @@ public class Cart {
 
     @OneToMany(
         fetch = FetchType.LAZY,
-        mappedBy = "cart"
+        mappedBy = "cart",
+        cascade = CascadeType.ALL
     )
     private Collection<CartDetailed> cartDetaileds;
     

@@ -4,14 +4,13 @@ import java.util.Optional;
 
 import com.electronicssales.entities.Product;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends MyCustomizeRepository<Product, Long> {
 
     String UPDATE_PRODUCT_QUANTITY_QUERY = "UPDATE Product p SET p.quantity = :quantity WHERE p.id = :productId";
 

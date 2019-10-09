@@ -1,8 +1,6 @@
 package com.electronicssales.resources;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -13,12 +11,10 @@ import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.services.CategoryService;
 import com.electronicssales.services.ManufacturerService;
-import com.electronicssales.utils.AppUtil;
 import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,12 +31,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/categories")
 public class CategoryResource {
 
+    @Lazy
     @Autowired
     private CategoryService categoryService;
 
+    @Lazy
     @Autowired
     private ManufacturerService manufacturerService;
 
+    @Lazy
     @Autowired
     private Mapper<CategoryResponse, Category> categoryResponseMapper;
 
@@ -57,46 +56,27 @@ public class CategoryResource {
 
         return ResponseEntity
             .created(null)
-            .body(categoryService.saveCategory(categoryDto));
+            .body(categoryService.createCategory(categoryDto));
     }
 
     @PostMapping("/bulk")
     public ResponseEntity<?> createAll(@RequestBody Collection<CategoryDto> categoryDtos) {
-        Collection<CategoryDto> categories = categoryDtos
-            .stream()
-            .filter(categoryDto -> !categoryService.existsByCategoryName(categoryDto.getCategoryName()))
-            .collect(Collectors.toSet());
         return ResponseEntity
             .created(null)
-            .body(categoryService.saveAll(categories));
+            .body(categoryService.saveAll(categoryDtos));
     }
 
     @GetMapping
     public ResponseEntity<?> fetchCategories(
-        @RequestParam(value = "p", required = false) Integer page,
-        @RequestParam(value = "l", required = false) Integer limit,
-        @RequestParam(value = "q", defaultValue = "") String query
-    ) 
+        @RequestParam(required = false, value = "q", defaultValue = "") 
+        String query) 
     {
-        if(limit == null) {
-            return ResponseEntity.ok(categoryService.findByCategoryNameContaining(query)); 
-        }
-        
-        if(page == null) {
-            page = 0;
-        }
-
-        Pageable pageable = PageRequest.of(page, limit);
-        List<CategoryResponse> categoryResponses = AppUtil.parseListFrom(
-                categoryService.findByCategoryNameContainingAndPageable(query, pageable), 
-                categoryResponseMapper
-        );
-        return ResponseEntity.ok(categoryResponses);
+        return ResponseEntity.ok(categoryService.findAll(query));
     }
 
     @GetMapping("/{categoryId}/manufacturers")
     public ResponseEntity<?> fetchManufacturers(@PathVariable long categoryId) {
-        return ResponseEntity.ok(manufacturerService.findByCategoryId(categoryId));
+        return ResponseEntity.ok(categoryService.fetchManufacturersByCategoryId(categoryId));
     }
 
     @PutMapping("/{id}")
@@ -105,25 +85,27 @@ public class CategoryResource {
         @PathVariable("id") long id
     ) 
     {
-        if(!categoryService.existsById(id)) {
-            throw new EntityNotFoundException(
-                new StringBuilder(Category.class.getSimpleName())
-                .append(" with id = '")
-                .append(id)
-                .append("' not found !")
-                .toString()
-            );
+        Category categoryFinded = categoryService
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Category with id not found !"));
+
+        if(!categoryFinded.getCategoryName().equals(categoryDto.getCategoryName())
+            && categoryService.existsByCategoryName(categoryDto.getCategoryName())) {
+                throw new EntityExistsException("Category with name is already exists !");
         }
 
         categoryDto.setId(id);
         return ResponseEntity
             .created(null)
-            .body(categoryService.saveCategory(categoryDto));
+            .body(categoryService.updateCategory(categoryDto));
     }
 
     @GetMapping("/{id}/childrens")
-    public ResponseEntity<?> fetchChildrensOf(@PathVariable("id") long parentId) {
-        return ResponseEntity.ok(categoryService.fetchChildrensOf(parentId));
+    public ResponseEntity<?> fetchChildrensOf(
+            @PathVariable("id") long parentId,
+            @RequestParam(required = false, value = "q", defaultValue = "") 
+            String query) {
+        return ResponseEntity.ok(categoryService.fetchChildrensOf(parentId, query));
     } 
 
     @GetMapping("/{id}/parameter-types")

@@ -10,9 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -45,6 +49,7 @@ public class Category {
     @JoinColumn(name = "parent_id")
     Category parent;
 
+    @JsonIgnore
     @OneToMany(
         mappedBy = "category", 
         fetch = FetchType.LAZY,
@@ -52,13 +57,19 @@ public class Category {
     )
     Collection<ProductCategory> productCategories;
 
-    @OneToMany(
-        mappedBy = "category",
+    @JsonIgnore
+    @ManyToMany(
         fetch = FetchType.LAZY,
         cascade = CascadeType.REMOVE
     )
-    Collection<CategoryParameterType> categoryParameters;
+    @JoinTable(
+        name = "categories_parameter_types",
+        joinColumns = @JoinColumn(name = "category_id"),
+        inverseJoinColumns = @JoinColumn(name = "parameter_type_id")
+    )
+    Collection<ParameterType> parameterTypes;
 
+    @JsonIgnore
     @OneToMany(
         mappedBy = "parent", 
         fetch = FetchType.LAZY,
@@ -66,6 +77,7 @@ public class Category {
     )
     Collection<Category> childrens;
 
+    @JsonIgnore
     @OneToMany(
         fetch = FetchType.LAZY, 
         mappedBy = "category",

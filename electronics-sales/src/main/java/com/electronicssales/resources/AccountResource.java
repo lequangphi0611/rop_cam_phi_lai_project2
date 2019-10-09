@@ -13,6 +13,7 @@ import com.electronicssales.utils.AuthenticateUtils;
 import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +30,11 @@ import lombok.Data;
 @RequestMapping("/api/accounts")
 public class AccountResource {
 
+    @Lazy
     @Autowired
     private UserService userService;
 
+    @Lazy
     @Autowired
     private Mapper<UserInfoResponse, User> userInfoMapper;
 

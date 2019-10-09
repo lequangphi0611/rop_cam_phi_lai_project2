@@ -12,7 +12,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Long> {
+public interface ProductCategoryRepository 
+    extends JpaRepository<ProductCategory, Long>, 
+        CustomizeProductCategoryRepository {
 
     String FIND_BY_PRODUCT_ID_AND_PRODUCT_CATEGORY_IDS_NOT_IN = "SELECT p FROM ProductCategory p" 
         +   " WHERE p.product.id = :productId"

@@ -23,7 +23,5 @@ public interface ManufacturerService {
     Optional<Manufacturer> findByManufacturerName(String manufacturerName); 
 
     Optional<Manufacturer> findById(long id);
-
-    Collection<ManufacturerDto> findByCategoryId(long categoryId);
     
 }

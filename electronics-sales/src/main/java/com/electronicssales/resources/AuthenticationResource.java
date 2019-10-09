@@ -14,6 +14,7 @@ import com.electronicssales.services.UserService;
 import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,15 +33,19 @@ public class AuthenticationResource {
 
     private static final long JWT_EXPIRATION_TIME = 604800000L;
 
+    @Lazy
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Lazy
     @Autowired
     private JwtTokenService jwtTokenService;
 
+    @Lazy
     @Autowired
     private UserService userService;
 
+    @Lazy
     @Autowired
     private Mapper<UserInfoResponse, User> userInfoMapper;
 

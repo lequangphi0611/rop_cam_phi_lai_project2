@@ -1,5 +1,7 @@
 package com.electronicssales.models.responses;
 
+import java.util.Collection;
+
 import lombok.Data;
 
 @Data
@@ -12,6 +14,8 @@ public class CategoryResponse {
     private long parentId;
 
     private int productCount;
+
+    Collection<CategoryResponse> childrens;
 
     
 }
