@@ -10,7 +10,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductRepository extends MyCustomizeRepository<Product, Long> {
+public interface ProductRepository 
+    extends MyCustomizeRepository<Product, Long>,
+        CustomizeProductRepository {
 
     String UPDATE_PRODUCT_QUANTITY_QUERY = "UPDATE Product p SET p.quantity = :quantity WHERE p.id = :productId";
 

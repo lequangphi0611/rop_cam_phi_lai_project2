@@ -9,8 +9,10 @@ import com.electronicssales.entities.Image;
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
+import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
 import com.electronicssales.models.responses.ProductParameterResponse;
+import com.electronicssales.models.responses.ProductResponse;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParagraphRepository;
 import com.electronicssales.repositories.ProductCategoryRepository;
@@ -58,6 +60,10 @@ public class DefaultProductService implements ProductService {
     @Autowired
     private Mapper<Product, ProductDto> productMapper;
 
+    @Lazy
+    @Autowired
+    private Mapper<ProductResponse, Product> productResponseMapper;
+
     @Override
     @Transactional
     public Product saveProduct(ProductDto productDto) {
@@ -93,11 +99,39 @@ public class DefaultProductService implements ProductService {
         return productPersisted;
     }
 
+    @Override
+    public Collection<ProductResponse> fetchProductsBy(FetchProductOption option) {
+        return productRepository
+            .fetchProductsBy(option)
+            .stream()
+            .map(productResponseMapper::mapping)
+            .collect(Collectors.toList());
+    }
+
     @Transactional
     @Override
     public Product updateProduct(ProductDto productDto) {
-        // TODO Auto-generated method stub
-        return null;
+        Product productMapped = productMapper.mapping(productDto);
+
+        productCategoryRepository.updateAll(
+            productMapped, 
+            productDto.getCategoriesId()
+                .stream()
+                .map(Category::new)
+                .collect(Collectors.toList())
+        );
+
+        productParameterRepository.updateAll(productMapped, productDto.getProductParameters());
+
+        productImageRepository.updateAll(
+            productMapped, 
+            productDto.getImageIds()
+                .stream()
+                .map(Image::new)
+                .collect(Collectors.toList())
+        );
+        
+        return productRepository.merge(productMapped);
     }
 
     private ProductParameterResponse parseFrom(ProductParameterRepositoryResponse repoResponse) {
@@ -148,6 +182,21 @@ public class DefaultProductService implements ProductService {
             return product;
         }
 
+    }
+
+    @Lazy
+    @Component
+    public class ProductResponseMapper implements Mapper<ProductResponse, Product> {
+
+        @Override
+        public ProductResponse mapping(Product product) {
+            ProductResponse productResponse = new ProductResponse();
+            productResponse.setId(product.getId());
+            productResponse.setProductName(product.getProductName());
+            productResponse.setQuantity(product.getQuantity());
+            return productResponse;
+        }
+        
     }
     
 }

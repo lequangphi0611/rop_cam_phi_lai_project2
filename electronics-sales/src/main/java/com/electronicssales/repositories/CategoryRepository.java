@@ -19,14 +19,14 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
 
     String FETCH_CATEGORIES_NOT_HAS_PARENT = "SELECT c.id, c.category_name AS categoryName, 0 AS parentId" 
         +   ", COUNT(pc.id) AS productCount FROM categories c"
-        +   " FULL OUTER JOIN product_categories pc" 
+        +   " LEFT OUTER JOIN product_categories pc" 
         +   " ON c.id = pc.category_id WHERE c.parent_id IS NULL"
         +   " AND c.category_name LIKE %:nameKeyword%"
         +   " GROUP BY c.id, c.category_name, c.parent_id";
 
     String FETCH_CHILDRENS_BY_PARENT_ID_QUERY = "SELECT c.id, c.category_name AS categoryName, c.parent_id as parentId" 
     +   ", COUNT(pc.id) AS productCount FROM categories c"
-    +   " FULL OUTER JOIN product_categories pc" 
+    +   " LEFT OUTER JOIN product_categories pc" 
     +   " ON c.id = pc.category_id WHERE c.parent_id = :parentId "
     +   " AND c.category_name LIKE %:nameKeyword%"
     +   " GROUP BY c.id, c.category_name, c.parent_id";

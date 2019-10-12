@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -56,6 +58,7 @@ public class Product {
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
+    @Column(updatable = false)
     Date createdTime;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -69,6 +72,7 @@ public class Product {
     )
     Collection<ProductCategory> productCategories;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manufacturer_id")
     Manufacturer manufacturer;

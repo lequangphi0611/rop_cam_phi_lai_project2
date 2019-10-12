@@ -1,5 +1,6 @@
 package com.electronicssales.models.responses;
 
+import java.util.Collection;
 import java.util.Date;
 
 import lombok.Data;
@@ -11,16 +12,14 @@ public class ProductResponse {
 
     private String productName;
 
+    private long imageId;
+
     private long price;
 
     private int quantity;
 
-    private boolean salable;
+    private Collection<String> categoryName;
 
-    private Date createTime;
-
-    private Date updatedTime;
-
-    private String categoryName;
+    private String manufacturerName;
     
 } 

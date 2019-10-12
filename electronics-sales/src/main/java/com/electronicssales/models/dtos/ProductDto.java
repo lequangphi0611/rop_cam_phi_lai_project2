@@ -8,21 +8,24 @@ import javax.validation.constraints.NotBlank;
 import com.electronicssales.entities.Paragraph;
 import com.electronicssales.entities.ProductParameter;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductDto {
 
-    private long id;
+    long id;
 
     @NotBlank
-    private String productName;
+    String productName;
 
-    private long price;
+    long price;
 
     Collection<Long> categoriesId = new ArrayList<>();
 
-    private long manufacturerId;
+    long manufacturerId;
 
     Collection<Paragraph> paragraphs = new ArrayList<>();
 

@@ -1,22 +1,34 @@
 package com.electronicssales.resources;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
+import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.services.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,13 +58,28 @@ public class ProductResource {
         return true;
     }
 
+    @GetMapping
+    public ResponseEntity<?> fetchProducts(
+        @RequestParam(value = "categoriesId", required = false) 
+        List<Long> categoriesId,
+        @RequestParam(value = "manufacturersId", required = false)
+        List<Long> manufacturersId
+    ) {
+        FetchProductOption option = new FetchProductOption();
+        option.setCategoriesId(Optional.ofNullable(categoriesId).orElse(Collections.emptyList()));
+        option.setManufacturersId(Optional.ofNullable(manufacturersId).orElse(Collections.emptyList()));
+
+        return ResponseEntity
+            .ok(productService.fetchProductsBy(option));
+    }
+
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody @Valid ProductDto productDto) {
         this.validateProductBeforeCreate(productDto);
 
         return ResponseEntity
             .created(null)
-            .body(productService.saveProduct(productDto));
+            .body(productService.createProduct(productDto));
     }
 
     @PutMapping("/{id}")
@@ -61,16 +88,23 @@ public class ProductResource {
         @PathVariable("id") long productId
     ) 
     {
+        productDto.setId(productId);
         validateProductBeforeUpdate(productDto);
 
         return ResponseEntity
             .created(null)
-            .body(productService.saveProduct(productDto));
+            .body(productService.updateProduct(productDto));
     }
 
     @GetMapping("/{id}/parameters")
     public ResponseEntity<?> fetchProductParameters(@PathVariable long id) {
         return ResponseEntity.ok(productService.getProductParametersByProductId(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable long id) {
+        // productService.
+        return ResponseEntity.ok().build();
     }
 
 }

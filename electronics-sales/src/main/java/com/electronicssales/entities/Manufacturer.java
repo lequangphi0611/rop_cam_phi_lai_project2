@@ -1,5 +1,6 @@
 package com.electronicssales.entities;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.persistence.CascadeType;
@@ -14,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +27,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Manufacturer {
+public class Manufacturer implements Serializable {
+
+    private static final long serialVersionUID = -6505611351764323974L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,6 +49,7 @@ public class Manufacturer {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Image manufacturerLogo;
 
+    @JsonIgnore
     @OneToMany(
         mappedBy = "manufacturer",
         fetch = FetchType.LAZY,
