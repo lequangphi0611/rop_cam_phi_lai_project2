@@ -72,7 +72,8 @@ public class AuthenticationResource {
         return ResponseEntity
             .ok(new UserAuthenticationResponse(
                 accessToken, 
-                userPrincipal.getUsername()
+                userPrincipal.getUsername(),
+                userPrincipal.getRole()
             ));
     }
 

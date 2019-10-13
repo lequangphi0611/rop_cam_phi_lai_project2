@@ -64,9 +64,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST, "/api/accounts")
                 .hasRole(CUSTOMER_ROLE)  
             .antMatchers(HttpMethod.GET, "/api/products/**")
-                .permitAll()          
+                .permitAll()    
+            .antMatchers("/actuator/*")
+                .permitAll()      
             .anyRequest()
-            .authenticated()
+                .authenticated()
                 .and()
             .addFilterBefore(jwtAuthentication, UsernamePasswordAuthenticationFilter.class);
     }

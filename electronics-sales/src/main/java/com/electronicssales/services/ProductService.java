@@ -9,11 +9,13 @@ import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.responses.ProductParameterResponse;
 import com.electronicssales.models.responses.ProductResponse;
 
+import org.springframework.data.domain.Page;
+
 public interface ProductService {
 
     Product saveProduct(ProductDto productDto);
 
-    Collection<ProductResponse> fetchProductsBy(FetchProductOption option);
+    Page<ProductResponse> fetchProductsBy(FetchProductOption option);
 
     Collection<ProductParameterResponse> getProductParametersByProductId(long productId);
 

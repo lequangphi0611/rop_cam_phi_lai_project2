@@ -1,7 +1,6 @@
 package com.electronicssales.models.responses;
 
 import java.util.Collection;
-import java.util.Date;
 
 import lombok.Data;
 

@@ -24,6 +24,8 @@ import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,13 +101,19 @@ public class DefaultProductService implements ProductService {
         return productPersisted;
     }
 
+    @Transactional
     @Override
-    public Collection<ProductResponse> fetchProductsBy(FetchProductOption option) {
-        return productRepository
-            .fetchProductsBy(option)
-            .stream()
-            .map(productResponseMapper::mapping)
-            .collect(Collectors.toList());
+    public Page<ProductResponse> fetchProductsBy(FetchProductOption option) {
+        Page<Product> productPage = productRepository.fetchProductsBy(option);
+        return new PageImpl<>(
+            productPage
+                .getContent()
+                .stream()
+                .map(productResponseMapper::mapping)
+                .collect(Collectors.toList()),
+            productPage.getPageable(), 
+            productPage.getTotalPages()
+        );
     }
 
     @Transactional
@@ -194,6 +202,7 @@ public class DefaultProductService implements ProductService {
             productResponse.setId(product.getId());
             productResponse.setProductName(product.getProductName());
             productResponse.setQuantity(product.getQuantity());
+            productResponse.setPrice(product.getPrice());
             return productResponse;
         }
         

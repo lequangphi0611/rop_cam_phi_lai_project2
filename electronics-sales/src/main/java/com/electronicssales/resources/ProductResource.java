@@ -1,25 +1,23 @@
 package com.electronicssales.resources;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.types.ProductSortType;
+import com.electronicssales.models.types.SortType;
 import com.electronicssales.services.ProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpRequest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,12 +61,37 @@ public class ProductResource {
         @RequestParam(value = "categoriesId", required = false) 
         List<Long> categoriesId,
         @RequestParam(value = "manufacturersId", required = false)
-        List<Long> manufacturersId
+        List<Long> manufacturersId,
+        @RequestParam(value = "fromPrice", required = false, defaultValue = "0")
+        long fromPrice,
+        @RequestParam(value = "toPrice", required = false, defaultValue = "0")
+        Long toPrice,
+        @RequestParam(value = "productSortType", required = false)
+        String productSortType,
+        @RequestParam(value = "sortType", required = false)
+        String sortType,
+        @RequestParam(value = "p", required = false, defaultValue = "0")
+        int page,
+        @RequestParam(value = "s", required = false, defaultValue = "10")
+        int size  
     ) {
+        
         FetchProductOption option = new FetchProductOption();
         option.setCategoriesId(Optional.ofNullable(categoriesId).orElse(Collections.emptyList()));
         option.setManufacturersId(Optional.ofNullable(manufacturersId).orElse(Collections.emptyList()));
+        option.setFromPrice(fromPrice);
+        option.setToPrice(toPrice);
 
+        if(productSortType != null) {
+            option.setProductSortType(ProductSortType.of(productSortType));
+        }
+
+        if(sortType != null) {
+            option.setSortType(SortType.of(sortType));
+        }
+
+        option.setPageable(PageRequest.of(page, size));
+        
         return ResponseEntity
             .ok(productService.fetchProductsBy(option));
     }

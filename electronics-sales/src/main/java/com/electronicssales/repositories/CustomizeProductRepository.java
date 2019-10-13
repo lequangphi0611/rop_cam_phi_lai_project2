@@ -1,12 +1,14 @@
 package com.electronicssales.repositories;
 
-import java.util.Collection;
-
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.responses.FetchProductOption;
 
+import org.springframework.data.domain.Page;
+
 public interface CustomizeProductRepository {
 
-    Collection<Product> fetchProductsBy(FetchProductOption option);
+    Page<Product> fetchProductsBy(FetchProductOption option);
+
+    long countAll();
     
 }
