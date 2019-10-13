@@ -2,6 +2,7 @@ package com.electronicssales.models.responses;
 
 import java.util.List;
 
+import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.SortType;
 
@@ -28,5 +29,9 @@ public class FetchProductOption {
     SortType sortType = SortType.ASC;
 
     Pageable pageable;
+
+    String searchKey;
+
+    FetchProductType fetchProductType;
     
 }

@@ -7,15 +7,15 @@ import lombok.Setter;
 
 public enum Rating {
 
-    VERY_BAD(0),
+    VERY_BAD(1),
 
-    BAD(1),
+    BAD(2),
 
-    OKAY(2),
+    OKAY(3),
 
-    GOOD(3),
+    GOOD(4),
 
-    GREAT(4);
+    GREAT(5);
 
     @Getter 
     @Setter

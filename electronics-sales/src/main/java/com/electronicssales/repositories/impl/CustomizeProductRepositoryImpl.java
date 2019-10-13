@@ -6,16 +6,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.SortType;
 import com.electronicssales.repositories.CustomizeProductRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,20 +34,48 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
 
     private static final String MANUFACTURER_PREFIX = "m";
 
+    private static final String REVIEWS_PREFIX = "rv";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomizeProductRepositoryImpl.class);
+    
     @Autowired
     private EntityManager entityManager;
+
+    private static final String[] COLUMNS = {
+        "id",
+        "productName",
+        "price",
+        "quantity",
+        "salable",
+        "createdTime",
+        "updatedTime",
+        "manufacturer"
+    };
+    
+    private static final Map<String, String> PRODUCT_COLUMNS = new HashMap<String, String>() {
+
+        private static final long serialVersionUID = 1L;
+
+        {
+            for(String column : COLUMNS) {
+                put(column, PRODUCT_PREFIX.concat(".").concat(column));
+            }
+        }
+    };
+
 
     @SuppressWarnings("unchecked")
     @Transactional
     @Override
     public Page<Product> fetchProductsBy(FetchProductOption option) {
         Map<String, Object> parameters = new HashMap<>();
-        StringBuilder builder = buildFetchProductsQueryBy(option, parameters);
+        String sqlbuilded = buildFetchProductsQueryBy(option, parameters).toString();
+        LOGGER.info("My JPQL Builded : {}", sqlbuilded);
 
         int firstResultIndex = option.getPageable().getPageNumber()  * option.getPageable().getPageSize();
 
         Query query = entityManager
-            .createQuery(builder.toString(), Product.class)
+            .createQuery(sqlbuilded.toString(), Product.class)
             .setFirstResult(firstResultIndex)
             .setMaxResults(option.getPageable().getPageSize());
             
@@ -71,10 +103,24 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
 
 
     private StringBuilder buildFetchProductsQueryBy(FetchProductOption option, Map<String, Object> parameters) {
-        StringBuilder builder = createBaseQuery();
+        StringBuilder builder = initQuery();
 
         // JOIN
         buildJoin(builder, option);
+
+        // Where
+        buildConditionsQuery(builder, option, parameters);
+
+        // Group by
+        Optional.ofNullable(groupBy(option))
+            .ifPresent(builder::append);
+
+        // Order by
+        builder.append(buildOrderBy(option.getProductSortType(), option.getSortType()));
+        return builder;
+    }
+
+    private StringBuilder buildConditionsQuery(StringBuilder builder,FetchProductOption option, Map<String, Object> parameters) {
 
         Collection<StringBuilder> builders = new ArrayList<>();
 
@@ -94,15 +140,21 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
             ));
         }
 
-        // Where
-        builder.append(mergeAllCondition(builders));
+        Optional.ofNullable(option.getSearchKey())
+            .ifPresent(searchKey -> {
+                builders.add(buildQueryBySearchKey(searchKey, parameters));
+            });
+        
+        if(option.getFetchProductType() != FetchProductType.ALL) {
+            builders.add(buildConditionsByFetchType(option.getFetchProductType()));
+        }
 
-        // Order by
-        builder.append(buildOrderBy(option.getProductSortType(), option.getSortType()));
+        builder.append(mergeAllCondition((List<StringBuilder>)builders));
+
         return builder;
     }
 
-    private StringBuilder createBaseQuery() {
+    private StringBuilder initQuery() {
         return new StringBuilder("SELECT ")
             .append(PRODUCT_PREFIX)
             .append(" FROM ")
@@ -122,12 +174,52 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
 
         if(!option.getManufacturersId().isEmpty()) {
             builder.append(" JOIN ")
-                .append(PRODUCT_PREFIX)
-                .append(".manufacturer ")
-                .append(MANUFACTURER_PREFIX);
+                .append(PRODUCT_COLUMNS
+                    .get("manufacturer")
+                    .concat(" ")
+                    .concat(MANUFACTURER_PREFIX)
+                );
+        }
+
+        if(option.getProductSortType() != null 
+            && option.getProductSortType() == ProductSortType.REVIEWS) {
+                builder.append(" LEFT JOIN ")
+                    .append(PRODUCT_PREFIX)
+                    .append(".reviews ")
+                    .append(REVIEWS_PREFIX);
         }
 
         return builder;
+    }
+
+    private StringBuilder buildConditionsByFetchType(FetchProductType fetchProductType) {
+        switch (fetchProductType) {
+            case SELLING:
+                return buildConditionsByFetchTypeEqualsSelling();
+        
+            case SALABLE:
+                return buildConditionsByFetchTypeEqualsSalable();
+            
+            default:
+                return buildConditionsByFetchTypeEqualsUnselling();
+        }
+    }
+
+    private StringBuilder buildConditionsByFetchTypeEqualsSalable() {
+        return new StringBuilder(PRODUCT_COLUMNS.get("salable"))
+            .append(" = 1");
+    }
+
+    private StringBuilder buildConditionsByFetchTypeEqualsSelling() {
+        return new StringBuilder(buildConditionsByFetchTypeEqualsSalable())
+            .append(" AND ")
+            .append(PRODUCT_COLUMNS.get("quantity"))
+            .append(" > 0");
+    }
+
+    private StringBuilder buildConditionsByFetchTypeEqualsUnselling() {
+        return new StringBuilder(PRODUCT_COLUMNS.get("salable"))
+            .append(" = 0");
     }
 
     private StringBuilder buildOrderBy(ProductSortType productSortType, SortType sortType) {
@@ -140,11 +232,13 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
                     case PRICE:
                         orderBuilder.append(buildOrderByPrice(sortType));
                         break;
-                    case TIME:
-                        orderBuilder.append(builderOrderByNew(sortType)); 
-                        break;
 
+                    case TIME:
+                        orderBuilder.append(buildOrderByNew(sortType)); 
+                        break;
+                        
                     default:
+                        orderBuilder.append(buildOrderByReviews(sortType));
                         break;
                 }
                 orderBuilder.append(", ");
@@ -158,17 +252,15 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         return orderBuilder;
     }
 
-    private StringBuilder mergeAllCondition(Collection<StringBuilder> builders) {
+    private StringBuilder mergeAllCondition(List<StringBuilder> builders) {
         StringBuilder builder  = new StringBuilder();
 
         if(builders.isEmpty()) {
             return builder;
         }
-
-        List<StringBuilder> builderList = (List<StringBuilder>)builders;
         
         builder.append(" WHERE");
-        builder.append(mergeSubConditions(builderList));
+        builder.append(mergeSubConditions(builders));
         return builder;
     }
 
@@ -186,7 +278,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
                     builder
                         .append(" (")
                         .append(value)
-                        .append(") ");
+                        .append(")");
                 });
         }
 
@@ -223,6 +315,22 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         return builder;
     }
 
+    private StringBuilder buildQueryBySearchKey(String searchKey, Map<String, Object> parameters) {
+        final String searchKeyParamStr = "searchKey";
+        StringBuilder builder = new StringBuilder(" ")
+            .append(PRODUCT_COLUMNS.get("productName"))
+            .append(" LIKE :")
+            .append(searchKeyParamStr);
+        parameters.put(
+            searchKeyParamStr, 
+            new StringBuilder("%")
+                .append(searchKey)
+                .append("%")
+                .toString()
+        );
+        return builder;
+    }
+
     private StringBuilder buildFindProductByPriceRangeCondition(long fromPrice, long toPrice, Map<String, Object> parameters) {
         StringBuilder builder = new StringBuilder();
         String[] rangePriceParamsStr = {"fromPrice", "toPrice"};
@@ -230,8 +338,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         List<StringBuilder> builders = new ArrayList<>();
         if(fromPrice > 0) {
             StringBuilder fromPriceQuery = new StringBuilder(" ")
-                .append(PRODUCT_PREFIX)
-                .append(".price >= :")
+                .append(PRODUCT_COLUMNS.get("price").concat(" >= :"))
                 .append(rangePriceParamsStr[0]);
             builders.add(fromPriceQuery);
             parameters.put(rangePriceParamsStr[0], fromPrice);
@@ -239,8 +346,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
 
         if(toPrice > 0) {
             StringBuilder toPriceQuery = new StringBuilder(" ")
-                .append(PRODUCT_PREFIX)
-                .append(".price <= :")
+                .append(PRODUCT_COLUMNS.get("price").concat(" <= :"))
                 .append(rangePriceParamsStr[1]);
             builders.add(toPriceQuery);
             parameters.put(rangePriceParamsStr[1], toPrice);
@@ -252,20 +358,52 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
 
     private StringBuilder buildOrderByPrice(SortType sortType) {
         return new StringBuilder(" ")
-            .append(PRODUCT_PREFIX)
-            .append(".price ")
+            .append(PRODUCT_COLUMNS.get("price").concat(" "))
             .append(sortType);
     }
 
-    private StringBuilder builderOrderByNew(SortType sortType) {
+    private StringBuilder buildOrderByNew(SortType sortType) {
         return new StringBuilder(" ")
-            .append(PRODUCT_PREFIX)
-            .append(".createdTime ")
+            .append(PRODUCT_COLUMNS.get("createdTime"))
+            .append(" ")
             .append(sortType)
             .append(", ")
-            .append(PRODUCT_PREFIX)
-            .append(".updatedTime ")
+            .append(PRODUCT_COLUMNS.get("updatedTime"))
+            .append(" ")
             .append(sortType);
+    }
+
+    private StringBuilder buildOrderByReviews(SortType sortType) {
+        return new StringBuilder(" SUM(")
+            .append(REVIEWS_PREFIX)
+            .append(".rating) ")
+            .append(sortType);
+    }
+
+    private StringBuilder groupBy(FetchProductOption option) {
+        StringBuilder groupByBuilder = null;
+        if(option.getProductSortType() != null
+            && option.getProductSortType() == ProductSortType.REVIEWS) {
+
+                groupByBuilder = new StringBuilder(" GROUP BY ");
+
+                List<String> columns = PRODUCT_COLUMNS
+                    .entrySet()
+                    .stream()
+                    .map(value -> value.getValue())
+                    .collect(Collectors.toList());
+
+                // columns.add(REVIEWS_PREFIX);
+                
+                for(int i = 0; i < columns.size(); i++) {
+                    if(i > 0) {
+                        groupByBuilder.append(", ");
+                    }
+                    groupByBuilder.append(columns.get(i));
+                }
+                
+        }
+        return groupByBuilder;
     }
 
     

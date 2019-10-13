@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.SortType;
 import com.electronicssales.services.ProductService;
@@ -73,7 +74,11 @@ public class ProductResource {
         @RequestParam(value = "p", required = false, defaultValue = "0")
         int page,
         @RequestParam(value = "s", required = false, defaultValue = "10")
-        int size  
+        int size,
+        @RequestParam(value = "search", required = false)
+        String searchKey,
+        @RequestParam(value = "fetchType", required = false)
+        String fetchType
     ) {
         
         FetchProductOption option = new FetchProductOption();
@@ -81,6 +86,9 @@ public class ProductResource {
         option.setManufacturersId(Optional.ofNullable(manufacturersId).orElse(Collections.emptyList()));
         option.setFromPrice(fromPrice);
         option.setToPrice(toPrice);
+        option.setSearchKey(searchKey);
+        option.setPageable(PageRequest.of(page, size));
+        option.setFetchProductType(FetchProductType.of(fetchType));
 
         if(productSortType != null) {
             option.setProductSortType(ProductSortType.of(productSortType));
@@ -89,8 +97,6 @@ public class ProductResource {
         if(sortType != null) {
             option.setSortType(SortType.of(sortType));
         }
-
-        option.setPageable(PageRequest.of(page, size));
         
         return ResponseEntity
             .ok(productService.fetchProductsBy(option));

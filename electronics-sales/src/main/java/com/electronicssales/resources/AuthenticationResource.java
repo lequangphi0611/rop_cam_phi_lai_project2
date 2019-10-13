@@ -7,11 +7,9 @@ import com.electronicssales.models.LoginRequest;
 import com.electronicssales.models.UserPrincipal;
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.responses.UserAuthenticationResponse;
-import com.electronicssales.models.responses.UserInfoResponse;
 import com.electronicssales.models.types.Role;
 import com.electronicssales.services.JwtTokenService;
 import com.electronicssales.services.UserService;
-import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -45,17 +43,23 @@ public class AuthenticationResource {
     @Autowired
     private UserService userService;
 
-    @Lazy
-    @Autowired
-    private Mapper<UserInfoResponse, User> userInfoMapper;
-
     @PostMapping("/login")
-    public ResponseEntity<UserAuthenticationResponse> login(
+    public ResponseEntity<?> login(
         @RequestBody LoginRequest loginRequest
     ) {
+        return login(loginRequest.getUsername(), loginRequest.getPassword());
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto) {
+        User userSaved = userService.createUser(userDto, Role.CUSTOMER);
+        return login(userSaved.getUsername(), userDto.getPassword());
+    }
+
+    private ResponseEntity<?> login(String username, String password) {
         Authentication authentication = authenticationManager
             .authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())    
+                new UsernamePasswordAuthenticationToken(username, password)    
             );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -75,14 +79,6 @@ public class AuthenticationResource {
                 userPrincipal.getUsername(),
                 userPrincipal.getRole()
             ));
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto) {
-        User userSaved = userService.createUser(userDto, Role.CUSTOMER);
-        return ResponseEntity
-            .created(null)
-            .body(userInfoMapper.mapping(userSaved));
     }
     
 }
