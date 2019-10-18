@@ -1,6 +1,8 @@
 package com.electronicssales.services.impls;
 
 
+import java.util.Optional;
+
 import javax.persistence.EntityExistsException;
 
 import com.electronicssales.entities.Image;
@@ -107,6 +109,11 @@ public class DefaultUserService implements UserService {
             .findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
         return UserPrincipal.of(user);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Lazy

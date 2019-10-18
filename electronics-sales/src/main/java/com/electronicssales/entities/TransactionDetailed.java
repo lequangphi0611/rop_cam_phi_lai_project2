@@ -32,8 +32,8 @@ public class TransactionDetailed {
 
     private long price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "discount_id")
-    private Discount discount;
+    private String discountType;
+
+    private long discountValue;
     
 }

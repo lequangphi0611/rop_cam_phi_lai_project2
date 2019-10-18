@@ -11,10 +11,12 @@ import javax.validation.Valid;
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.responses.ProductResponse;
 import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.SortType;
 import com.electronicssales.services.ProductService;
+import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -37,6 +39,10 @@ public class ProductResource {
     @Lazy
     @Autowired
     private ProductService productService;
+
+    @Lazy
+    @Autowired
+    private Mapper<ProductResponse, Product> productResponseMapper;
 
     private boolean validateProductBeforeCreate(ProductDto product) {
         if(productService.existsByProductName(product.getProductName())) {
@@ -102,6 +108,15 @@ public class ProductResource {
             .ok(productService.fetchProductsBy(option));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> fetchProduct(@PathVariable long id) {
+        Product productFinded = productService.findByProductId(id)
+            .orElseThrow(() -> new EntityNotFoundException("Product with id not found !"));
+        
+        return ResponseEntity  
+            .ok(productResponseMapper.mapping(productFinded));
+    }
+
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody @Valid ProductDto productDto) {
         this.validateProductBeforeCreate(productDto);
@@ -132,7 +147,11 @@ public class ProductResource {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable long id) {
-        // productService.
+        if(!productService.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        deleteProduct(id);
         return ResponseEntity.ok().build();
     }
 

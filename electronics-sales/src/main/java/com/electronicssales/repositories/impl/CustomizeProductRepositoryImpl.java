@@ -11,7 +11,10 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
+import com.electronicssales.entities.Discount;
 import com.electronicssales.entities.Product;
+import com.electronicssales.entities.ProductCategory;
+import com.electronicssales.entities.ProductImage;
 import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
@@ -51,7 +54,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         "updatedTime",
         "manufacturer"
     };
-    
+
     private static final Map<String, String> PRODUCT_COLUMNS = new HashMap<String, String>() {
 
         private static final long serialVersionUID = 1L;
@@ -63,6 +66,20 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         }
     };
 
+    private static final String  FIND_CATEGORY_IDS_BY_PRODUCT_ID_QUERY = new StringBuilder("SELECT ")
+            .append(PRODUCT_CATEGORY_PREFIX)
+            .append(".category.id FROM ")
+            .append(ProductCategory.class.getSimpleName().concat(" "))
+            .append(PRODUCT_CATEGORY_PREFIX)
+            .append(" WHERE ")
+            .append(PRODUCT_CATEGORY_PREFIX)
+            .append(".product.id = :productId")
+            .toString();
+
+    private static final String FIND_IMAGE_IDS_BY_PRODUCT_ID_QUERY = new StringBuilder("SELECT pi.image.id FROM ")
+            .append(ProductImage.class.getSimpleName())
+            .append(" pi WHERE pi.product.id = :productId")
+            .toString();
 
     @SuppressWarnings("unchecked")
     @Transactional
@@ -99,6 +116,22 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         return entityManager
             .createQuery(builder.toString(), Long.class)
             .getSingleResult();
+    }
+
+    @Transactional
+    @Override
+    public List<Long> findCategoryIdsByProductId(long productId) {
+        return entityManager.createQuery(FIND_CATEGORY_IDS_BY_PRODUCT_ID_QUERY, Long.class)
+            .setParameter("productId", productId)
+            .getResultList();
+    }
+
+    @Override
+    public List<Long> findImageIdsByProductId(long productId) {
+        return entityManager
+            .createQuery(FIND_IMAGE_IDS_BY_PRODUCT_ID_QUERY, Long.class)
+            .setParameter("productId", productId)
+            .getResultList();
     }
 
 
@@ -188,6 +221,10 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
                     .append(".reviews ")
                     .append(REVIEWS_PREFIX);
         }
+
+        builder.append(" LEFT JOIN FETCH ")
+            .append(PRODUCT_PREFIX)
+            .append(".discount dc");
 
         return builder;
     }

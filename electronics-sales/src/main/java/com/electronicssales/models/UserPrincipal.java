@@ -17,6 +17,8 @@ public class UserPrincipal implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 
+    private long id;
+
     private String username;
 
     private String password;
@@ -40,6 +42,7 @@ public class UserPrincipal implements UserDetails {
 
         UserPrincipal userPrincipal = new UserPrincipal();
 
+        userPrincipal.setId(user.getId());
         userPrincipal.setAuthorities(authorities);
         userPrincipal.setUsername(user.getUsername());
         userPrincipal.setPassword(user.getPassword());

@@ -28,5 +28,7 @@ public interface ProductService {
     boolean existsByProductName(String productName);
 
     Optional<Product> findByProductId(long id);
+
+    void deleteById(long id);
     
 }

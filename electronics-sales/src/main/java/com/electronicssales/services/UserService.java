@@ -1,5 +1,7 @@
 package com.electronicssales.services;
 
+import java.util.Optional;
+
 import com.electronicssales.entities.User;
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.responses.UserInfoResponse;
@@ -18,5 +20,7 @@ public interface UserService extends UserDetailsService {
     boolean existsById(long userId);
 
     UserInfoResponse getUserInfoByUsername(String username);
+
+    Optional<User> findByUsername(String username);
     
 }

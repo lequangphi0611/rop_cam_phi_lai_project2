@@ -4,6 +4,8 @@ import javax.validation.Valid;
 
 import com.electronicssales.models.dtos.ImportInvoiceDto;
 import com.electronicssales.services.ImportInvoiceService;
+import com.electronicssales.services.UserService;
+import com.electronicssales.utils.AuthenticateUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -21,8 +23,14 @@ public class ImportInvoiceResource {
     @Autowired
     private ImportInvoiceService importInvoiceService;
 
+    @Lazy
+    @Autowired
+    private UserService userService;
+
     @PostMapping
     public ResponseEntity<?> createImportInvoice(@RequestBody @Valid ImportInvoiceDto importInvoiceDtoReq) {
+        long userId = AuthenticateUtils.getUserPrincipal().getId();
+        importInvoiceDtoReq.setUserId(userId);
         return ResponseEntity
             .created(null)
             .body(importInvoiceService.saveImportInvoice(importInvoiceDtoReq));

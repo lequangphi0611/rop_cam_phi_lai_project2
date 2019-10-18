@@ -29,6 +29,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(
     name = "products"
@@ -41,7 +42,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long id;
+    Long id;
 
     @Column(
         columnDefinition = "nvarchar(max)",
@@ -72,7 +73,6 @@ public class Product {
     )
     Collection<ProductCategory> productCategories;
 
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manufacturer_id")
     Manufacturer manufacturer;
@@ -106,12 +106,9 @@ public class Product {
     )
     Collection<Paragraph> descriptions;
 
-    @OneToMany(
-        mappedBy = "product",
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
-    )
-    Collection<ProductDiscount> productDiscounts;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "discount_id")
+    Discount discount;
 
     public Product(long id) {
         this.id = id;

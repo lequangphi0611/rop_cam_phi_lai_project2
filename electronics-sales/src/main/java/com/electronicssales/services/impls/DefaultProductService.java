@@ -5,10 +5,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Category;
+import com.electronicssales.entities.Discount;
 import com.electronicssales.entities.Image;
 import com.electronicssales.entities.Manufacturer;
+import com.electronicssales.entities.ParameterType;
 import com.electronicssales.entities.Product;
+import com.electronicssales.entities.ProductParameter;
 import com.electronicssales.models.dtos.ProductDto;
+import com.electronicssales.models.dtos.ProductParameterDto;
+import com.electronicssales.models.responses.DiscountResponse;
 import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
 import com.electronicssales.models.responses.ProductParameterResponse;
@@ -74,29 +79,30 @@ public class DefaultProductService implements ProductService {
         return productSaved;
     }
 
+    private void proccessAfterSaved(Product productPersisted, ProductDto productDto) {
+        productCategoryRepository.createAll(
+            productPersisted, 
+            getCategoryIds(productDto.getCategoriesId())
+        );
+
+        productParameterRepository.createAll(
+            productPersisted, 
+            getProductParametersFrom(productDto.getProductParameterDtos())
+        );
+
+        productImageRepository.createAll(
+            productPersisted, 
+            getImagesByIds(productDto.getImageIds())
+        );
+    }
+
     @Transactional
     @Override
     public Product createProduct(ProductDto productDto) {
         Product productTransient = productMapper.mapping(productDto);
         Product productPersisted = productRepository.persist(productTransient);
 
-        productCategoryRepository.createAll(
-            productPersisted, 
-            productDto.getCategoriesId()
-                .stream()
-                .map(Category::new)
-                .collect(Collectors.toList())
-        );
-
-        productParameterRepository.createAll(productPersisted, productDto.getProductParameters());
-
-        productImageRepository.createAll(
-            productPersisted, 
-            productDto.getImageIds()
-                .stream()
-                .map(Image::new)
-                .collect(Collectors.toList())
-        );
+        proccessAfterSaved(productPersisted, productDto);
 
         return productPersisted;
     }
@@ -116,28 +122,29 @@ public class DefaultProductService implements ProductService {
         );
     }
 
+    private void proccessAfterUpdated(Product productPersisted, ProductDto productDto) {
+        productCategoryRepository.updateAll(
+            productPersisted, 
+            getCategoryIds(productDto.getCategoriesId())
+        );
+
+        productParameterRepository.updateAll(
+            productPersisted, 
+            getProductParametersFrom(productDto.getProductParameterDtos())
+        );
+
+        productImageRepository.updateAll(
+            productPersisted, 
+            getImagesByIds(productDto.getImageIds())
+        );
+    }
+
     @Transactional
     @Override
     public Product updateProduct(ProductDto productDto) {
         Product productMapped = productMapper.mapping(productDto);
 
-        productCategoryRepository.updateAll(
-            productMapped, 
-            productDto.getCategoriesId()
-                .stream()
-                .map(Category::new)
-                .collect(Collectors.toList())
-        );
-
-        productParameterRepository.updateAll(productMapped, productDto.getProductParameters());
-
-        productImageRepository.updateAll(
-            productMapped, 
-            productDto.getImageIds()
-                .stream()
-                .map(Image::new)
-                .collect(Collectors.toList())
-        );
+        proccessAfterUpdated(productMapped, productDto);
         
         return productRepository.merge(productMapped);
     }
@@ -174,6 +181,39 @@ public class DefaultProductService implements ProductService {
         return productRepository.findById(id);
     }
 
+    @Override
+    public void deleteById(long id) {
+        productRepository.deleteById(id);
+    }
+
+    private Collection<ProductParameter> getProductParametersFrom(Collection<ProductParameterDto> productParameterDtos) {
+        return productParameterDtos
+            .stream()
+            .map(this::getProductParameterFrom)
+            .collect(Collectors.toList());
+    }
+
+    private ProductParameter getProductParameterFrom(ProductParameterDto productParameterDtos) {
+        ProductParameter productParameter = new ProductParameter();
+        productParameter.setParameterType(new ParameterType(productParameterDtos.getParameterTypeId()));
+        productParameter.setParameterValue(productParameterDtos.getParameterValue());
+        return productParameter;
+    }
+
+    private Collection<Image> getImagesByIds(Collection<Long> imageIds) {
+        return imageIds
+            .stream()
+            .map(Image::new)
+            .collect(Collectors.toList());
+    }
+
+    private Collection<Category> getCategoryIds(Collection<Long> categoryIds) {
+        return categoryIds
+            .stream()
+            .map(Category::new)
+            .collect(Collectors.toList());
+    }
+
     @Lazy
     @Component
     class ProductMapper implements Mapper<Product, ProductDto> {
@@ -196,6 +236,14 @@ public class DefaultProductService implements ProductService {
     @Component
     public class ProductResponseMapper implements Mapper<ProductResponse, Product> {
 
+        @Lazy
+        @Autowired
+        private ProductRepository productRepository;
+
+        @Lazy
+        @Autowired
+        private Mapper<DiscountResponse, Discount> discountResponseMapper;
+
         @Override
         public ProductResponse mapping(Product product) {
             ProductResponse productResponse = new ProductResponse();
@@ -203,6 +251,12 @@ public class DefaultProductService implements ProductService {
             productResponse.setProductName(product.getProductName());
             productResponse.setQuantity(product.getQuantity());
             productResponse.setPrice(product.getPrice());
+            productResponse.setCategoryIds(productRepository.findCategoryIdsByProductId(product.getId()));
+            productResponse.setManufacturerId(product.getManufacturer().getId());
+            productResponse.setImageIds(productRepository.findImageIdsByProductId(product.getId()));
+            Optional.ofNullable(product.getDiscount())
+                .ifPresent(discount -> 
+                    productResponse.setDiscount(discountResponseMapper.mapping(discount)));
             return productResponse;
         }
         

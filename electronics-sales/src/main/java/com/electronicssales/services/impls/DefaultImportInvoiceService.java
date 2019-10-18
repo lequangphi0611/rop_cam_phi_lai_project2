@@ -1,9 +1,8 @@
 package com.electronicssales.services.impls;
 
-import javax.persistence.EntityNotFoundException;
-
 import com.electronicssales.entities.ImportInvoice;
 import com.electronicssales.entities.Product;
+import com.electronicssales.entities.User;
 import com.electronicssales.models.dtos.ImportInvoiceDto;
 import com.electronicssales.repositories.ImportInvoiceRepository;
 import com.electronicssales.repositories.ProductRepository;
@@ -33,25 +32,16 @@ public class DefaultImportInvoiceService implements ImportInvoiceService {
     @Autowired
     private Mapper<ImportInvoice, ImportInvoiceDto> importInvoiceMapper;
 
-    private int updateProductQuantity(int quantity, long productId) {
-        Product productFinded = productRepository
-            .findById(productId)
-            .orElseThrow(() -> new EntityNotFoundException("Product not found !"));
-
-        int currentQuantity = productFinded.getQuantity();
-        int newQuantity = quantity + currentQuantity;
-        productRepository.updateProductQuantity(newQuantity, productId);
-        return newQuantity;
-    }
-
     @Override
     @Transactional
-    public ImportInvoice saveImportInvoice(ImportInvoiceDto importInvoiceĐto) {
-        ImportInvoice importInvoiceSaved = importInvoiceRepository.save(importInvoiceMapper.mapping(importInvoiceĐto));
+    public ImportInvoice saveImportInvoice(ImportInvoiceDto importInvoiceDto) {
+        ImportInvoice importTransient = importInvoiceMapper.mapping(importInvoiceDto);
+        ImportInvoice importInvoiceSaved = importInvoiceRepository.save(importTransient);
 
-        importInvoiceRepository.updateCreatorId(importInvoiceĐto.getUserId(), importInvoiceSaved.getId());
-
-        updateProductQuantity(importInvoiceSaved.getQuantity(), importInvoiceSaved.getProduct().getId());
+        productRepository.updateProductQuantity(
+                importInvoiceSaved.getQuantity(), 
+                importInvoiceSaved.getProduct().getId()
+        );
 
         return importInvoiceSaved;
     }
@@ -66,8 +56,9 @@ public class DefaultImportInvoiceService implements ImportInvoiceService {
         @Override
         public ImportInvoice mapping(ImportInvoiceDto importInvoiceDto) {
             ImportInvoice importInvoice = new ImportInvoice();
-            // User creator = userRepository.findById(importInvoiceDto.getUserId()).get();
-            // importInvoice.setCreator(creator);
+            User creator = new User();
+            creator.setId(importInvoiceDto.getUserId());
+            importInvoice.setCreator(creator);
             importInvoice.setQuantity(importInvoiceDto.getQuantity());
             importInvoice.setProduct(new Product(importInvoiceDto.getProductId()));
             return importInvoice;

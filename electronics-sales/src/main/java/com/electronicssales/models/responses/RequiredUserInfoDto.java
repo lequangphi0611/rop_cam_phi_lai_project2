@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class RequiredUserInfoDto {
 
+    private long id;
+
     @NotBlank
     private String firstname;
 

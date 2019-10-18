@@ -2,6 +2,8 @@ package com.electronicssales.models.responses;
 
 import java.util.Collection;
 
+import com.electronicssales.models.responses.DiscountResponse;
+
 import lombok.Data;
 
 @Data
@@ -11,14 +13,16 @@ public class ProductResponse {
 
     private String productName;
 
-    private long imageId;
+    private Collection<Long> imageIds;
 
     private long price;
 
     private int quantity;
 
-    private Collection<String> categoryName;
+    private Collection<Long> categoryIds;
 
-    private String manufacturerName;
+    private Long manufacturerId;
+
+    private DiscountResponse discount;
     
 } 

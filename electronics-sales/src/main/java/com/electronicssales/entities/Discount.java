@@ -17,9 +17,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.electronicssales.models.types.DiscountType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "discounts")
 @Data
@@ -36,15 +38,11 @@ public class Discount {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date startedTime;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date finishedTime;
-
-    @OneToMany(
-        mappedBy = "discount",
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
-    )
-    Collection<ProductDiscount> productDiscounts;
     
+    @OneToMany(
+        fetch = FetchType.LAZY, 
+        mappedBy = "discount",
+        cascade = CascadeType.MERGE
+    )
+    private Collection<Product> products;
 }

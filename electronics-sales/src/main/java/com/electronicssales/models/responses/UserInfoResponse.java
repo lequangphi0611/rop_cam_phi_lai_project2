@@ -13,8 +13,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class UserInfoResponse extends RequiredUserInfoDto {
 
-    private long id;
-
     @NotBlank
     private String username;
 

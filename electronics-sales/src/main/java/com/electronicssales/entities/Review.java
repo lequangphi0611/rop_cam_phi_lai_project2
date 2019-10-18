@@ -31,7 +31,7 @@ public class Review {
 
     @OneToOne(
         fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL
+        cascade = CascadeType.REMOVE
     )
     @JoinColumn(name = "comment_id")
     private Comment comment;

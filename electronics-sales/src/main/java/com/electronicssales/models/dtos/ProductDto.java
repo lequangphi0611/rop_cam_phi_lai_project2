@@ -6,7 +6,6 @@ import java.util.Collection;
 import javax.validation.constraints.NotBlank;
 
 import com.electronicssales.entities.Paragraph;
-import com.electronicssales.entities.ProductParameter;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -29,7 +28,7 @@ public class ProductDto {
 
     Collection<Paragraph> paragraphs = new ArrayList<>();
 
-    Collection<ProductParameter> productParameters = new ArrayList<>();
+    Collection<ProductParameterDto> productParameterDtos = new ArrayList<>();
 
     Collection<Long> imageIds = new ArrayList<>();
     
