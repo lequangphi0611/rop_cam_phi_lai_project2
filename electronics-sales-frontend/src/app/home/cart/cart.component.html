@@ -1,0 +1,90 @@
+<!-- body -->
+<!-- <div class="mt-4 container col-12 px-5 ml-2.5"> -->
+<div class=" container col-12 px-5 ml-2.5" style="min-height: 400px">
+  <div class="row mt-5">
+    <div class="card col-12 p-0">
+      <div class="card-header">
+        <h3>Giỏ hàng của bạn</h3>
+      </div>
+      <div class="container col-12 p-0 m-0">
+        <table id="cart" class="table table-hover table-condensed">
+          <thead>
+            <tr>
+              <th style="width:40%">Tên sản phẩm</th>
+              <th style="width:10%">Giá</th>
+              <th style="width:13%">Số lượng</th>
+              <th style="width:22%" class="text-center">Thành tiền</th>
+              <th style="width:15%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-th="Product">
+                <div class="row">
+                  <div class="col-sm-2 hidden-xs">
+                    <img
+                      [lazyLoad]="'/assets/img/product02.png'"
+                      alt="Sản phẩm 1"
+                      class="img-responsive"
+                      width="100"
+                    />
+                  </div>
+                  <div class="col-sm-10">
+                    <h4 class="nomargin">Tai nghe</h4>
+                    <p>
+                      Mô tả của sản phẩm 1 tai nghe rất tốt, nhẹ nhàng, dễ sử
+                      dụng
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td data-th="Price">
+                200.000 <span style="color:darkgrey"> Vnđ</span>
+              </td>
+              <td data-th="Quantity">
+                <input
+                  class="form-control text-center"
+                  value="1"
+                  type="number"
+                />
+              </td>
+              <td data-th="Subtotal" style="text-align: center; color: #EA4335">
+                200.000 <span style="color:darkgrey"> Vnđ</span>
+              </td>
+              <td class="actions" data-th="">
+                <button class="btn btn-info" title="Xem chi tiết">
+                  <i class="fa fa-edit"></i>
+                </button>
+                <button class="btn btn-danger" title="Xóa sản phẩm">
+                  <i class="fa fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>
+                <a class="btn btn-warning"
+                  ><i class="fa fa-angle-left"></i> Tiếp tục mua hàng</a
+                >
+              </td>
+              <td colspan="2" class="hidden-xs"></td>
+              <td class="hidden-xs text-left">
+                <strong>Tổng tiền: 500.000 đ</strong>
+              </td>
+              <td>
+                <a href="buy.html" class="btn btn-success btn-block"
+                  >Thanh toán <i class="fa fa-angle-right"></i
+                ></a>
+              </td>
+
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <br />
+</div>

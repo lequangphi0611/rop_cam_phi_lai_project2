@@ -1,0 +1,97 @@
+<!--top-header-->
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <a class="navbar-brand" [routerLink]="['/index']">
+    <img class="logo" [lazyLoad]="'/assets/img/logo caam.png'" />
+  </a>
+  <div class="collapse navbar-collapse mr-3">
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Danh mục
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <ng-container
+            *ngFor="
+              let category of categories$ | async;
+              trackBy: trackByCategory
+            "
+          >
+            <a id="{{ category.id }}" class="dropdown-item"
+              >{{ category.categoryName }} ({{ category.productCount }})</a
+            >
+            <div class="dropdown-divider"></div>
+          </ng-container>
+        </div>
+      </li>
+    </ul>
+    <form class="form-inline col-lg-12 m-3 my-2 my-lg-0s">
+      <input
+        class="form-control mr-sm-2 col-8"
+        type="search"
+        placeholder="Nhập nội dung tìm kiếm..."
+        aria-label="Search"
+      />
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+        Tìm kiếm
+      </button>
+    </form>
+  </div>
+
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNavAltMarkup"
+    aria-controls="navbarNavAltMarkup"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <ul class="navbar-nav">
+      <li *ngFor="let navItem of navItemRight$ | async" class="nav-item">
+        <a
+          class="nav-link"
+          [routerLink]="[navItem.link]"
+          routerLinkActive="active"
+        >
+          {{ navItem.name }}
+        </a>
+      </li>
+
+      <li class="nav-item"></li>
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <i class="fa fa-user"></i> User
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="Myacount.html">Tài khoản của tôi</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Đăng xuất</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!--end-top-header-->
+
+<app-sub-navigation [navItems]="navItems$ | async"></app-sub-navigation>

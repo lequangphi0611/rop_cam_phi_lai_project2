@@ -1,13 +1,14 @@
 package com.electronicssales.services;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.responses.ParagraphResponse;
 import com.electronicssales.models.responses.ProductParameterResponse;
-import com.electronicssales.models.responses.ProductResponse;
 
 import org.springframework.data.domain.Page;
 
@@ -15,7 +16,7 @@ public interface ProductService {
 
     Product saveProduct(ProductDto productDto);
 
-    Page<ProductResponse> fetchProductsBy(FetchProductOption option);
+    Page<Product> fetchProductsBy(FetchProductOption option);
 
     Collection<ProductParameterResponse> getProductParametersByProductId(long productId);
 
@@ -30,5 +31,7 @@ public interface ProductService {
     Optional<Product> findByProductId(long id);
 
     void deleteById(long id);
+
+    List<ParagraphResponse> getDescriptionsOf(long productId);
     
 }

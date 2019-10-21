@@ -3,6 +3,7 @@ package com.electronicssales.resources;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.responses.ProductDiscountResponse;
 import com.electronicssales.models.responses.ProductResponse;
 import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
@@ -20,8 +22,11 @@ import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +48,10 @@ public class ProductResource {
     @Lazy
     @Autowired
     private Mapper<ProductResponse, Product> productResponseMapper;
+
+    @Lazy
+    @Autowired
+    private Mapper<ProductDiscountResponse, Product> productDiscountResponseMapper;
 
     private boolean validateProductBeforeCreate(ProductDto product) {
         if(productService.existsByProductName(product.getProductName())) {
@@ -84,7 +93,9 @@ public class ProductResource {
         @RequestParam(value = "search", required = false)
         String searchKey,
         @RequestParam(value = "fetchType", required = false)
-        String fetchType
+        String fetchType,
+        @RequestParam(defaultValue = "true")
+        boolean fetchDiscount
     ) {
         
         FetchProductOption option = new FetchProductOption();
@@ -96,16 +107,23 @@ public class ProductResource {
         option.setPageable(PageRequest.of(page, size));
         option.setFetchProductType(FetchProductType.of(fetchType));
 
-        if(productSortType != null) {
+        if(StringUtils.hasText(productSortType)) {
             option.setProductSortType(ProductSortType.of(productSortType));
         }
-
-        if(sortType != null) {
-            option.setSortType(SortType.of(sortType));
-        }
         
-        return ResponseEntity
-            .ok(productService.fetchProductsBy(option));
+        option.setSortType(SortType.of(sortType));
+        option.setFetchDiscount(fetchDiscount);
+
+        Mapper<? extends ProductResponse, Product> productMapper = fetchDiscount 
+            ? productDiscountResponseMapper
+            : productResponseMapper;
+        Page<Product> productPage = productService.fetchProductsBy(option);
+        Page<? extends ProductResponse> productPageResult = new PageImpl<>(
+            productPage.getContent().stream().map(productMapper::mapping).collect(Collectors.toList()),
+            productPage.getPageable(), 
+            productPage.getTotalElements()
+        );
+        return ResponseEntity.ok(productPageResult);
     }
 
     @GetMapping("/{id}")
@@ -114,16 +132,16 @@ public class ProductResource {
             .orElseThrow(() -> new EntityNotFoundException("Product with id not found !"));
         
         return ResponseEntity  
-            .ok(productResponseMapper.mapping(productFinded));
+            .ok(productDiscountResponseMapper.mapping(productFinded));
     }
 
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody @Valid ProductDto productDto) {
         this.validateProductBeforeCreate(productDto);
-
+        Product productCreated = productService.createProduct(productDto);
         return ResponseEntity
             .created(null)
-            .body(productService.createProduct(productDto));
+            .body(productResponseMapper.mapping(productCreated));
     }
 
     @PutMapping("/{id}")
@@ -134,10 +152,10 @@ public class ProductResource {
     {
         productDto.setId(productId);
         validateProductBeforeUpdate(productDto);
-
+        Product productUpdated = productService.updateProduct(productDto);
         return ResponseEntity
             .created(null)
-            .body(productService.updateProduct(productDto));
+            .body(productResponseMapper.mapping(productUpdated));
     }
 
     @GetMapping("/{id}/parameters")
@@ -153,6 +171,12 @@ public class ProductResource {
 
         deleteProduct(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/descriptions")
+    public ResponseEntity<?> fetchDescriptions(@PathVariable("id") long productId) {
+        return ResponseEntity
+            .ok(productService.getDescriptionsOf(productId));
     }
 
 }

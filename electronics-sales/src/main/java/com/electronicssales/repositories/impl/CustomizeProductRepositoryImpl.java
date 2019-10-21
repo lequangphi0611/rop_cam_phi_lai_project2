@@ -6,16 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-import com.electronicssales.entities.Discount;
 import com.electronicssales.entities.Product;
 import com.electronicssales.entities.ProductCategory;
 import com.electronicssales.entities.ProductImage;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.types.DiscountType;
 import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.SortType;
@@ -39,12 +39,14 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
 
     private static final String REVIEWS_PREFIX = "rv";
 
+    private static final String DISCOUNT_PREFIX = "dc";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomizeProductRepositoryImpl.class);
     
     @Autowired
     private EntityManager entityManager;
 
-    private static final String[] COLUMNS = {
+    private static final String[] PRODUCT_COLUMNS_STRING = {
         "id",
         "productName",
         "price",
@@ -52,7 +54,15 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         "salable",
         "createdTime",
         "updatedTime",
-        "manufacturer"
+        "manufacturer",
+        "discount"
+    };
+
+    private static final String[] DISCOUNT_COLUMNS_STRING = {
+        "id",
+        "discountValue",
+        "startedTime",
+        "discountType"
     };
 
     private static final Map<String, String> PRODUCT_COLUMNS = new HashMap<String, String>() {
@@ -60,9 +70,21 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         private static final long serialVersionUID = 1L;
 
         {
-            for(String column : COLUMNS) {
-                put(column, PRODUCT_PREFIX.concat(".").concat(column));
-            }
+            Stream.of(PRODUCT_COLUMNS_STRING)
+                .forEach(columnStr -> 
+                    put(columnStr, PRODUCT_PREFIX.concat(".").concat(columnStr))
+                );
+        }
+    };
+
+    private static final Map<String, String> DISCOUNT_COLUMNS = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
+
+        {
+            Stream.of(DISCOUNT_COLUMNS_STRING)
+                .forEach(columnStr -> 
+                    put(columnStr, DISCOUNT_PREFIX.concat(".").concat(columnStr))
+                );
         }
     };
 
@@ -145,8 +167,13 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         buildConditionsQuery(builder, option, parameters);
 
         // Group by
-        Optional.ofNullable(groupBy(option))
-            .ifPresent(builder::append);
+        boolean group = (option.getProductSortType() != null 
+             && option.getProductSortType() == ProductSortType.REVIEWS)
+            || (option.isFetchDiscount()
+               && option.getFetchProductType() == FetchProductType.DISCOUNT);
+        if(group) {
+            groupBy(builder);
+        }
 
         // Order by
         builder.append(buildOrderBy(option.getProductSortType(), option.getSortType()));
@@ -178,7 +205,8 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
                 builders.add(buildQueryBySearchKey(searchKey, parameters));
             });
         
-        if(option.getFetchProductType() != FetchProductType.ALL) {
+        if(option.getFetchProductType() != FetchProductType.ALL
+            && option.getFetchProductType() != FetchProductType.DISCOUNT) {
             builders.add(buildConditionsByFetchType(option.getFetchProductType()));
         }
 
@@ -222,9 +250,17 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
                     .append(REVIEWS_PREFIX);
         }
 
-        builder.append(" LEFT JOIN FETCH ")
-            .append(PRODUCT_PREFIX)
-            .append(".discount dc");
+        if(option.isFetchDiscount()) {
+            if(option.getFetchProductType() != FetchProductType.DISCOUNT) {
+            builder.append(" LEFT");
+            }
+
+            builder
+                .append(" JOIN FETCH ")
+                .append(PRODUCT_PREFIX)
+                .append(".discount ")
+                .append(DISCOUNT_PREFIX);
+        }
 
         return builder;
     }
@@ -273,7 +309,11 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
                     case TIME:
                         orderBuilder.append(buildOrderByNew(sortType)); 
                         break;
-                        
+                    
+                    case DISCOUNT:
+                        orderBuilder.append(builderOrderByDiscount(sortType));
+                        break;
+
                     default:
                         orderBuilder.append(buildOrderByReviews(sortType));
                         break;
@@ -417,30 +457,45 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
             .append(sortType);
     }
 
-    private StringBuilder groupBy(FetchProductOption option) {
-        StringBuilder groupByBuilder = null;
-        if(option.getProductSortType() != null
-            && option.getProductSortType() == ProductSortType.REVIEWS) {
+    private StringBuilder builderOrderByDiscount(SortType sortType) {
+        return new StringBuilder(" CASE ")
+            .append(DISCOUNT_COLUMNS.get(DISCOUNT_COLUMNS_STRING[3]))
+            .append(" WHEN '")
+            .append(DiscountType.PERCENT)
+            .append("' THEN (")
+            .append(PRODUCT_COLUMNS.get(PRODUCT_COLUMNS_STRING[2]))
+            .append(" * ")
+            .append(DISCOUNT_COLUMNS.get(DISCOUNT_COLUMNS_STRING[1]))
+            .append(" / 100 )")
+            .append(" ELSE ")
+            .append(DISCOUNT_COLUMNS.get(DISCOUNT_COLUMNS_STRING[1]))
+            .append(" END ")
+            .append(sortType);
+    }
 
-                groupByBuilder = new StringBuilder(" GROUP BY ");
+    private void groupBy(StringBuilder builder) {
+        builder.append(" GROUP BY ");
 
-                List<String> columns = PRODUCT_COLUMNS
-                    .entrySet()
-                    .stream()
-                    .map(value -> value.getValue())
-                    .collect(Collectors.toList());
+        List<String> columns = new ArrayList<>();
 
-                // columns.add(REVIEWS_PREFIX);
-                
-                for(int i = 0; i < columns.size(); i++) {
-                    if(i > 0) {
-                        groupByBuilder.append(", ");
-                    }
-                    groupByBuilder.append(columns.get(i));
-                }
-                
+        PRODUCT_COLUMNS
+            .entrySet()
+            .stream()
+            .map(value -> value.getValue())
+            .forEach(columns::add);
+        
+        DISCOUNT_COLUMNS
+            .entrySet()
+            .stream()
+            .map(value -> value.getValue())
+            .forEach(columns::add);
+        
+        for(int i = 0; i < columns.size(); i++) {
+            if(i > 0) {
+                builder.append(", ");
+            }
+            builder.append(columns.get(i));
         }
-        return groupByBuilder;
     }
 
     

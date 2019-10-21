@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -18,6 +19,8 @@ import javax.persistence.TemporalType;
 
 import com.electronicssales.models.types.DiscountType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.Data;
 
@@ -36,6 +39,8 @@ public class Discount {
     @Enumerated(EnumType.STRING)
     private DiscountType discountType;
 
+    @CreationTimestamp
+    @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date startedTime;
     

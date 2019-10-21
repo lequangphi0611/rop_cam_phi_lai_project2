@@ -1,0 +1,27 @@
+ <!-- body -->
+ <div class="pt-5 login-page">
+  <div class="card card-container">
+      <h4 style="text-align: center;">Đăng ký</h4>
+      <!-- <img id="profile-img" class="profile-img-card" src="img/avatar_2x.png" /> -->
+      <p id="profile-name" class="profile-name-card"></p>
+      <form class="form-signin">
+          <!-- <span id="reauth-email" class="reauth-email"></span> -->
+          <input type="email" id="inputEmail" class="form-control" placeholder="Họ và tên" required autofocus><br>
+          <input type="email" id="inputEmail" class="form-control" placeholder="Email/Số ĐT" required><br>
+          <input type="password" id="inputPassword" class="form-control" placeholder="Mật khẩu" required><br>
+          <input type="password" id="inputPassword" class="form-control" placeholder="Xác nhận mật khẩu" required>
+          <div id="remember" class="checkbox">
+              <label>
+                  <input type="checkbox" value="remember-me"> Đồng ý với các chính sách bảo mật của Infinity Shop
+              </label>
+          </div>
+          <hr>
+          <button class="btn btn-lg btn-primary btn-block btn-signin"
+              type="submit">Đăng ký</button>
+              <a [routerLink]="['/index/login']"  class="forgot-password">
+                      Đăng nhập với tài khoản đã có?
+                  </a>
+      </form><!-- /form -->
+  </div><!-- /card-container -->
+</div>
+<!--/body-->

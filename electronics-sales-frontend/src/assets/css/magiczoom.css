@@ -1,0 +1,166 @@
+/**
+ * Core styles
+ */
+ .MagicZoom,
+ .mz-figure,
+ .mz-lens,
+ .mz-zoom-window,
+ .mz-loading,
+ .mz-hint,
+ .mz-expand .mz-expand-stage,
+ .mz-expand .mz-expand-stage .mz-image-stage,
+ .mz-expand .mz-expand-stage .mz-image-stage .mz-caption,
+ .mz-thumb img,
+ .mz-expand-thumbnails,
+ .mz-expand-controls,
+ .mz-button {
+     -webkit-box-sizing: border-box;
+             box-sizing: border-box;
+ }
+ 
+ .MagicZoom,
+ .mz-figure {
+     display: inline-block;
+     outline: 0 !important;
+     font-size: 0 !important;
+     line-height: 100% !important;
+     direction: ltr !important;
+     position: relative;
+     z-index: 1;
+     margin: 0 auto;
+     vertical-align: middle;
+     -webkit-user-select: none;
+        -moz-user-select: none;
+         -ms-user-select: none;
+             user-select: none;
+     -webkit-touch-callout: none;
+     -webkit-tap-highlight-color: transparent;
+     -webkit-backface-visibility: hidden;
+             backface-visibility: hidden;
+ }
+ .MagicZoom {
+     -webkit-transform: translate3d(0,0,0);
+     -ms-touch-action: pan-y;
+         touch-action: pan-y;
+ }
+ .MagicZoom img,
+ .mz-figure img {
+     border: 0 !important;
+     margin: 0 !important;
+     outline: 0 !important;
+     padding: 0 !important;
+ }
+ .MagicZoom > img,
+ /* .mz-figure > img {
+     width: 100%;
+     height: auto;
+ } */
+ .ie8-magic .MagicZoom > img,
+ .ie8-magic .mz-figure > img {
+     width: 100%;
+     max-width: none !important;
+ }
+ .mz-figure.mz-no-zoom.mz-no-expand,
+ .mz-expand .mz-figure.mz-no-zoom {
+     cursor: default !important;
+ }
+ .mz-figure.mz-active,
+ .mz-expand {
+     -ms-touch-action: none;
+         touch-action: none;
+ }
+ 
+ .mz-lens,
+ .mz-zoom-window {
+     position: absolute !important;
+     overflow: hidden !important;
+     pointer-events: none !important;
+ }
+ .mz-lens img,
+ .mz-zoom-window img {
+     position: absolute !important;
+     max-width: none !important;
+     max-height: none !important;
+ }
+ /* .mz-lens img {
+     -webkit-transition: none !important;
+             transition: none !important;
+ } */
+ 
+ /* .mz-zoom-window {
+     z-index: 2000000000;
+     -webkit-transform: translate3d(0,0,0);
+             transform: translate3d(0,0,0);
+ } */
+ /* .mz-zoom-window.mz-magnifier {
+     -webkit-mask-image: -webkit-radial-gradient(circle, white, black);
+     -webkit-mask-clip: content;
+     cursor: none;
+ }
+ .mz-figure.mz-active .mz-zoom-window.mz-magnifier {
+     pointer-events: auto !important;
+     cursor: inherit !important;
+ }
+ .mz-zoom-window.mz-magnifier.mz-expanded {
+     z-index: 2147483647;
+ } */
+ .mz-zoom-window img  {
+     width: auto;
+     height: auto;
+     left: -1000%;
+     right: -1000%;
+     top: -1000%;
+     bottom: -1000%;
+     margin: auto !important;
+     -webkit-transition: none !important;
+             transition: none !important;
+     -webkit-transform-origin: 50% 50% !important;
+         -ms-transform-origin: 50% 50% !important;
+             transform-origin: 50% 50% !important;
+ }
+ 
+ /**
+  * Zoom lens
+  */
+ .mz-lens {
+     border: 1px solid #aaa;
+     border-color: rgba(170,170,170,0.7);
+     box-shadow: 0 0 5px rgba(0,0,0,.3);
+     cursor: none;
+     z-index: 10;
+     opacity: 0;
+ }
+ .mz-figure.mz-active .mz-lens {
+     opacity: 1;
+     -webkit-transition: opacity .3s cubic-bezier(0.25, 0.5, 0.5, 0.9) .1s;
+     transition: opacity .3s cubic-bezier(0.25, 0.5, 0.5, 0.9) .1s;
+ }
+ .mz-figure.mz-active.mz-magnifier-zoom .mz-lens {
+     border-radius: 50%;
+     opacity: 0;
+     cursor: none;
+ }
+ 
+ 
+ /* Zoom window animations */
+ .mz-zoom-window.mz-p-right,
+ .mz-zoom-window.mz-p-left,
+ .mz-zoom-window.mz-p-top,
+ .mz-zoom-window.mz-p-bottom {
+     opacity: 0;
+     z-index: -100;
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

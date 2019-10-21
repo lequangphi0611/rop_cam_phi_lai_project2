@@ -1,0 +1,43 @@
+<div class="mt-4 container col-12 px-5 ml-2.5">
+
+  <div class="row mt-5">
+    <div class="card col-12 p-0">
+      <div class="card-header">
+        <h3>Top phụ kiện được ưa chuộng</h3>
+      </div>
+      <div class="col-12 p-0 m-0">
+        <div class="d-flex justify-content-start col-3">
+          <div class="product card mx-auto hover-cursor">
+            <div class="product-img">
+              <img class="card-img-top" src="/assets/img/product01.png" alt="Card image cap">
+              <div class="product-label">
+                <span class="sale">-30%</span>
+              </div>
+            </div>
+            <div class="product-body">
+              <p class="product-category">Danh mục của sản phẩm .....</p>
+              <h3 class="product-name"><a href="#">tên sản phẩm.....</a></h3>
+              <h4 class="product-price"> Giá vnd <del class="product-old-price">Giá cũ
+                  vnd</del></h4>
+
+                <app-rating [disabled]="true" [rating]="4" [itemId] = '4'></app-rating>
+
+
+              <div class="product-btns">
+                <button class="add-to-wishlist"><i class="fas fa-heart star-yellow"></i><span class="tooltipp">Thêm
+                    vào yêu thích</span></button>
+                <button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">Chi tiết</span></button>
+              </div>
+            </div>
+            <div class="add-to-cart">
+              <li><button class="add-to-cart-btn"> Thêm
+                vào giỏ hàng</button></li>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -98,7 +98,11 @@ public class Product {
     )
     Collection<ProductParameter> productParameters;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(
+        fetch = FetchType.LAZY, 
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     @JoinTable(
         name = "product_descriptions",
         joinColumns = @JoinColumn(name = "product_id"),

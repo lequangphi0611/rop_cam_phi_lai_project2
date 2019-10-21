@@ -10,6 +10,8 @@ public enum FetchProductType {
 
     ALL,
 
+    DISCOUNT,
+
     UNSELLING;
 
     public static FetchProductType of(String arg) {

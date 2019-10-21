@@ -12,7 +12,7 @@ public enum SortType {
         return Stream.of(SortType.values())
             .filter(value -> value.toString().equalsIgnoreCase(arg))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElse(SortType.ASC);
     }
     
 }

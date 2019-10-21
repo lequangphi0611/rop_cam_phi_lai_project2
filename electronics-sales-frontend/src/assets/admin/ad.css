@@ -1,0 +1,212 @@
+ul { list-style: none; }
+a { text-decoration: none; color: black;}
+body {
+   font-family: 'Dosis', sans-serif;
+   /* background:lightblue; */
+   background:white;
+}
+#menu-wrapper {
+    overflow: hidden;
+    max-width: 100%;
+    cursor: pointer;
+    /* padding-top: 0px ; */
+}
+
+
+#menu-wrapper #hamburger-menu {
+    position: relative;
+    width: 25px;
+    height: 20px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+}
+
+#menu-wrapper #hamburger-menu span {
+    opacity: 1;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 3px;
+    border-radius: 10px;
+    color: black;
+    background-color: black;
+    position: absolute;
+    transform: rotate(0deg);
+    transition: .4s ease-in-out;
+}
+
+#menu-wrapper #hamburger-menu span:nth-child(1) {
+    top: 0;
+}
+#menu-wrapper #hamburger-menu span:nth-child(2) {
+    top: 9px;
+}
+#menu-wrapper #hamburger-menu span:nth-child(3) {
+    top: 18px;
+}
+#menu-wrapper #hamburger-menu.open span:nth-child(1) {
+    transform: translateY(9px) rotate(135deg);
+}
+#menu-wrapper #hamburger-menu.open span:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-60px);
+}
+#menu-wrapper #hamburger-menu.open span:nth-child(3) {
+    transform: translateY(-9px) rotate(-135deg);
+}
+    /* #menu-container{
+        min-height: 900px;
+        max-height: 2000px;
+    } */
+#menu-container .menu-list .menu-submenu {
+    padding: 20px;
+    /* padding-bottom: 20px; */
+}
+#menu-container .menu-list {
+    padding-left: 0;
+    display: block;
+    position: absolute;
+    width: 100%;
+    max-width: 250px;
+    background: white;
+    box-shadow: rgba(100,100,100,0.2) 6px 2px 10px;
+    z-index: 999;
+    overflow-y: auto;
+    overflow-x: hidden;
+    left: -100%;
+}
+
+#menu-container .menu-list li.accordion-toggle, #menu-container .menu-list .menu-login {
+    font-size: 16px;
+    padding-left: 15px;
+    padding-bottom: 12px;
+    padding-top: 12px;
+    text-transform: uppercase;
+    border-top: 1px solid #dbdcd2;
+}
+#menu-container .menu-list li:first-of-type {
+    border-top: 0;
+}
+
+.accordion-toggle, .accordion-content {
+    cursor: pointer;
+    font-size: 14px;
+    position: relative;
+    letter-spacing: 1px;
+    padding-bottom: 15px;
+    text-transform: uppercase;
+    margin-left: 0px;
+ 
+}
+  .accordion-content {
+    display: none;
+}
+
+.accordion-toggle a:before, .accordion-toggle a:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 30px;
+    width: 15px;
+    height: 2px;
+    margin-top: -1px;
+    background-color: #5a5858;
+    transform-origin: 50% 50%;
+    transition: all 0.3s ease-out;
+}
+
+.accordion-toggle a:before {
+    transform: rotate(-90deg);
+    opacity: 1;
+    z-index: 2;
+}
+
+.accordion-toggle.active-tab {
+  background: yellowgreen;
+  transition: all 0.3s ease;
+}
+.accordion-toggle a.active:before {
+    transform: rotate(0deg);
+    background: #fff !important;
+}
+
+.accordion-toggle a.active:after {
+    transform: rotate(180deg);
+    background: #fff !important;
+    opacity: 0;
+}
+/*-------------Tổng quan--------------*/
+.total-cell{
+    background-color:#fbfdfd;  
+    border: 1px solid #e7e7e7;
+    border-radius: 3px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+.total-cell .card{
+    margin: 8px 0px 30px 30px;
+    background: #ffffff;
+    border: 1px solid #e7e7e7;
+    border-radius: 3px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.total-cell-title{
+color: #be2f2f;
+text-align: center;
+margin: 20px;
+}
+.stat-widget-two .stat-text {
+    font-size: 16px;
+    margin: 15px 0px 0px 5px;
+    color: #868e96;
+  }
+  .stat-widget-two .stat-digit {
+    font-size: 1.75rem;
+    font-weight: 500;
+    color: #373757;
+  }
+  .progress{
+      width: 70%;
+      margin: 25px 10px 20px 40px;
+  }
+  .clear{
+      clear: both;
+      padding: 20px;
+}
+.chart{
+    background-color:#fbfdfd;  
+    border: 1px solid #e7e7e7;
+    border-radius: 3px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+.chart-title{
+    color: #be2f2f;
+    /* text-align: center; */
+    margin: 20px;
+    }
+.chart-body{
+    width: 600px;
+}
+.top{
+    background-color:#fbfdfd;  
+    border: 1px solid #e7e7e7;
+    border-radius: 3px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+.top-title{
+    color: #be2f2f;
+    /* text-align: center; */
+    margin: 20px;
+    float: left;
+    }
+.dt-buttons{
+    float: left;
+    margin: 20px;
+}
+.top-body{
+    margin: 20px 5px 20px 0px; 
+    width: 100%;
+}

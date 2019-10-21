@@ -6,6 +6,8 @@ public enum ProductSortType {
 
     PRICE,
 
+    DISCOUNT,
+
     TIME,
 
     REVIEWS;

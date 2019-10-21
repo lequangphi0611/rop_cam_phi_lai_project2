@@ -2,27 +2,26 @@ package com.electronicssales.models.responses;
 
 import java.util.Collection;
 
-import com.electronicssales.models.responses.DiscountResponse;
-
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductResponse {
 
-    private long id;
+    long id;
 
-    private String productName;
+    String productName;
 
-    private Collection<Long> imageIds;
+    Collection<Long> imageIds;
 
-    private long price;
+    long price;
 
-    private int quantity;
+    int quantity;
 
-    private Collection<Long> categoryIds;
+    Collection<Long> categoryIds;
 
-    private Long manufacturerId;
-
-    private DiscountResponse discount;
+    long manufacturerId;
     
-} 
+}

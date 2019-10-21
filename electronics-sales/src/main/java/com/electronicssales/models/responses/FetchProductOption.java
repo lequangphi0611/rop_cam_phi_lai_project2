@@ -33,5 +33,7 @@ public class FetchProductOption {
     String searchKey;
 
     FetchProductType fetchProductType;
+
+    boolean fetchDiscount;
     
 }

@@ -1,0 +1,15 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light col-12">
+  <div class="col-12">
+    <div class="navbar-nav col-lg-12">
+
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="[item.link]"
+        routerLinkActive="active"
+        class="nav-item nav-link"
+      >
+        {{ item.name }}
+      </a>
+    </div>
+  </div>
+</nav>

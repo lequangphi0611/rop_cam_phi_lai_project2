@@ -1,6 +1,7 @@
 package com.electronicssales.services.impls;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,9 @@ import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.dtos.ProductParameterDto;
 import com.electronicssales.models.responses.DiscountResponse;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.responses.IParagraphResponse;
+import com.electronicssales.models.responses.ParagraphResponse;
+import com.electronicssales.models.responses.ProductDiscountResponse;
 import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
 import com.electronicssales.models.responses.ProductParameterResponse;
 import com.electronicssales.models.responses.ProductResponse;
@@ -30,7 +34,6 @@ import com.electronicssales.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +74,14 @@ public class DefaultProductService implements ProductService {
     @Autowired
     private Mapper<ProductResponse, Product> productResponseMapper;
 
+    @Lazy
+    @Autowired
+    private Mapper<ProductDiscountResponse, Product> productDiscountResponseMapper;
+
+    @Lazy
+    @Autowired
+    private Mapper<ParagraphResponse, IParagraphResponse> paragraphResponseMapper;
+
     @Override
     @Transactional
     public Product saveProduct(ProductDto productDto) {
@@ -109,17 +120,8 @@ public class DefaultProductService implements ProductService {
 
     @Transactional
     @Override
-    public Page<ProductResponse> fetchProductsBy(FetchProductOption option) {
-        Page<Product> productPage = productRepository.fetchProductsBy(option);
-        return new PageImpl<>(
-            productPage
-                .getContent()
-                .stream()
-                .map(productResponseMapper::mapping)
-                .collect(Collectors.toList()),
-            productPage.getPageable(), 
-            productPage.getTotalPages()
-        );
+    public Page<Product> fetchProductsBy(FetchProductOption option) {
+        return productRepository.fetchProductsBy(option);
     }
 
     private void proccessAfterUpdated(Product productPersisted, ProductDto productDto) {
@@ -214,6 +216,15 @@ public class DefaultProductService implements ProductService {
             .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ParagraphResponse> getDescriptionsOf(long productId) {
+        return productRepository
+            .findParagraphsByProductId(productId)
+            .stream()
+            .map(paragraphResponseMapper::mapping)
+            .collect(Collectors.toList());
+    }
+
     @Lazy
     @Component
     class ProductMapper implements Mapper<Product, ProductDto> {
@@ -240,13 +251,9 @@ public class DefaultProductService implements ProductService {
         @Autowired
         private ProductRepository productRepository;
 
-        @Lazy
-        @Autowired
-        private Mapper<DiscountResponse, Discount> discountResponseMapper;
-
         @Override
         public ProductResponse mapping(Product product) {
-            ProductResponse productResponse = new ProductResponse();
+            ProductResponse productResponse = (ProductResponse) new ProductDiscountResponse();
             productResponse.setId(product.getId());
             productResponse.setProductName(product.getProductName());
             productResponse.setQuantity(product.getQuantity());
@@ -254,12 +261,35 @@ public class DefaultProductService implements ProductService {
             productResponse.setCategoryIds(productRepository.findCategoryIdsByProductId(product.getId()));
             productResponse.setManufacturerId(product.getManufacturer().getId());
             productResponse.setImageIds(productRepository.findImageIdsByProductId(product.getId()));
-            Optional.ofNullable(product.getDiscount())
-                .ifPresent(discount -> 
-                    productResponse.setDiscount(discountResponseMapper.mapping(discount)));
             return productResponse;
         }
         
+    }
+
+    @Lazy
+    @Component
+    public class ProductDiscountResponseMapper implements Mapper<ProductDiscountResponse, Product> {
+
+        @Lazy
+        @Autowired
+        private Mapper<ProductResponse, Product> productResponseMapper;
+
+        @Lazy
+        @Autowired
+        private Mapper<DiscountResponse, Discount> discountResponseMapper;
+
+        @Override
+        public ProductDiscountResponse mapping(Product product) {
+            ProductDiscountResponse productDiscountResponse = 
+               (ProductDiscountResponse) productResponseMapper.mapping(product);
+            Optional.ofNullable(product.getDiscount())
+                .ifPresent(discount -> 
+                    productDiscountResponse.setDiscount(discountResponseMapper.mapping(discount))
+                );
+            return productDiscountResponse;
+        }
+    
+    
     }
     
 }
