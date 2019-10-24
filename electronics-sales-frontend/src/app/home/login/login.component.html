@@ -1,24 +1,80 @@
 <div class="pt-5 login-page">
   <div class="card card-container">
-      <h4 style="text-align: center;">Đăng nhập</h4>
-      <img id="profile-img" class="profile-img-card" src="/assets/img/avatar_2x.png" />
-      <p id="profile-name" class="profile-name-card"></p>
-      <form class="form-signin">
-          <span id="reauth-email" class="reauth-email"></span>
-          <input type="email" id="inputEmail" class="form-control" placeholder="Email/Số ĐT" required
-              autofocus><br>
-          <input type="password" id="inputPassword" class="form-control" placeholder="Mật khẩu" required>
-          <div id="remember" class="checkbox">
-              <label>
-                  <input type="checkbox" value="remember-me"> Nhớ mật khẩu
-              </label>
-          </div>
-          <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Đăng nhập</button>
-          <a class="btn btn-lg btn-primary btn-block btn-signin" [routerLink]="['/index/register']">Đăng ký</a>
-      </form><!-- /form -->
-      <a href="#" class="forgot-password" >
-          Quên mật khẩu?
-      </a>
+    <h4 style="text-align: center;">Đăng nhập</h4>
+    <img
+      id="profile-img"
+      class="profile-img-card"
+      src="/assets/img/avatar_2x.png"
+    />
+    <p id="profile-name" class="profile-name-card"></p>
+    <small class="alert alert-danger" *ngIf="loginFailed">
+      Không đúng tên đăng nhập hoặc mật khẩu
+    </small>
+    <small
+    class="alert alert-danger"
+      *ngIf="
+        (loginForm.controls['username'].dirty ||
+          loginForm.controls['username'].touched) &&
+        loginForm.controls['username'].errors?.required
 
-  </div><!-- /card-container -->
+      "
+    >
+      Không được để trống tên đăng nhập
+  </small>
+    <small
+      class="alert alert-danger"
+      *ngIf="
+        (loginForm.controls['password'].dirty ||
+          loginForm.controls['password'].touched) &&
+        loginForm.controls['password'].errors?.required
+        && !loginFailed
+      "
+    >
+      Không được để trống mật khẩu
+  </small>
+    <form class="form-signin" [formGroup]="loginForm" (submit)="onSubmit()">
+      <span id="reauth-email" class="reauth-email"></span>
+      <input
+        class="form-control"
+        formControlName="username"
+        placeholder="Tên đăng nhập"
+        required
+        autofocus
+      /><br />
+      <input
+        type="{{ passwordInputType }}"
+        formControlName="password"
+        class="form-control"
+        placeholder="Mật khẩu"
+        (focus)="loginFailed = false"
+        required
+      />
+      <div id="remember" class="checkbox">
+        <label>
+          <input
+            type="checkbox"
+            #showPasswordCheckbox
+            (change)="
+              onChangeShowPasswordCheckBox(showPasswordCheckbox.checked)
+            "
+            value="remember-me"
+          />
+          Hiển thị mật khẩu
+        </label>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">
+        Đăng nhập
+      </button>
+      <a
+        class="btn btn-lg btn-primary btn-block btn-signin"
+        [routerLink]="['/index/register']"
+        >Đăng ký</a
+      >
+    </form>
+    <!-- /form -->
+    <a href="#" class="forgot-password">
+      Quên mật khẩu?
+    </a>
+  </div>
+  <!-- /card-container -->
 </div>

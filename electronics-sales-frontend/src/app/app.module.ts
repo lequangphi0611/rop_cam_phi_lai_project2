@@ -1,6 +1,5 @@
-import { RatingComponent } from './home/rating/rating.component';
+import { UserAuthenticatedService } from './services/user-authenticated.service';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
-import { UserService } from './services/user.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
@@ -11,14 +10,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatDialogModule } from '@angular/material/dialog';
-import {MatButtonModule} from '@angular/material/button';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-
-import { FormsModule } from '@angular/forms';
-
-import { LazyLoadImageModule, scrollPreset, LazyLoadImageDirective } from 'ng-lazyload-image';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -33,14 +25,7 @@ import { LazyLoadImageModule, scrollPreset, LazyLoadImageDirective } from 'ng-la
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
-    // Material
-    MatDialogModule,
-    MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    LazyLoadImageModule.forRoot({
-      preset: scrollPreset // <-- tell LazyLoadImage that you want to use scrollPreset
-    })
+    ReactiveFormsModule
   ],
   providers: [
     CookieService,
@@ -49,7 +34,8 @@ import { LazyLoadImageModule, scrollPreset, LazyLoadImageDirective } from 'ng-la
       useClass : AuthInterceptorService,
       multi: true
     },
-    UserService,
+    AuthInterceptorService,
+    UserAuthenticatedService
   ],
   bootstrap: [AppComponent]
 })

@@ -6,30 +6,42 @@
   <div class="collapse navbar-collapse mr-3">
     <ul class="navbar-nav">
       <li class="nav-item dropdown">
-        <a
-          class="nav-link dropdown-toggle"
-          href="#"
-          id="navbarDropdown"
-          role="button"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
+        <a class="nav-link dropdown-toggle" [matMenuTriggerFor]="categories"
+          >Danh mục</a
         >
-          Danh mục
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <mat-menu #categories="matMenu">
           <ng-container
             *ngFor="
               let category of categories$ | async;
               trackBy: trackByCategory
             "
           >
-            <a id="{{ category.id }}" class="dropdown-item"
-              >{{ category.categoryName }} ({{ category.productCount }})</a
+            <ng-container
+              *ngIf="!category.childrens || category.childrens.length === 0"
             >
-            <div class="dropdown-divider"></div>
+              <button mat-menu-item>
+                {{ category.categoryName }} ({{ category.productCount }})
+              </button>
+            </ng-container>
+            <ng-container *ngIf="category.childrens?.length > 0">
+              <button mat-menu-item [matMenuTriggerFor]="childMenu">
+                {{ category.categoryName }} ({{ category.productCount }})
+              </button>
+              <mat-menu #childMenu="matMenu">
+                <ng-container
+                  *ngFor="
+                    let children of category.childrens;
+                    trackBy: trackByCategory
+                  "
+                >
+                  <button mat-menu-item>
+                    {{ children.categoryName }} ({{ children.productCount }})
+                  </button>
+                </ng-container>
+              </mat-menu>
+            </ng-container>
           </ng-container>
-        </div>
+        </mat-menu>
       </li>
     </ul>
     <form class="form-inline col-lg-12 m-3 my-2 my-lg-0s">
@@ -64,13 +76,14 @@
           class="nav-link"
           [routerLink]="[navItem.link]"
           routerLinkActive="active"
+          *ngIf="(!navItem.isLogin) || (navItem.isLogin && !(currUser$ | async))"
         >
           {{ navItem.name }}
         </a>
       </li>
 
       <li class="nav-item"></li>
-      <li class="nav-item dropdown">
+      <li class="nav-item dropdown" *ngIf="currUser$ | async">
         <a
           class="nav-link dropdown-toggle"
           href="#"
@@ -80,12 +93,12 @@
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <i class="fa fa-user"></i> User
+          <i class="fa fa-user"></i> {{(currUser$ | async).firstname}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="Myacount.html">Tài khoản của tôi</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Đăng xuất</a>
+          <a class="dropdown-item" (click)="logOut()">Đăng xuất</a>
         </div>
       </li>
     </ul>

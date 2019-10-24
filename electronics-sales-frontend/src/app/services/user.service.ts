@@ -1,10 +1,11 @@
+import { User } from './../models/view-model/user.view.model';
 import { AccountDto } from './../models/dtos/account.dto';
 import { AuthenticatedResponse } from './../models/dtos/authenticated.response';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
@@ -37,5 +38,9 @@ export class UserService {
 
   getCurrentRole(): Observable<{role: string}> {
     return this.http.get<{role: string}>('/api/accounts/roles');
+  }
+
+  getCurrentUser(): Observable<User> {
+    return this.http.get<User>('/api/accounts/current');
   }
 }

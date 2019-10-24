@@ -1,3 +1,4 @@
+import { UserAuthenticatedService } from './services/user-authenticated.service';
 import { map } from 'rxjs/operators';
 import { UserService } from './services/user.service';
 import { Component } from '@angular/core';
@@ -12,7 +13,8 @@ import { Router } from '@angular/router';
 })
 export class AppComponent  {
 
-  constructor(private userService: UserService, private route: Router) {
+  constructor(private userAuthService: UserAuthenticatedService) {
+    this.userAuthService.load();
   }
 
 }

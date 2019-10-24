@@ -1,3 +1,5 @@
+import { User } from './../../models/view-model/user.view.model';
+import { UserAuthenticatedService } from './../../services/user-authenticated.service';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { NavItemData } from './sub-navigation/sub-navigation.component';
@@ -24,45 +26,56 @@ const SUB_NAV_ITEMS: NavItemData[] = [
   },
 ];
 
-const NAV_ITEMS_RIGHT: NavItemData[] = [
-  {
-    name: 'Giỏ hàng',
-    link: 'cart',
-  },
-  {
-    name: 'Đăng ký',
-    link: 'register',
-  },
-  {
-    name: 'Đăng nhập',
-    link: 'login',
-  },
-];
-
 @Component({
   selector: 'app-home-header',
   templateUrl: './home-header.component.html',
   styleUrls: ['../home.component.css'],
 })
 export class HomeHeaderComponent implements OnInit {
+
+  readonly NAV_ITEMS_RIGHT: {name: string, link: string, isLogin: boolean}[] = [
+    {
+      name: 'Giỏ hàng',
+      link: 'cart',
+      isLogin: false
+    },
+    {
+      name: 'Đăng ký',
+      link: 'register',
+      isLogin: true
+    },
+    {
+      name: 'Đăng nhập',
+      link: 'login',
+      isLogin: true
+    },
+  ];
+
   navItems$: Observable<NavItemData[]>;
 
-  navItemRight$: Observable<NavItemData[]>;
+  navItemRight$: Observable<{name: string, link: string, isLogin: boolean}[]>;
 
   categories$: Observable<CategoryView[]>;
 
-  constructor(private categoryService: CategoryService) {}
+  currUser$: Observable<User>;
+
+  constructor(
+    private categoryService: CategoryService,
+    public userAuthenticatedService: UserAuthenticatedService
+  ) {}
 
   ngOnInit() {
     this.navItems$ = of(SUB_NAV_ITEMS);
-    this.navItemRight$ = of(NAV_ITEMS_RIGHT);
-    this.categories$ = this.categoryService.fetchCategories().pipe(map(categories => {
-      console.log({categories});
-      return categories;
-    }));
+    this.navItemRight$ = of(this.NAV_ITEMS_RIGHT);
+    this.categories$ = this.categoryService.fetchCategories();
+    this.currUser$ = this.userAuthenticatedService.user$;
   }
 
   trackByCategory(index: number, item: CategoryView) {
     return item.id;
+  }
+
+  async logOut(): Promise<void> {
+    this.userAuthenticatedService.clear();
   }
 }

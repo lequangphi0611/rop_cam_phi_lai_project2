@@ -38,7 +38,7 @@ public class AccountResource {
     @Autowired
     private Mapper<UserInfoResponse, User> userInfoMapper;
 
-    @GetMapping("/me")
+    @GetMapping("/current")
     public ResponseEntity<?> fetchCurrentUserInfo() {
         String username = AuthenticateUtils.getUsernameAuthentecated();
         return ResponseEntity.ok(userService.getUserInfoByUsername(username));
