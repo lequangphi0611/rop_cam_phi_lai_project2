@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Image;
@@ -35,8 +36,10 @@ public class ImageResource {
         value = "/{id}",
         produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public byte[] fetchImage(@PathVariable long id) {
-        return imageService.getImageDataById(id);
+    public Callable<byte[]> fetchImage(@PathVariable long id) {
+        return () -> {
+            return imageService.getImageDataById(id);
+        };
     }
 
     @PostMapping

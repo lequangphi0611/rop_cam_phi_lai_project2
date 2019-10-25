@@ -121,7 +121,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         parameters.forEach(query::setParameter);
         
         List<Product> products = (List<Product>)query.getResultList();
-        return new PageImpl<>(products, option.getPageable(), countAll());
+        return new PageImpl<>(products, option.getPageable(), products.size());
             
     }
 

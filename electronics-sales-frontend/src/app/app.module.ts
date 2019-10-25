@@ -1,7 +1,7 @@
 import { UserAuthenticatedService } from './services/user-authenticated.service';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,32 +11,30 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
+import { ProductService } from './services/product.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
-  entryComponents: [
-  ],
+  declarations: [AppComponent],
+  entryComponents: [],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     CookieService,
     {
-      provide : HTTP_INTERCEPTORS,
-      useClass : AuthInterceptorService,
-      multi: true
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi: true,
     },
     AuthInterceptorService,
-    UserAuthenticatedService
+    UserAuthenticatedService,
+    ProductService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

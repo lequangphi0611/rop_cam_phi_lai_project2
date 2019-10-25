@@ -1,4 +1,9 @@
-
 <app-home-banner></app-home-banner>
 
-<app-show-product-content></app-show-product-content>
+<div class="mt-4 container col-12 px-5 ml-2.5">
+
+<app-show-product-content
+  *ngFor="let productBanner of productBanners"
+  [productBanner]="productBanner"
+></app-show-product-content>
+</div>

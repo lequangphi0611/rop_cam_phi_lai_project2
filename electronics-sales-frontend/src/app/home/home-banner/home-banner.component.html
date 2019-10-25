@@ -28,25 +28,21 @@
     </div>
   </div>
   <div class="col-lg-4 col-12 my-banner pr-0">
-    <img [lazyLoad]="'/assets/img/Banner/bannerright.jpg'" class="mb-3">
+    <app-my-lazy-load-image
+    class="mb-3"
+              [imageSrc]="'/assets/img/Banner/bannerright.jpg'"
+            ></app-my-lazy-load-image>
     <div class="row col-12 p-0 mt-2">
       <div class="col-3">
-        <img class="img-fluid" [lazyLoad]="'/assets/img/logo/Apple-Logo.jpg'">
+        <app-my-lazy-load-image
+        class="img-fluid"
+                  [imageSrc]="'/assets/img/logo/Apple-Logo.jpg'"
+                ></app-my-lazy-load-image>
       </div>
       <div class="col-9 p-0 post-title-color ">
         <p> Nhà rốp có nhiều Iphone.
           Nhà rốp có nhiều Iphone.
           Nhà rốp có nhiều Iphone.</p>
-      </div>
-    </div>
-    <div class="row col-12 p-0 mt-2">
-      <div class="col-3">
-        <img class="img-fluid" [lazyLoad]="'/assets/img/logo/Apple-Logo.jpg'" >
-      </div>
-      <div class="col-9 p-0 post-title-color">
-        <p> Nhà cũng Lài có nhiều Iphone.
-          Nhà cũng Lài có nhiều Iphone.
-          Nhà cũng Lài có nhiều Iphone.</p>
       </div>
     </div>
   </div>

@@ -3,6 +3,7 @@ package com.electronicssales.resources;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityExistsException;
@@ -54,108 +55,86 @@ public class ProductResource {
     private Mapper<ProductDiscountResponse, Product> productDiscountResponseMapper;
 
     private boolean validateProductBeforeCreate(ProductDto product) {
-        if(productService.existsByProductName(product.getProductName())) {
+        if (productService.existsByProductName(product.getProductName())) {
             throw new EntityExistsException("Product is already exists !");
         }
         return true;
     }
 
     private boolean validateProductBeforeUpdate(ProductDto productCheckable) {
-        Product productFinded = productService
-            .findByProductId(productCheckable.getId())
-            .orElseThrow(() -> new EntityNotFoundException("Product not found !"));
+        Product productFinded = productService.findByProductId(productCheckable.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found !"));
 
-        if(!productFinded.getProductName().equalsIgnoreCase(productCheckable.getProductName())
-           && productService.existsByProductName(productCheckable.getProductName()) ) 
+        if (!productFinded.getProductName().equalsIgnoreCase(productCheckable.getProductName())
+                && productService.existsByProductName(productCheckable.getProductName()))
             throw new EntityExistsException("Product name is aleady exists !");
 
         return true;
     }
 
     @GetMapping
-    public ResponseEntity<?> fetchProducts(
-        @RequestParam(value = "categoriesId", required = false) 
-        List<Long> categoriesId,
-        @RequestParam(value = "manufacturersId", required = false)
-        List<Long> manufacturersId,
-        @RequestParam(value = "fromPrice", required = false, defaultValue = "0")
-        long fromPrice,
-        @RequestParam(value = "toPrice", required = false, defaultValue = "0")
-        Long toPrice,
-        @RequestParam(value = "productSortType", required = false)
-        String productSortType,
-        @RequestParam(value = "sortType", required = false)
-        String sortType,
-        @RequestParam(value = "p", required = false, defaultValue = "0")
-        int page,
-        @RequestParam(value = "s", required = false, defaultValue = "10")
-        int size,
-        @RequestParam(value = "search", required = false)
-        String searchKey,
-        @RequestParam(value = "fetchType", required = false)
-        String fetchType,
-        @RequestParam(defaultValue = "true")
-        boolean fetchDiscount
-    ) {
-        
-        FetchProductOption option = new FetchProductOption();
-        option.setCategoriesId(Optional.ofNullable(categoriesId).orElse(Collections.emptyList()));
-        option.setManufacturersId(Optional.ofNullable(manufacturersId).orElse(Collections.emptyList()));
-        option.setFromPrice(fromPrice);
-        option.setToPrice(toPrice);
-        option.setSearchKey(searchKey);
-        option.setPageable(PageRequest.of(page, size));
-        option.setFetchProductType(FetchProductType.of(fetchType));
+    public Callable<ResponseEntity<?>> fetchProducts(
+            @RequestParam(value = "categoriesId", required = false) List<Long> categoriesId,
+            @RequestParam(value = "manufacturersId", required = false) List<Long> manufacturersId,
+            @RequestParam(value = "fromPrice", required = false, defaultValue = "0") long fromPrice,
+            @RequestParam(value = "toPrice", required = false, defaultValue = "0") Long toPrice,
+            @RequestParam(value = "productSortType", required = false) String productSortType,
+            @RequestParam(value = "sortType", required = false) String sortType,
+            @RequestParam(value = "p", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "s", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "search", required = false) String searchKey,
+            @RequestParam(value = "fetchType", required = false) String fetchType,
+            @RequestParam(defaultValue = "true") boolean fetchDiscount) {
+        return () -> {
 
-        if(StringUtils.hasText(productSortType)) {
-            option.setProductSortType(ProductSortType.of(productSortType));
-        }
-        
-        option.setSortType(SortType.of(sortType));
-        option.setFetchDiscount(fetchDiscount);
+            FetchProductOption option = new FetchProductOption();
+            option.setCategoriesId(Optional.ofNullable(categoriesId).orElse(Collections.emptyList()));
+            option.setManufacturersId(Optional.ofNullable(manufacturersId).orElse(Collections.emptyList()));
+            option.setFromPrice(fromPrice);
+            option.setToPrice(toPrice);
+            option.setSearchKey(searchKey);
+            option.setPageable(PageRequest.of(page, size));
+            option.setFetchProductType(FetchProductType.of(fetchType));
 
-        Mapper<? extends ProductResponse, Product> productMapper = fetchDiscount 
-            ? productDiscountResponseMapper
-            : productResponseMapper;
-        Page<Product> productPage = productService.fetchProductsBy(option);
-        Page<? extends ProductResponse> productPageResult = new PageImpl<>(
-            productPage.getContent().stream().map(productMapper::mapping).collect(Collectors.toList()),
-            productPage.getPageable(), 
-            productPage.getTotalElements()
-        );
-        return ResponseEntity.ok(productPageResult);
+            if (StringUtils.hasText(productSortType)) {
+                option.setProductSortType(ProductSortType.of(productSortType));
+            }
+
+            option.setSortType(SortType.of(sortType));
+            option.setFetchDiscount(fetchDiscount);
+
+            Mapper<? extends ProductResponse, Product> productMapper = fetchDiscount ? productDiscountResponseMapper
+                    : productResponseMapper;
+            Page<Product> productPage = productService.fetchProductsBy(option);
+            Page<? extends ProductResponse> productPageResult = new PageImpl<>(
+                    productPage.getContent().stream().map(productMapper::mapping).collect(Collectors.toList()),
+                    productPage.getPageable(), productPage.getTotalElements());
+            return ResponseEntity.ok(productPageResult);
+        };
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> fetchProduct(@PathVariable long id) {
         Product productFinded = productService.findByProductId(id)
-            .orElseThrow(() -> new EntityNotFoundException("Product with id not found !"));
-        
-        return ResponseEntity  
-            .ok(productDiscountResponseMapper.mapping(productFinded));
+                .orElseThrow(() -> new EntityNotFoundException("Product with id not found !"));
+
+        return ResponseEntity.ok(productDiscountResponseMapper.mapping(productFinded));
     }
 
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody @Valid ProductDto productDto) {
         this.validateProductBeforeCreate(productDto);
         Product productCreated = productService.createProduct(productDto);
-        return ResponseEntity
-            .created(null)
-            .body(productResponseMapper.mapping(productCreated));
+        return ResponseEntity.created(null).body(productResponseMapper.mapping(productCreated));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(
-        @RequestBody @Valid ProductDto productDto, 
-        @PathVariable("id") long productId
-    ) 
-    {
+    public ResponseEntity<?> updateProduct(@RequestBody @Valid ProductDto productDto,
+            @PathVariable("id") long productId) {
         productDto.setId(productId);
         validateProductBeforeUpdate(productDto);
         Product productUpdated = productService.updateProduct(productDto);
-        return ResponseEntity
-            .created(null)
-            .body(productResponseMapper.mapping(productUpdated));
+        return ResponseEntity.created(null).body(productResponseMapper.mapping(productUpdated));
     }
 
     @GetMapping("/{id}/parameters")
@@ -165,7 +144,7 @@ public class ProductResource {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable long id) {
-        if(!productService.existsById(id)) {
+        if (!productService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
 
@@ -175,8 +154,7 @@ public class ProductResource {
 
     @GetMapping("/{id}/descriptions")
     public ResponseEntity<?> fetchDescriptions(@PathVariable("id") long productId) {
-        return ResponseEntity
-            .ok(productService.getDescriptionsOf(productId));
+        return ResponseEntity.ok(productService.getDescriptionsOf(productId));
     }
 
 }
