@@ -29,7 +29,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String CUSTOMER_ROLE = Role.MANAGER.toString();
+    private static final String MANAGER_ROLE = Role.MANAGER.toString();
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -56,9 +56,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .csrf()
                 .disable()
-            // .exceptionHandling()
-            //     .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            //     .and()
+            .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and()
             .authorizeRequests()
             .antMatchers(
                 "/api/login", 
@@ -74,7 +74,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/api/discounts/**")
                 .permitAll()  
             .antMatchers(HttpMethod.POST, "/api/accounts")
-                .hasRole(CUSTOMER_ROLE)  
+                .hasRole(MANAGER_ROLE)
+            .antMatchers(HttpMethod.HEAD, "/api/accounts/**")
+                .permitAll()
             .antMatchers(HttpMethod.GET, "/api/products/**")
                 .permitAll()    
             .antMatchers("/actuator/*")

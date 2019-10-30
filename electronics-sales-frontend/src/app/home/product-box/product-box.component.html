@@ -3,32 +3,32 @@
     <app-my-lazy-load-image
       class="image-fluid"
       [imageSrc]="'/api/images/' + product.imageIds[0]"
+      (click)="goToDetail(product.id)"
     ></app-my-lazy-load-image>
     <div class="product-label" *ngIf="product.discount">
       <span class="sale"
         >-{{ product.discount.discountValue }}
-        {{
-          product.discount.discountType == "PERCENT" ? "%" : "VND"
-        }}</span
+        {{ product.discount.discountType == "PERCENT" ? "%" : "VND" }}</span
       >
     </div>
   </div>
   <div class="product-body">
-    <h3 class="product-name">
-      <a href="#">{{ product.productName }}</a>
+    <h3 class="product-name" >
+      <a (click)="goToDetail(product.id)">{{ product.productName }}</a>
     </h3>
     <h4 class="product-price">
-      {{ product.price | currency: "VND" | currencyvn }}
-      <del class="product-old-price" *ngIf="product.discount">Giá cũ vnd</del>
+      {{
+        product.getCurrentPrice() | currency: "VND" | currencyvn
+      }}
+      <del class="product-old-price" *ngIf="product.discount">
+        {{ product.price | currency: "VND" | currencyvn }}
+      </del>
     </h4>
 
-    <app-rating
-      [rating]="4"
-      [itemId]="product.id"
-    ></app-rating>
+    <app-rating [rating]="4" [itemId]="product.id"></app-rating>
 
     <div class="product-btns">
-      <button class="quick-view">
+      <button class="quick-view" (click)="goToDetail(product.id)">
         <i class="fa fa-eye"></i><span class="tooltipp">Chi tiết</span>
       </button>
     </div>

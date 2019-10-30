@@ -1,3 +1,5 @@
+import { CurrencyVNPipe } from './pipes/currency-vn.pipe';
+import { CategoryService } from './services/category.service';
 import { UserAuthenticatedService } from './services/user-authenticated.service';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { BrowserModule } from '@angular/platform-browser';
@@ -12,6 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from './services/product.service';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,6 +34,11 @@ import { ProductService } from './services/product.service';
       useClass: AuthInterceptorService,
       multi: true,
     },
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: 'vi-VN'
+    },
+    CategoryService,
     AuthInterceptorService,
     UserAuthenticatedService,
     ProductService,

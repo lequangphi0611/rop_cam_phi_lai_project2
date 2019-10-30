@@ -18,7 +18,7 @@ public class RequiredUserInfoDto {
     @Pattern(regexp = "[0]([0-9]{9,11})")
     private String phoneNumber;
 
-    @Pattern(regexp = "^[a-z][a-z0-9_\\.]{5,32}@[a-z0-9]{2,}(\\.[a-z0-9]{2,4}){1,2}$")
+    @Pattern(regexp = "^[a-z][a-z0-9_\\.]+@[a-z0-9]{2,}(\\.[a-z0-9]{2,4}){1,2}$")
     private String email;
 
     private String address;

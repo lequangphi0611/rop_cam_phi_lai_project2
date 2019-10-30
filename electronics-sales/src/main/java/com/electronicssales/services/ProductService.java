@@ -30,6 +30,8 @@ public interface ProductService {
 
     Optional<Product> findByProductId(long id);
 
+    Optional<Product> findByName(String productName);
+
     void deleteById(long id);
 
     List<ParagraphResponse> getDescriptionsOf(long productId);

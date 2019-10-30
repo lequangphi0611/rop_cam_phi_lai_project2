@@ -4,15 +4,17 @@ import { MyLazyLoadImageModule } from './../../my-lazy-load-image/my-lazy-load-i
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductBoxComponent } from './product-box.component';
+import { PipesModule } from 'src/app/pipes/pipes.module';
 
 
 
 @NgModule({
-  declarations: [ProductBoxComponent, CurrencyVNPipe],
+  declarations: [ProductBoxComponent],
   imports: [
     CommonModule,
     MyLazyLoadImageModule,
-    RatingModule
+    RatingModule,
+    PipesModule
   ],
   exports: [ProductBoxComponent]
 })

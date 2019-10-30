@@ -1,6 +1,7 @@
 package com.electronicssales.resources;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import javax.validation.Valid;
 
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
@@ -46,43 +48,40 @@ public class AccountResource {
 
     @GetMapping("/roles")
     public ResponseEntity<?> fetchCurrentRole() {
-        String role = AuthenticateUtils
-            .getUserPrincipal()
-            .getRole();
-        return ResponseEntity
-            .ok(new RoleResponse(role));
+        String role = AuthenticateUtils.getUserPrincipal().getRole();
+        return ResponseEntity.ok(new RoleResponse(role));
+    }
+
+    @RequestMapping(value = "/username/{username}", method = RequestMethod.HEAD)
+    public Callable<ResponseEntity<?>> existsByUsername(@PathVariable String username) {
+        return () -> {
+            if(userService.existByUsername(username)) {
+                return ResponseEntity.ok().build();
+            }
+
+            return ResponseEntity.notFound().build();
+        };
     }
 
     @PostMapping
     public ResponseEntity<?> createAdminAccount(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity
-            .created(null)
-            .body(userInfoMapper
-                .mapping(userService.createUser(userDto, Role.EMPLOYEE))
-            );
+        return ResponseEntity.created(null)
+                .body(userInfoMapper.mapping(userService.createUser(userDto, Role.EMPLOYEE)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAccount(
-        @RequestBody @Valid UserDto userDto,
-        @PathVariable long id
-    ) 
-    {
+    public ResponseEntity<?> updateAccount(@RequestBody @Valid UserDto userDto, @PathVariable long id) {
         userDto.setId(id);
-        UserInfoResponse result = Optional
-            .of(userDto)
-            .map(userService::updateUser)
-            .map(userInfoMapper::mapping)
-            .get();
+        UserInfoResponse result = Optional.of(userDto).map(userService::updateUser).map(userInfoMapper::mapping).get();
         return ResponseEntity.ok(result);
     }
 
     @Data
     @AllArgsConstructor
     static class RoleResponse {
-        
+
         private String role;
-        
+
     }
-    
+
 }

@@ -62,7 +62,7 @@ public class Product {
     @Column(updatable = false)
     Date createdTime;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)   
     @UpdateTimestamp
     Date updatedTime;
 

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ProductParameterResponse {
 
-    private long productParameterId;
+    private long parameterId;
 
     private String parameterType;
 

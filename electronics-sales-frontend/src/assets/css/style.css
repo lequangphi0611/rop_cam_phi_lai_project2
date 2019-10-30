@@ -45,7 +45,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  
+
 }
 
 .section-title {
@@ -184,7 +184,7 @@
 
 .product .product-body .product-name {
   text-transform: uppercase;
-  font-size: 14px;
+  font-size: 1.15rem;
 }
 
 .product .product-body .product-name>a {
@@ -408,7 +408,7 @@
   padding: 10px;
   margin: 10px;
 }
-                 
+
 .clear{
   clear: both;
   padding-bottom: 20px;

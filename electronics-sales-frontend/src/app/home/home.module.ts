@@ -1,3 +1,4 @@
+import { CategoryHomeDataService } from './category-home-data.service';
 import { UserAuthenticatedService } from './../services/user-authenticated.service';
 import { MaterialModule } from './../material/material.module';
 import { HomeHeaderComponent } from './home-header/home-header.component';
@@ -28,7 +29,7 @@ import { FormsModule } from '@angular/forms';
     MaterialModule
   ],
   providers: [
-    CategoryService,
+    CategoryHomeDataService,
   ],
 })
 export class HomeModule {}

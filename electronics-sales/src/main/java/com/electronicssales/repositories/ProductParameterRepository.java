@@ -14,7 +14,7 @@ public interface ProductParameterRepository
     extends JpaRepository<ProductParameter, Long>,
     CustomizeProductParameterRepository {
 
-    String PRODUCT_PARAMETER_NATIVE_QUERY_BY_PRODUCT_ID = "SELECT p.id as productParameterId,"
+    String PRODUCT_PARAMETER_NATIVE_QUERY_BY_PRODUCT_ID = "SELECT t.id as parameterId,"
         +   " t.parameter_type_name AS parameterType,"
         +   " p.parameter_value AS parameterValue"
         +   " FROM product_parameters p"

@@ -1,3 +1,4 @@
+import { MaterialModule } from './../../material/material.module';
 import { MyLazyLoadImageModule } from './../../my-lazy-load-image/my-lazy-load-image.module';
 import { HomeBannerComponent } from './../home-banner/home-banner.component';
 import { NgModule } from '@angular/core';
@@ -19,7 +20,8 @@ import { ProductBoxModule } from '../product-box/product-box.module';
     CommonModule,
     HomeContentDefaultRoutingModule,
     MyLazyLoadImageModule,
-    ProductBoxModule
+    ProductBoxModule,
+    MaterialModule
   ]
 })
 export class HomeContentDefaultModule { }

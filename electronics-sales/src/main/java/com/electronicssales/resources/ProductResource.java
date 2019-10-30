@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -114,11 +115,24 @@ public class ProductResource {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> fetchProduct(@PathVariable long id) {
-        Product productFinded = productService.findByProductId(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product with id not found !"));
+    public Callable<ResponseEntity<?>> fetchProduct(@PathVariable long id) {
+        return () -> {
+            Product productFinded = productService.findByProductId(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Product with id not found !"));
 
-        return ResponseEntity.ok(productDiscountResponseMapper.mapping(productFinded));
+            return ResponseEntity.ok(productDiscountResponseMapper.mapping(productFinded));
+        };
+    }
+
+    @RequestMapping(path = "/product-name/{productName}", method = RequestMethod.HEAD)
+    public Callable<ResponseEntity<?>> getProductByName(@PathVariable String productName) {
+        return () -> {
+            Optional<Product> productFinded = productService.findByName(productName);
+            if(!productFinded.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok().build();
+        };
     }
 
     @PostMapping

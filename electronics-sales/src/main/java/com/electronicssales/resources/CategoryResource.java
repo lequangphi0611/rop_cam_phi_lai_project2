@@ -1,6 +1,7 @@
 package com.electronicssales.resources;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -44,48 +45,53 @@ public class CategoryResource {
     private Mapper<CategoryResponse, Category> categoryResponseMapper;
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody @Valid CategoryDto categoryDto) {
+    public Callable<ResponseEntity<?>> createCategory(@RequestBody @Valid CategoryDto categoryDto) {
 
-        if(categoryService.existsByCategoryName(categoryDto.getCategoryName())) {
-            throw new EntityExistsException(
-                new StringBuilder(Category.class.getSimpleName())
-                    .append(" with categoryName is already exists !")
-                    .toString()
-            );
-        }
-
-        return ResponseEntity
-            .created(null)
-            .body(categoryService.createCategory(categoryDto));
+        return () -> {
+            if(categoryService.existsByCategoryName(categoryDto.getCategoryName())) {
+                throw new EntityExistsException(
+                    new StringBuilder(Category.class.getSimpleName())
+                        .append(" with categoryName is already exists !")
+                        .toString()
+                );
+            }
+    
+            return ResponseEntity
+                .created(null)
+                .body(categoryService.createCategory(categoryDto));
+        };
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<?> createAll(@RequestBody Collection<CategoryDto> categoryDtos) {
-        return ResponseEntity
+    public Callable<ResponseEntity<?>> createAll(@RequestBody Collection<CategoryDto> categoryDtos) {
+        return () -> {
+            return ResponseEntity
             .created(null)
             .body(categoryService.saveAll(categoryDtos));
+        };
     }
 
     @GetMapping
-    public ResponseEntity<?> fetchCategories(
+    public Callable<ResponseEntity<?>> fetchCategories(
         @RequestParam(required = false, value = "q", defaultValue = "") 
         String query) 
     {
-        return ResponseEntity.ok(categoryService.findAll(query));
+        return () -> ResponseEntity.ok(categoryService.findAll(query));
     }
 
     @GetMapping("/{categoryId}/manufacturers")
-    public ResponseEntity<?> fetchManufacturers(@PathVariable long categoryId) {
-        return ResponseEntity.ok(categoryService.fetchManufacturersByCategoryId(categoryId));
+    public Callable<ResponseEntity<?>> fetchManufacturers(@PathVariable long categoryId) {
+        return () -> ResponseEntity.ok(categoryService.fetchManufacturersByCategoryId(categoryId));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCategory(
+    public Callable<ResponseEntity<?>> updateCategory(
         @RequestBody @Valid CategoryDto categoryDto,
         @PathVariable("id") long id
     ) 
     {
-        Category categoryFinded = categoryService
+        return () -> {
+            Category categoryFinded = categoryService
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Category with id not found !"));
 
@@ -98,25 +104,28 @@ public class CategoryResource {
         return ResponseEntity
             .created(null)
             .body(categoryService.updateCategory(categoryDto));
+        };
     }
 
     @GetMapping("/{id}/childrens")
-    public ResponseEntity<?> fetchChildrensOf(
+    public Callable<ResponseEntity<?>> fetchChildrensOf(
             @PathVariable("id") long parentId,
             @RequestParam(required = false, value = "q", defaultValue = "") 
             String query) {
-        return ResponseEntity.ok(categoryService.fetchChildrensOf(parentId, query));
+        return () -> ResponseEntity.ok(categoryService.fetchChildrensOf(parentId, query));
     } 
 
     @GetMapping("/{id}/parameter-types")
-    public ResponseEntity<?> fetchParametersByCategoryId(@PathVariable("id") long categoryId) {
-        return ResponseEntity.ok(categoryService.fetchParameterTypeByCategoryId(categoryId));
+    public Callable<ResponseEntity<?>> fetchParametersByCategoryId(@PathVariable("id") long categoryId) {
+        return () -> ResponseEntity.ok(categoryService.fetchParameterTypeByCategoryId(categoryId));
     } 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable long id) {
-        categoryService.deleteCategoryById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public Callable<ResponseEntity<?>> deleteCategory(@PathVariable long id) {
+        return () -> {
+            categoryService.deleteCategoryById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        };
     }
     
 }

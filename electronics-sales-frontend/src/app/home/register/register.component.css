@@ -1,1 +1,7 @@
-@import '../../../assets/css/login_register.css';
+.register {
+  min-height: 70vh;
+}
+
+.register-form {
+  min-height: 30vh;
+}

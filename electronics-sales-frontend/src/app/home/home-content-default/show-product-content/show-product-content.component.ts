@@ -8,7 +8,7 @@ import { ProductBanner } from '../home-content-default.component';
 @Component({
   selector: 'app-show-product-content',
   templateUrl: './show-product-content.component.html',
-  styleUrls: ['../../home.component.css']
+  styleUrls: ['../../home.component.css', '../../../../assets/css/magiczoom.css']
 })
 export class ShowProductContentComponent implements OnInit {
 

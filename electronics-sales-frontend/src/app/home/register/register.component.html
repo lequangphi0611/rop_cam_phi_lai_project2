@@ -1,26 +1,156 @@
- <!-- body -->
- <div class="pt-5 login-page">
-  <div class="card card-container">
-      <h4 style="text-align: center;">Đăng ký</h4>
-      <!-- <img id="profile-img" class="profile-img-card" src="img/avatar_2x.png" /> -->
-      <p id="profile-name" class="profile-name-card"></p>
-      <form class="form-signin">
-          <!-- <span id="reauth-email" class="reauth-email"></span> -->
-          <input type="email"  class="form-control" placeholder="Họ và tên" required autofocus><br>
-          <input type="email"  class="form-control" placeholder="Email/Số ĐT" required><br>
-          <input type="password"  class="form-control" placeholder="Mật khẩu" required><br>
-          <input type="password"  class="form-control" placeholder="Xác nhận mật khẩu" required>
-          <div id="remember" class="checkbox">
-              <label>
-                  <input type="checkbox" value="remember-me"> Đồng ý với các chính sách bảo mật của Infinity Shop
-              </label>
+<div class="d-flex register justify-content-center py-5">
+  <mat-card class="register-form col-lg-5 col-sm-8 col-12">
+    <form
+      class=" w-100 py-3"
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      id="registerForm"
+    >
+      <div class="text-center m-2 mb-2 h3 font-weight-bold text-primary">
+        Đăng ký
+      </div>
+      <div class="w-100 py-2">
+        <div class="w-100 mt-2 p-0 my-2">
+          <div class="row w-100 p-0">
+            <mat-form-field class="col">
+              <input matInput placeholder="Họ" formControlName="lastname" />
+              <mat-error
+                *ngIf="registerForm.controls['lastname'].hasError('required')"
+              >
+                Không được để trống họ
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col">
+              <input matInput  placeholder="Tên" formControlName="firstname" />
+              <mat-error
+                *ngIf="registerForm.controls['firstname'].hasError('required')"
+              >
+                Không được để trống tên
+              </mat-error>
+            </mat-form-field>
           </div>
-          <hr>
-          <button class="btn btn-lg btn-primary btn-block btn-signin"
-              type="submit">Đăng ký</button>
-              <a [routerLink]="['/index/login']"  class="forgot-password">
-                      Đăng nhập với tài khoản đã có?
-                  </a>
-      </form><!-- /form -->
-  </div><!-- /card-container -->
+
+          <div class="row w-100 pl-3 my-2 p-0">
+            <label class="mr-3 col-2 p-0">Giới tính : </label>
+            <mat-radio-group
+              class="col-5 row p-0"
+              aria-label="Select an option"
+              formControlName="gender"
+              color="warn"
+            >
+              <mat-radio-button *ngFor="let gender of gender$ | async" class="col" [checked]="gender.checked" [value]="gender.value">{{gender.name}}</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <mat-form-field class="col p-0 my-2">
+            <input
+              matInput
+              placeholder="Tên đăng nhập"
+              formControlName="username"
+              id="username"
+            />
+            <mat-error
+              *ngIf="registerForm.controls['username'].hasError('required')"
+            >
+              Không được để trống tên đăng nhập
+            </mat-error>
+            <mat-error
+              *ngIf="registerForm.controls['username'].hasError('existUsername')"
+            >
+              Tên đăng nhập đã tồn tại
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="col p-0 my-2">
+            <input
+              type="password"
+              matInput
+              placeholder="Mật khẩu"
+              formControlName="password"
+            />
+            <mat-error
+              *ngIf="registerForm.controls['password'].hasError('required')"
+            >
+              Không được để trống mật khẩu
+            </mat-error>
+            <mat-error
+              *ngIf="registerForm.controls['password'].hasError('notEnoughPasswordLength')"
+            >
+              Mật khẩu phải có ít nhât 6 ký tự
+            </mat-error>
+            <mat-error
+              *ngIf="registerForm.controls['password'].hasError('nonStartWithUpperCase')"
+            >
+              Mật khẩu phải có ít nhất 1 ký tự in hoa
+            </mat-error>
+
+          </mat-form-field>
+          <mat-form-field class="col p-0 my-2">
+            <input
+              type="password"
+              matInput
+              placeholder="Xác nhận lại mật khẩu"
+              formControlName="confirmPassword"
+              [errorStateMatcher]="errorMatcher"
+            />
+            <mat-error
+              *ngIf="
+                registerForm.controls['confirmPassword'].hasError('required') ||
+                registerForm.hasError('passwordNotMatch')
+              "
+            >
+              Xác nhận mật khẩu không khớp
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="col p-0 my-2">
+            <input
+              matInput
+              [matDatepicker]="picker"
+              placeholder="Ngày sinh"
+              formControlName="birthday"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field class="col p-0 my-2">
+            <input matInput placeholder="Email" formControlName="email" />
+            <mat-error
+              *ngIf="registerForm.controls['email'].hasError('required')"
+            >
+              Không được để trống email
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="col p-0 my-2">
+            <input
+              matInput
+              placeholder="Số điện thoại"
+              formControlName="phoneNumber"
+            />
+          </mat-form-field>
+          <mat-form-field class="col p-0 my-2">
+            <textarea
+              matInput
+              placeholder="Địa chỉ"
+              formControlName="address"
+            ></textarea>
+            <mat-error
+              *ngIf="registerForm.controls['address'].hasError('required')"
+            >
+              Không được để trống địa chỉ
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <button
+        mat-raised-button
+        class="col-12"
+        [disabled]="this.registerForm.invalid"
+        color="primary"
+      >
+        Đăng ký
+      </button>
+    </form>
+  </mat-card>
 </div>

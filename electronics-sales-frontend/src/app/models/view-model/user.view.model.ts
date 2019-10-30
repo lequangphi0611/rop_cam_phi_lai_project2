@@ -1,3 +1,4 @@
+import { Role } from './../types/role.type';
 export interface User {
   id: number;
 
@@ -13,9 +14,11 @@ export interface User {
 
   address?: string;
 
-  gender: boolean;
+  gender?: boolean;
 
   birthday?: Date;
 
   avartarId?: number;
+
+  role: Role;
 }

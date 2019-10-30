@@ -1,5 +1,7 @@
 package com.electronicssales.resources;
 
+import java.util.concurrent.Callable;
+
 import javax.validation.Valid;
 
 import com.electronicssales.entities.User;
@@ -46,16 +48,18 @@ public class AuthenticationResource {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(
+    public Callable<ResponseEntity<?>> login(
         @RequestBody LoginRequest loginRequest
     ) {
-        return login(loginRequest.getUsername(), loginRequest.getPassword());
+        return () -> login(loginRequest.getUsername(), loginRequest.getPassword());
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto) {
-        User userSaved = userService.createUser(userDto, Role.CUSTOMER);
-        return login(userSaved.getUsername(), userDto.getPassword());
+    public Callable<ResponseEntity<?>> register(@RequestBody @Valid UserDto userDto) {
+        return () -> {
+            User userSaved = userService.createUser(userDto, Role.CUSTOMER);
+            return login(userSaved.getUsername(), userDto.getPassword());
+        };
     }
 
     private ResponseEntity<?> login(String username, String password) {

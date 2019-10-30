@@ -6,6 +6,7 @@ import { NavItemData } from './sub-navigation/sub-navigation.component';
 import { Component, OnInit } from '@angular/core';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { CategoryService } from 'src/app/services/category.service';
+import { CategoryHomeDataService } from '../category-home-data.service';
 
 const SUB_NAV_ITEMS: NavItemData[] = [
   {
@@ -26,30 +27,30 @@ const SUB_NAV_ITEMS: NavItemData[] = [
   },
 ];
 
+const NAV_ITEMS_RIGHT: {name: string, link: string, isLogin: boolean}[] = [
+  {
+    name: 'Giỏ hàng',
+    link: 'cart',
+    isLogin: false
+  },
+  {
+    name: 'Đăng ký',
+    link: 'register',
+    isLogin: true
+  },
+  {
+    name: 'Đăng nhập',
+    link: 'login',
+    isLogin: true
+  },
+];
+
 @Component({
   selector: 'app-home-header',
   templateUrl: './home-header.component.html',
   styleUrls: ['../home.component.css'],
 })
 export class HomeHeaderComponent implements OnInit {
-
-  readonly NAV_ITEMS_RIGHT: {name: string, link: string, isLogin: boolean}[] = [
-    {
-      name: 'Giỏ hàng',
-      link: 'cart',
-      isLogin: false
-    },
-    {
-      name: 'Đăng ký',
-      link: 'register',
-      isLogin: true
-    },
-    {
-      name: 'Đăng nhập',
-      link: 'login',
-      isLogin: true
-    },
-  ];
 
   navItems$: Observable<NavItemData[]>;
 
@@ -61,13 +62,21 @@ export class HomeHeaderComponent implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
-    public userAuthenticatedService: UserAuthenticatedService
+    public userAuthenticatedService: UserAuthenticatedService,
+    private categoryHomeDataService: CategoryHomeDataService
   ) {}
 
   ngOnInit() {
     this.navItems$ = of(SUB_NAV_ITEMS);
-    this.navItemRight$ = of(this.NAV_ITEMS_RIGHT);
-    this.categories$ = this.categoryService.fetchCategories();
+    this.navItemRight$ = of(NAV_ITEMS_RIGHT);
+    this.categories$ = this.categoryService
+      .fetchCategories()
+      .pipe(
+        map(categories => {
+          this.categoryHomeDataService.setValue(categories);
+          return categories;
+        })
+      );
     this.currUser$ = this.userAuthenticatedService.user$;
   }
 
@@ -78,4 +87,6 @@ export class HomeHeaderComponent implements OnInit {
   async logOut(): Promise<void> {
     this.userAuthenticatedService.clear();
   }
+
+
 }

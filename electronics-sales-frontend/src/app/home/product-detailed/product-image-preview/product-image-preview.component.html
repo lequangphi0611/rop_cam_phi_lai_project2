@@ -1,0 +1,20 @@
+<div class="card w-100">
+  <div class="img-content p-3 d-flex register justify-content-center">
+    <img
+      [lazyLoad]="
+        displayImage ? displayImage : images.length > 0 ? images[0] : ''
+      "
+      defaultImage="/assets/default.jpg"
+    />
+  </div>
+  <div class="px-3"><div class="dropdown-divider"></div></div>
+  <div class="p-3">
+    <a class="mr-2" (click)="onSelected(image)" *ngFor="let image of images">
+      <img
+        class="img-preview"
+        [lazyLoad]="image"
+        defaultImage="/assets/default.jpg"
+      />
+    </a>
+  </div>
+</div>

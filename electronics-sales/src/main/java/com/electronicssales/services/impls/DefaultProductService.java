@@ -155,7 +155,7 @@ public class DefaultProductService implements ProductService {
         ProductParameterResponse productParameterResponse = new ProductParameterResponse();
         productParameterResponse.setParameterType(repoResponse.getParameterType());
         productParameterResponse.setParameterValue(repoResponse.getParameterValue());
-        productParameterResponse.setProductParameterId(repoResponse.getProductParameterId());
+        productParameterResponse.setParameterId(repoResponse.getParameterId());
         return productParameterResponse;
     }
  
@@ -223,6 +223,11 @@ public class DefaultProductService implements ProductService {
             .stream()
             .map(paragraphResponseMapper::mapping)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Product> findByName(String productName) {
+        return productRepository.findByProductName(productName);
     }
 
     @Lazy

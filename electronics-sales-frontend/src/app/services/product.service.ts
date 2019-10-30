@@ -1,6 +1,8 @@
+import { map, catchError } from 'rxjs/operators';
+import { ProductParameterView } from './../models/view-model/product-parameter.view';
 import { Page } from './../models/page.model';
 import { FetchProductOption } from './../models/fetch-product-option.model';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ProductView } from '../models/view-model/product.view.model';
@@ -10,25 +12,55 @@ const AMPERSAND = '&';
 const QUESTION_MARK = '?';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
+  private static readonly BASE_REQUEST = `/api/products`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   fetchProduct(option: FetchProductOption): Observable<Page<ProductView>> {
     return this.http
-      .get<Page<ProductView>>(this.buildRequestUrlFrom(option));
+      .get<Page<ProductView>>(this.buildRequestUrlFrom(option))
+      .pipe(
+        map((productPage: Page<ProductView>) => {
+          productPage.content = productPage.content.map(product =>
+            ProductView.of(product)
+          );
+          return productPage;
+        })
+      );
+  }
+
+  existsByName(name: string): Observable<boolean> {
+    return this.http.head<any>(`/api/products/product-name/${name}`, {observe: 'response'})
+      .pipe(
+        map(() => true),
+        catchError(() => {
+          return of(false);
+        })
+      );
+  }
+
+  getProduct(id: number): Observable<ProductView> {
+    return this.http
+      .get<ProductView>(`${ProductService.BASE_REQUEST}/${id}`)
+      .pipe(map(product => ProductView.of(product)));
+  }
+
+  getParameters(productId: number): Observable<ProductParameterView[]> {
+    return this.http.get<ProductParameterView[]>(
+      `${ProductService.BASE_REQUEST}/${productId}/parameters`
+    );
   }
 
   private buildRequestUrlFrom(option: FetchProductOption): string {
-    let builder = `/api/products`;
+    let builder = `${ProductService.BASE_REQUEST}`;
     const parameters = this.createParametersFrom(option);
     if (parameters.length === 0) {
       return builder;
     }
     builder += `${QUESTION_MARK}${this.parseParameters(parameters)}`;
-    console.log({builder});
     return builder;
   }
 
@@ -40,7 +72,9 @@ export class ProductService {
     }
 
     if (option.manufacturersId) {
-      parameters.push(this.createManufacturersIdParameter(option.manufacturersId));
+      parameters.push(
+        this.createManufacturersIdParameter(option.manufacturersId)
+      );
     }
 
     if (option.page >= 0) {
@@ -82,14 +116,16 @@ export class ProductService {
   }
 
   private createCategoriesIdParameter(categoriesId: number[]): string {
-    const categoriesIdParameterArray = categoriesId
-          .map(categoryId => `categoriesId=${categoryId}`);
+    const categoriesIdParameterArray = categoriesId.map(
+      categoryId => `categoriesId=${categoryId}`
+    );
     return this.parseParameters(categoriesIdParameterArray);
   }
 
   private createManufacturersIdParameter(manufacturersId: number[]): string {
-    const manufacturersIdParameterArray = manufacturersId
-      .map(manufacturerId => `manufacturersId=${manufacturerId}`);
+    const manufacturersIdParameterArray = manufacturersId.map(
+      manufacturerId => `manufacturersId=${manufacturerId}`
+    );
     return this.parseParameters(manufacturersIdParameterArray);
   }
 

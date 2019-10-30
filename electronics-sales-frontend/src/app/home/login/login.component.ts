@@ -3,10 +3,12 @@ import { Router } from '@angular/router';
 import { Role } from './../../models/types/role.type';
 import { AuthenticatedResponse } from './../../models/dtos/authenticated.response';
 import { UserAuthenticatedService } from './../../services/user-authenticated.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, FormBuilder, FormGroup, NgForm } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 const INDEX_PATH = '/index';
 
@@ -21,13 +23,15 @@ const TEXT_INPUT_TYPE = 'text';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm: FormGroup;
 
   passwordInputType = PASSWORD_INPUT_TYPE;
 
   loginFailed: boolean;
+
+  destroys$ = new Subject<void>();
 
   constructor(
     private formBuilder: FormBuilder,
@@ -48,6 +52,7 @@ export class LoginComponent implements OnInit {
     const loginRequest = this.loginForm.value as AccountDto;
     this.userService
       .login(loginRequest)
+      .pipe(takeUntil(this.destroys$))
       .subscribe(
         authResponse => this.onSuccess(authResponse),
         err => this.onError(err)
@@ -75,5 +80,10 @@ export class LoginComponent implements OnInit {
 
   onChangeShowPasswordCheckBox(showPassword: boolean): void {
    this.passwordInputType = showPassword ? TEXT_INPUT_TYPE : PASSWORD_INPUT_TYPE;
+  }
+
+  ngOnDestroy(): void {
+    this.destroys$.next();
+    this.destroys$.unsubscribe();
   }
 }
