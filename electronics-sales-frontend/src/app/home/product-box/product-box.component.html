@@ -7,21 +7,20 @@
     ></app-my-lazy-load-image>
     <div class="product-label" *ngIf="product.discount">
       <span class="sale"
-        >-{{ product.discount.discountValue }}
-        {{ product.discount.discountType == "PERCENT" ? "%" : "VND" }}</span
+        >-{{ product.discount | discount }}</span
       >
     </div>
   </div>
   <div class="product-body">
-    <h3 class="product-name" >
-      <a (click)="goToDetail(product.id)">{{ product.productName }}</a>
-    </h3>
+    <h5 class="product-name" [matTooltip]="product.productName">
+      <a (click)="goToDetail(product.id)">{{ product.productName | cutString: 20 }}</a>
+    </h5>
     <h4 class="product-price">
       {{
-        product.getCurrentPrice() | currency: "VND" | currencyvn
+        product.getCurrentPrice() | currencyvn
       }}
       <del class="product-old-price" *ngIf="product.discount">
-        {{ product.price | currency: "VND" | currencyvn }}
+        {{ product.price | currencyvn }}
       </del>
     </h4>
 

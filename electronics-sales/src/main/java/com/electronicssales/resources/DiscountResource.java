@@ -1,5 +1,7 @@
 package com.electronicssales.resources;
 
+import java.util.concurrent.Callable;
+
 import com.electronicssales.entities.Discount;
 import com.electronicssales.models.dtos.DiscountDto;
 import com.electronicssales.models.responses.DiscountFullResponse;
@@ -36,38 +38,38 @@ public class DiscountResource {
     private Mapper<DiscountFullResponse, Discount> discountFullResponseMapper;
 
     @PostMapping
-    public ResponseEntity<?> createDiscount(@RequestBody DiscountDto discountDto) {
-        return ResponseEntity
+    public Callable<ResponseEntity<?>> createDiscount(@RequestBody DiscountDto discountDto) {
+        return () -> ResponseEntity
             .created(null)
             .body(discountResponseMapper.mapping(discountService.saveDiscount(discountDto)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateDiscount(
+    public Callable<ResponseEntity<?>> updateDiscount(
         @RequestBody DiscountDto discountDto,
         @PathVariable("id") long id
     ) {
         discountDto.setId(id);
-        return ResponseEntity
+        return () -> ResponseEntity
             .ok(discountResponseMapper.mapping(discountService.updateDiscount(discountDto)));
     }
 
     @GetMapping
-    public ResponseEntity<?> fetchDiscounts() {
-        return ResponseEntity
+    public Callable<ResponseEntity<?>> fetchDiscounts() {
+        return () -> ResponseEntity
             .ok(discountService.fetchDiscounts());
     }
 
     @GetMapping("/{id}/products")
-    public ResponseEntity<?> fetchProducts(@PathVariable("id") long discountId) {
-        return ResponseEntity
+    public Callable<ResponseEntity<?>> fetchProducts(@PathVariable("id") long discountId) {
+        return () -> ResponseEntity
             .ok(discountService.getProducts(discountId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOneDiscount(@PathVariable("id") long discountId) {
+    public Callable<ResponseEntity<?>> getOneDiscount(@PathVariable("id") long discountId) {
 
-        return ResponseEntity
+        return () -> ResponseEntity
             .of(discountService
                 .findById(discountId)
                 .map(discountFullResponseMapper::mapping)
@@ -75,8 +77,10 @@ public class DiscountResource {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteDiscount(@PathVariable("id") long discountId) {
-        discountService.deleteById(discountId);
-        return ResponseEntity.ok().build();
+    public Callable<ResponseEntity<?>> deleteDiscount(@PathVariable("id") long discountId) {
+        return () -> {
+            discountService.deleteById(discountId);
+            return ResponseEntity.ok().build();
+        };
     }
 }

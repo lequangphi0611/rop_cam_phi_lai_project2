@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,8 +33,7 @@ public class Comment {
     private long id;
 
     @ManyToOne(
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL
+        fetch = FetchType.LAZY
     )
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
@@ -43,14 +43,16 @@ public class Comment {
     private User user;
 
     @OneToOne(
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL
+        fetch = FetchType.EAGER,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     @JoinColumn(name = "paragraph_id")
     private Paragraph paragraph;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
+    @Column(updatable = false)
     private Date createdTime;
 
     @Temporal(TemporalType.TIMESTAMP)

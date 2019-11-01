@@ -3,23 +3,21 @@ package com.electronicssales.models.types;
 import java.util.stream.Stream;
 
 import lombok.Getter;
-import lombok.Setter;
 
 public enum Rating {
 
-    VERY_BAD(1),
+    VERY_BAD(0),
 
-    BAD(2),
+    BAD(1),
 
-    OKAY(3),
+    OKAY(2),
 
-    GOOD(4),
+    GOOD(3),
 
-    GREAT(5);
+    GREAT(4);
 
-    @Getter 
-    @Setter
-    private int value;    
+    @Getter
+    private final int value;    
 
     Rating(int value) {
         this.value = value;

@@ -45,7 +45,8 @@ public class Cart {
     @OneToMany(
         fetch = FetchType.LAZY,
         mappedBy = "cart",
-        cascade = CascadeType.ALL
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     private Collection<CartDetailed> cartDetaileds;
     

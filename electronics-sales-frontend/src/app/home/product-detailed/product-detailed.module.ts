@@ -8,10 +8,11 @@ import { ProductDetailedRoutingModule } from './product-detailed-routing.module'
 import { ProductDetailedComponent } from './product-detailed.component';
 import { ProductImagePreviewComponent } from './product-image-preview/product-image-preview.component';
 import { PipesModule } from 'src/app/pipes/pipes.module';
+import { ProductDetailedParameterListComponent } from './product-detailed-parameter-list/product-detailed-parameter-list.component';
 
 
 @NgModule({
-  declarations: [ProductDetailedComponent, ProductImagePreviewComponent],
+  declarations: [ProductDetailedComponent, ProductImagePreviewComponent, ProductDetailedParameterListComponent],
   imports: [
     CommonModule,
     ProductDetailedRoutingModule,

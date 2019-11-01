@@ -1,5 +1,7 @@
 package com.electronicssales.resources;
 
+import java.util.concurrent.Callable;
+
 import javax.validation.Valid;
 
 import com.electronicssales.models.dtos.ImportInvoiceDto;
@@ -28,12 +30,14 @@ public class ImportInvoiceResource {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createImportInvoice(@RequestBody @Valid ImportInvoiceDto importInvoiceDtoReq) {
-        long userId = AuthenticateUtils.getUserPrincipal().getId();
-        importInvoiceDtoReq.setUserId(userId);
-        return ResponseEntity
-            .created(null)
-            .body(importInvoiceService.saveImportInvoice(importInvoiceDtoReq));
+    public Callable<ResponseEntity<?>> createImportInvoice(@RequestBody @Valid ImportInvoiceDto importInvoiceDtoReq) {
+        return () -> {
+            long userId = AuthenticateUtils.getUserPrincipal().getId();
+            importInvoiceDtoReq.setUserId(userId);
+            return ResponseEntity
+                .created(null)
+                .body(importInvoiceService.saveImportInvoice(importInvoiceDtoReq));
+        };
     }
     
 }

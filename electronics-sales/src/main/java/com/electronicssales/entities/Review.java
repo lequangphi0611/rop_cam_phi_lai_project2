@@ -30,8 +30,8 @@ public class Review {
     private Rating rating;
 
     @OneToOne(
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
+        fetch = FetchType.EAGER,
+        cascade = CascadeType.ALL
     )
     @JoinColumn(name = "comment_id")
     private Comment comment;

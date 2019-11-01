@@ -1,4 +1,4 @@
-import { CurrencyVNPipe } from './../../pipes/currency-vn.pipe';
+import { MaterialModule } from './../../material/material.module';
 import { RatingModule } from './../rating/rating.module';
 import { MyLazyLoadImageModule } from './../../my-lazy-load-image/my-lazy-load-image.module';
 import { NgModule } from '@angular/core';
@@ -14,7 +14,8 @@ import { PipesModule } from 'src/app/pipes/pipes.module';
     CommonModule,
     MyLazyLoadImageModule,
     RatingModule,
-    PipesModule
+    PipesModule,
+    MaterialModule
   ],
   exports: [ProductBoxComponent]
 })

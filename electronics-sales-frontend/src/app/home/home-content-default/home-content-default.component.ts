@@ -24,7 +24,7 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
   readonly basicOption: FetchProductOption = {
     page: 0,
     size: 4,
-    fetchType: FetchProductType.SELLING,
+    fetchType: FetchProductType.ALL,
   };
 
   constructor(private categoryHomeDataService: CategoryHomeDataService) {}

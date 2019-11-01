@@ -12,7 +12,6 @@ import com.electronicssales.services.ImageService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,21 +42,24 @@ public class ImageResource {
     }
 
     @PostMapping
-    public ResponseEntity<Image> saveImage(@RequestBody MultipartFile file) throws IOException {
-        Image imageSaved = imageService.saveImage(file.getBytes());
-        URI location = ServletUriComponentsBuilder
-            .fromCurrentContextPath()
-            .path("/api/images/{id}")
-            .buildAndExpand(imageSaved.getId())
-            .toUri();
-        return ResponseEntity
-            .created(location)
-            .body(imageSaved);
+    public Callable<ResponseEntity<?>> saveImage(@RequestBody MultipartFile file) throws IOException {
+        return () -> {
+            Image imageSaved = imageService.saveImage(file.getBytes());
+            URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/api/images/{id}")
+                .buildAndExpand(imageSaved.getId())
+                .toUri();
+            return ResponseEntity
+                .created(location)
+                .body(imageSaved);
+        };
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<Collection<Image>> saveImages(@RequestBody MultipartFile[] files) throws IOException {
-        Collection<Image> images = Arrays.asList(files)
+    public Callable<ResponseEntity<?>> saveImages(@RequestBody MultipartFile[] files) throws IOException {
+        return () -> {
+            Collection<Image> images = Arrays.asList(files)
             .stream()
             .map((file) -> {
                     try {
@@ -68,7 +70,8 @@ public class ImageResource {
                 })
             .collect(Collectors.toList());
 
-        return new ResponseEntity<Collection<Image>>(images, HttpStatus.CREATED);
+            return ResponseEntity.created(null).body(images);
+        };
     }
 
 }

@@ -41,15 +41,19 @@ public class AccountResource {
     private Mapper<UserInfoResponse, User> userInfoMapper;
 
     @GetMapping("/current")
-    public ResponseEntity<?> fetchCurrentUserInfo() {
-        String username = AuthenticateUtils.getUsernameAuthentecated();
-        return ResponseEntity.ok(userService.getUserInfoByUsername(username));
+    public Callable<ResponseEntity<?>> fetchCurrentUserInfo() {
+        return () -> {
+            String username = AuthenticateUtils.getUsernameAuthentecated();
+            return ResponseEntity.ok(userService.getUserInfoByUsername(username));
+        };
     }
 
     @GetMapping("/roles")
-    public ResponseEntity<?> fetchCurrentRole() {
-        String role = AuthenticateUtils.getUserPrincipal().getRole();
-        return ResponseEntity.ok(new RoleResponse(role));
+    public Callable<ResponseEntity<?>> fetchCurrentRole() {
+        return () -> {
+            String role = AuthenticateUtils.getUserPrincipal().getRole();
+            return ResponseEntity.ok(new RoleResponse(role));
+        };
     }
 
     @RequestMapping(value = "/username/{username}", method = RequestMethod.HEAD)
@@ -64,16 +68,18 @@ public class AccountResource {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAdminAccount(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.created(null)
-                .body(userInfoMapper.mapping(userService.createUser(userDto, Role.EMPLOYEE)));
+    public Callable<ResponseEntity<?>> createAdminAccount(@Valid @RequestBody UserDto userDto) {
+        return () -> ResponseEntity.created(null)
+            .body(userInfoMapper.mapping(userService.createUser(userDto, Role.EMPLOYEE)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAccount(@RequestBody @Valid UserDto userDto, @PathVariable long id) {
-        userDto.setId(id);
-        UserInfoResponse result = Optional.of(userDto).map(userService::updateUser).map(userInfoMapper::mapping).get();
-        return ResponseEntity.ok(result);
+    public Callable<ResponseEntity<?>> updateAccount(@RequestBody @Valid UserDto userDto, @PathVariable long id) {
+        return () -> {
+            userDto.setId(id);
+            UserInfoResponse result = Optional.of(userDto).map(userService::updateUser).map(userInfoMapper::mapping).get();
+            return ResponseEntity.ok(result);
+        };
     }
 
     @Data

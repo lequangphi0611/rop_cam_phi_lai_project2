@@ -186,6 +186,7 @@ public class DefaultUserService implements UserService {
             userInfoResponse.setPhoneNumber(userInfo.getPhoneNumber());
             userInfoResponse.setAddress(userInfo.getAddress());
             userInfoResponse.setAvartarId(user.getAvartar() != null ? user.getAvartar().getId() : 0);
+            userInfoResponse.setRole(user.getRole());
             return userInfoResponse;
         }
         

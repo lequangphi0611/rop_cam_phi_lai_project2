@@ -1,6 +1,7 @@
 package com.electronicssales.resources;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -44,53 +45,59 @@ public class ManufacturerResource {
     }
 
     @PostMapping
-    public ResponseEntity<?> createManufacturer(@RequestBody @Valid ManufacturerDto manufacturerDto) {
-        final String manufacturerName = manufacturerDto.getManufacturerName();
-        if(manufacturerService.existsByManufacturerName(manufacturerName)) {
-            StringBuilder builder = new StringBuilder(Manufacturer.class.getSimpleName());
-            builder
-                .append(" with name = '")
-                .append(manufacturerName)
-                .append("' is already exists !");
-            throw new EntityExistsException(builder.toString());
-        }
-        Manufacturer manufacturerSaved = manufacturerService.save(manufacturerDto);
-        return ResponseEntity
-            .created(null)
-            .body(manufacturerSaved);
+    public Callable<ResponseEntity<?>> createManufacturer(@RequestBody @Valid ManufacturerDto manufacturerDto) {
+        return () -> {
+            final String manufacturerName = manufacturerDto.getManufacturerName();
+            if(manufacturerService.existsByManufacturerName(manufacturerName)) {
+                StringBuilder builder = new StringBuilder(Manufacturer.class.getSimpleName());
+                builder
+                    .append(" with name = '")
+                    .append(manufacturerName)
+                    .append("' is already exists !");
+                throw new EntityExistsException(builder.toString());
+            }
+            Manufacturer manufacturerSaved = manufacturerService.save(manufacturerDto);
+            return ResponseEntity
+                .created(null)
+                .body(manufacturerSaved);
+        };
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<?> createBulk(@RequestBody @Valid Collection<ManufacturerDto> manufacturerDtos) {
-        return ResponseEntity
+    public Callable<ResponseEntity<?> > createBulk(@RequestBody @Valid Collection<ManufacturerDto> manufacturerDtos) {
+        return () -> ResponseEntity
             .created(null)
             .body(manufacturerService.saveAll(manufacturerDtos));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateManufacturer(
+    public Callable<ResponseEntity<?>> updateManufacturer(
         @RequestBody @Valid ManufacturerDto manufacturerDto,
         @PathVariable long id
     ) 
     {
-        Manufacturer manufacturer = manufacturerService
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Manufacturer not found !"));
+        return () -> {
+            Manufacturer manufacturer = manufacturerService
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Manufacturer not found !"));
 
-        if(!manufacturer.getManufacturerName().equalsIgnoreCase(manufacturerDto.getManufacturerName())
-            && manufacturerService.existsByManufacturerName(manufacturerDto.getManufacturerName())) {
-                throw new EntityExistsException("Manufacturer Name is already exists !");
-        }
-        manufacturerDto.setId(id);
-        Manufacturer newManufacturer = manufacturerService.save(manufacturerDto);
-        return ResponseEntity.ok(newManufacturer);
+            if(!manufacturer.getManufacturerName().equalsIgnoreCase(manufacturerDto.getManufacturerName())
+                && manufacturerService.existsByManufacturerName(manufacturerDto.getManufacturerName())) {
+                    throw new EntityExistsException("Manufacturer Name is already exists !");
+            }
+            manufacturerDto.setId(id);
+            Manufacturer newManufacturer = manufacturerService.save(manufacturerDto);
+            return ResponseEntity.ok(newManufacturer);
+        };
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteManufacturer(@PathVariable long id) {
-        requiredManufacturerId(id);
-        manufacturerService.deleteById(id);
-        return ResponseEntity.ok().build();
+    public Callable<ResponseEntity<?>> deleteManufacturer(@PathVariable long id) {
+        return () -> {
+            requiredManufacturerId(id);
+            manufacturerService.deleteById(id);
+            return ResponseEntity.ok().build();
+        };
     }
     
 }

@@ -1,0 +1,8 @@
+<ul class="list-group list-group-flush">
+  <li class="list-group-item" *ngFor="let param of parameters$ | async">
+    <div class="row">
+      <div class="col-4 parameter-type">{{ param.parameterType }} :</div>
+      <div class="col">{{ param.parameterValue }}</div>
+    </div>
+  </li>
+</ul>

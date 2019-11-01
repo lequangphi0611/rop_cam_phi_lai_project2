@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
 
+import com.electronicssales.models.types.Role;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -19,5 +21,7 @@ public class UserInfoResponse extends RequiredUserInfoDto {
     private Date birthday;
 
     private long avartarId;
+
+    private Role role;
     
 }

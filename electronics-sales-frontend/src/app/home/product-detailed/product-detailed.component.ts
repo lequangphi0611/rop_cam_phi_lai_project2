@@ -20,7 +20,7 @@ export class ProductDetailedComponent implements OnInit, OnDestroy {
 
   subcription: Subscription;
 
-  parameters: Observable<ProductParameterView[]>;
+  parameters$: Observable<ProductParameterView[]>;
 
   constructor(
     private productService: ProductService,
@@ -43,8 +43,8 @@ export class ProductDetailedComponent implements OnInit, OnDestroy {
         ))
     );
 
-    this.parameters = this.productId$.pipe(
-      switchMap(id => this.productService.getParameters(id))
+    this.parameters$ = this.productId$.pipe(
+      switchMap(id => this.productService.getParameters(id)),
     );
   }
 

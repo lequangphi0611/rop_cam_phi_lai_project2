@@ -1,42 +1,16 @@
 import { DiscountView } from './discount.view';
 import { DiscountType } from '../types/discount.type';
 export class ProductView {
-
-  id: number;
-
-  productName: string;
-
-  imageIds: number[];
-
-  price: number;
-
-  quantity: number;
-
-  categoryIds: number[];
-
-  manufacturerId: number;
-
-  discount: DiscountView;
-
   constructor(
-    id: number,
-    productName: string,
-    imageIds: number[],
-    price: number,
-    quantity: number,
-    categoryIds?: number[],
-    manufacturerId?: number,
-    discount?: DiscountView
-  ) {
-    this.id = id;
-    this.productName = productName;
-    this.imageIds = imageIds;
-    this.price = price;
-    this.quantity = quantity;
-    this.categoryIds = categoryIds;
-    this.manufacturerId = manufacturerId;
-    this.discount = discount;
-  }
+    private id: number,
+    private productName: string,
+    private imageIds: number[],
+    private price: number,
+    private quantity: number,
+    private categoryIds?: number[],
+    private manufacturerId?: number,
+    private discount?: DiscountView
+  ) {}
 
   static of(iProduct: {
     id: number;

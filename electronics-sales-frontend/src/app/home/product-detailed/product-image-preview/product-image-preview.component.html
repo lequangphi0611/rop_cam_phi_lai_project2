@@ -1,11 +1,10 @@
 <div class="card w-100">
   <div class="img-content p-3 d-flex register justify-content-center">
-    <img
-      [lazyLoad]="
+    <app-my-lazy-load-image
+      [imageSrc]="
         displayImage ? displayImage : images.length > 0 ? images[0] : ''
       "
-      defaultImage="/assets/default.jpg"
-    />
+    ></app-my-lazy-load-image>
   </div>
   <div class="px-3"><div class="dropdown-divider"></div></div>
   <div class="p-3">

@@ -19,6 +19,7 @@ import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.SortType;
 import com.electronicssales.services.ProductService;
+import com.electronicssales.services.ReviewService;
 import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,10 @@ public class ProductResource {
     @Lazy
     @Autowired
     private ProductService productService;
+
+    @Lazy
+    @Autowired
+    private ReviewService reviewService;
 
     @Lazy
     @Autowired
@@ -125,7 +130,7 @@ public class ProductResource {
     }
 
     @RequestMapping(path = "/product-name/{productName}", method = RequestMethod.HEAD)
-    public Callable<ResponseEntity<?>> getProductByName(@PathVariable String productName) {
+    public Callable<ResponseEntity<?>> existsByProductByName(@PathVariable String productName) {
         return () -> {
             Optional<Product> productFinded = productService.findByName(productName);
             if(!productFinded.isPresent()) {
@@ -136,39 +141,50 @@ public class ProductResource {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody @Valid ProductDto productDto) {
-        this.validateProductBeforeCreate(productDto);
-        Product productCreated = productService.createProduct(productDto);
-        return ResponseEntity.created(null).body(productResponseMapper.mapping(productCreated));
+    public Callable<ResponseEntity<?>> createProduct(@RequestBody @Valid ProductDto productDto) {
+        return () -> {
+            this.validateProductBeforeCreate(productDto);
+            Product productCreated = productService.createProduct(productDto);
+            return ResponseEntity.created(null).body(productResponseMapper.mapping(productCreated));
+        };
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@RequestBody @Valid ProductDto productDto,
+    public Callable<ResponseEntity<?>> updateProduct(@RequestBody @Valid ProductDto productDto,
             @PathVariable("id") long productId) {
-        productDto.setId(productId);
-        validateProductBeforeUpdate(productDto);
-        Product productUpdated = productService.updateProduct(productDto);
-        return ResponseEntity.created(null).body(productResponseMapper.mapping(productUpdated));
+        return () -> {
+            productDto.setId(productId);
+            validateProductBeforeUpdate(productDto);
+            Product productUpdated = productService.updateProduct(productDto);
+            return ResponseEntity.created(null).body(productResponseMapper.mapping(productUpdated));
+        };
     }
 
     @GetMapping("/{id}/parameters")
-    public ResponseEntity<?> fetchProductParameters(@PathVariable long id) {
-        return ResponseEntity.ok(productService.getProductParametersByProductId(id));
+    public Callable<ResponseEntity<?>> fetchProductParameters(@PathVariable long id) {
+        return () -> ResponseEntity.ok(productService.getProductParametersByProductId(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable long id) {
-        if (!productService.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        deleteProduct(id);
-        return ResponseEntity.ok().build();
+    public Callable<ResponseEntity<?>> deleteProduct(@PathVariable long id) {
+        return () -> {
+            if (!productService.existsById(id)) {
+                return ResponseEntity.notFound().build();
+            }
+    
+            deleteProduct(id);
+            return ResponseEntity.ok().build();
+        };
     }
 
     @GetMapping("/{id}/descriptions")
-    public ResponseEntity<?> fetchDescriptions(@PathVariable("id") long productId) {
-        return ResponseEntity.ok(productService.getDescriptionsOf(productId));
+    public Callable<ResponseEntity<?>> fetchDescriptions(@PathVariable("id") long productId) {
+        return () -> ResponseEntity.ok(productService.getDescriptionsOf(productId));
+    }
+
+    @GetMapping("/{id}/reviews")
+    public Callable<ResponseEntity<?>> fetchReviews(@PathVariable long id) {
+        return () -> ResponseEntity.ok(reviewService.findByProductId(id));
     }
 
 }
