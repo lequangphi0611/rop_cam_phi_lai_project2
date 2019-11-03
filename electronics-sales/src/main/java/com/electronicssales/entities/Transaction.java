@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,6 +32,7 @@ public class Transaction {
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
+    @Column(updatable = false)
     private Date createdTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,8 +40,8 @@ public class Transaction {
     private UserInfo customerInfo;
 
     @OneToMany(
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER,
+        cascade = CascadeType.REMOVE,
         mappedBy = "transaction"
     )
     private Collection<TransactionDetailed> transactionDetaileds;

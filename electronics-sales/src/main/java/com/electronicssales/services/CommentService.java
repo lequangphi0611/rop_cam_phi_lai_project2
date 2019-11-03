@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.electronicssales.models.dtos.CommentDto;
 
+import org.springframework.data.domain.Pageable;
+
 public interface CommentService {
 
     CommentDto save(CommentDto comment);
@@ -13,5 +15,5 @@ public interface CommentService {
 
     void deleteById(long commentId);
     
-    List<CommentDto> findChildsByParentId(long parentId);
+    List<CommentDto> findChildsByParentId(long parentId, Pageable pageable);
 }

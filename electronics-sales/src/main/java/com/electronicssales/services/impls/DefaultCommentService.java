@@ -14,6 +14,7 @@ import com.electronicssales.utils.TwoDimensionalMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,8 +54,8 @@ public class DefaultCommentService implements CommentService {
     }
 
     @Override
-    public List<CommentDto> findChildsByParentId(long parentId) {
-        return commentRepository.findByParentCommentId(parentId)
+    public List<CommentDto> findChildsByParentId(long parentId, Pageable pageable) {
+        return commentRepository.findByParentCommentId(parentId, pageable)
             .stream()
             .map(commentMapper::mapping)
             .collect(Collectors.toList());

@@ -65,5 +65,12 @@ public class Comment {
         cascade = CascadeType.REMOVE
     )
     private Collection<Comment> childrens;
+
+    @OneToOne(
+        fetch = FetchType.LAZY,
+        mappedBy = "comment",
+        cascade = CascadeType.ALL
+    )
+    private PostComment postComment;
     
 }

@@ -1,6 +1,8 @@
 package com.electronicssales.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.electronicssales.models.types.DiscountType;
 
 import lombok.Data;
 
@@ -32,7 +36,8 @@ public class TransactionDetailed {
 
     private long price;
 
-    private String discountType;
+    @Enumerated(EnumType.STRING)
+    private DiscountType discountType;
 
     private long discountValue;
     

@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -41,9 +42,9 @@ public class Post {
     )
     private String postTitle;
 
-    @ManyToOne(
+    @OneToOne(
         fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL
+        cascade = CascadeType.REMOVE
     )
     @JoinColumn(name = "image_id")
     private Image postImage;
@@ -59,7 +60,8 @@ public class Post {
     @OneToMany(
         cascade = CascadeType.ALL,
         fetch = FetchType.LAZY,
-        mappedBy = "post"
+        mappedBy = "post",
+        orphanRemoval = true
     )
     private Collection<PostParagraph> postParagraphs;
 

@@ -10,11 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.electronicssales.models.types.Role;
+
+import org.hibernate.annotations.Where;
 
 import lombok.Data;
 
@@ -22,6 +23,7 @@ import lombok.Data;
 @Table(
     name = "users"
 )
+@Where(clause = "actived=true")
 @Data
 public class User {
 
@@ -32,7 +34,11 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE,
+        orphanRemoval = true
+    )
     @JoinColumn(name = "avartar_id")
     private Image avartar;
 

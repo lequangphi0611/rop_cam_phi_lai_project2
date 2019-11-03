@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -183,8 +184,9 @@ public class ProductResource {
     }
 
     @GetMapping("/{id}/reviews")
-    public Callable<ResponseEntity<?>> fetchReviews(@PathVariable long id) {
-        return () -> ResponseEntity.ok(reviewService.findByProductId(id));
+    public Callable<ResponseEntity<?>> fetchReviews(@PathVariable long id, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) Integer size) {
+        Pageable pageable = (size == null || size <= 0) ? null : PageRequest.of(page, size);
+        return () -> ResponseEntity.ok(reviewService.findByProductId(id, pageable));
     }
 
 }

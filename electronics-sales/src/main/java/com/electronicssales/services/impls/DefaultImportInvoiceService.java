@@ -37,14 +37,22 @@ public class DefaultImportInvoiceService implements ImportInvoiceService {
     public ImportInvoice saveImportInvoice(ImportInvoiceDto importInvoiceDto) {
         ImportInvoice importTransient = importInvoiceMapper.mapping(importInvoiceDto);
         ImportInvoice importInvoiceSaved = importInvoiceRepository.save(importTransient);
-
-        productRepository.updateProductQuantity(
-                importInvoiceSaved.getQuantity(), 
-                importInvoiceSaved.getProduct().getId()
-        );
+        
+        updateProductQuantity(importInvoiceSaved);
 
         return importInvoiceSaved;
     }
+
+    private void updateProductQuantity(ImportInvoice importInvoice) {
+        long productId = importInvoice.getProduct().getId();
+        int oldProductQuantity = productRepository.getProductQuantity(productId).getQuantity();
+        int newProductQuantity = oldProductQuantity + importInvoice.getQuantity();
+        productRepository.updateProductQuantity(
+                newProductQuantity, 
+                productId
+        );
+    }
+
     @Lazy
     @Component
     public class ImportInvoiceMapper implements Mapper<ImportInvoice, ImportInvoiceDto> {

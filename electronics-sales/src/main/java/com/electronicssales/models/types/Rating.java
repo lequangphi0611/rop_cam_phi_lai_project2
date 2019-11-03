@@ -6,7 +6,7 @@ import lombok.Getter;
 
 public enum Rating {
 
-    VERY_BAD(0),
+    VERY_BAD(Rating.MIN_RATING),
 
     BAD(1),
 
@@ -14,21 +14,26 @@ public enum Rating {
 
     GOOD(3),
 
-    GREAT(4);
+    GREAT(Rating.MAX_RATING);
+
+    private static final int MIN_RATING = 0;
+
+    private static final int MAX_RATING = 4;
 
     @Getter
-    private final int value;    
+    private final int value;
 
     Rating(int value) {
         this.value = value;
     }
 
     public static Rating of(int value) {
-        return Stream
-            .of(Rating.values())
+        return Stream.of(Rating.values())
             .filter(v -> v.value == value)
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseGet(() -> 
+                value < MIN_RATING ? Rating.VERY_BAD : Rating.GREAT
+            );
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.responses.IParagraphResponse;
+import com.electronicssales.models.responses.ProductQuantityOnly;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,8 +17,8 @@ public interface ProductRepository
     extends MyCustomizeRepository<Product, Long>,
         CustomizeProductRepository {
 
-    String UPDATE_PRODUCT_QUANTITY_QUERY = "UPDATE Product p"
-        +   " SET p.quantity = p.quantity + :newQuantity"
+    String APPEND_PRODUCT_QUANTITY_QUERY = "UPDATE Product p"
+        +   " SET p.quantity = :newQuantity"
         +   " WHERE p.id = :productId";
 
     String REMOVE_ALL_DISCOUNT_QUERY = "UPDATE products"
@@ -37,12 +38,15 @@ public interface ProductRepository
         +   " INNER JOIN paragraphs pg ON pd.paragraph_id = pg.id"
         +   " WHERE p.id = ?1";
 
+    String GET_PRODUCT_QUANTITY = "SELECT p.quantity as quantity FROM products p"
+        +   " WHERE p.id = ?1";
+
     Optional<Product> findByProductName(String productName);
 
     boolean existsByProductName(String productName);
 
     @Modifying
-    @Query(value = UPDATE_PRODUCT_QUANTITY_QUERY)
+    @Query(value = APPEND_PRODUCT_QUANTITY_QUERY)
     void updateProductQuantity( @Param("newQuantity") int newQuantity,
                                 @Param("productId") long productId);
 
@@ -64,4 +68,7 @@ public interface ProductRepository
 
     @Query(value = FIND_PARAGRAPHS_BY_PRODUCT_ID_NATIVE_QUERY, nativeQuery = true)
     List<IParagraphResponse> findParagraphsByProductId(long productId);
+
+    @Query(value = GET_PRODUCT_QUANTITY, nativeQuery = true)
+    ProductQuantityOnly getProductQuantity(long productId);
 }
