@@ -1,11 +1,9 @@
 package com.electronicssales.resources;
 
-import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import javax.validation.Valid;
 
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.models.dtos.ManufacturerDto;
@@ -19,9 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/manufacturers")
@@ -45,9 +44,12 @@ public class ManufacturerResource {
     }
 
     @PostMapping
-    public Callable<ResponseEntity<?>> createManufacturer(@RequestBody @Valid ManufacturerDto manufacturerDto) {
+    public Callable<ResponseEntity<?>> createManufacturer(
+            @RequestPart ManufacturerDto manufacturer, 
+            @RequestPart(required = false) MultipartFile image) 
+    {
         return () -> {
-            final String manufacturerName = manufacturerDto.getManufacturerName();
+            final String manufacturerName = manufacturer.getManufacturerName();
             if(manufacturerService.existsByManufacturerName(manufacturerName)) {
                 StringBuilder builder = new StringBuilder(Manufacturer.class.getSimpleName());
                 builder
@@ -56,38 +58,32 @@ public class ManufacturerResource {
                     .append("' is already exists !");
                 throw new EntityExistsException(builder.toString());
             }
-            Manufacturer manufacturerSaved = manufacturerService.save(manufacturerDto);
+            manufacturer.setImage(image);
             return ResponseEntity
                 .created(null)
-                .body(manufacturerSaved);
+                .body(manufacturerService.save(manufacturer));
         };
-    }
-
-    @PostMapping("/bulk")
-    public Callable<ResponseEntity<?> > createBulk(@RequestBody @Valid Collection<ManufacturerDto> manufacturerDtos) {
-        return () -> ResponseEntity
-            .created(null)
-            .body(manufacturerService.saveAll(manufacturerDtos));
     }
 
     @PutMapping("/{id}")
     public Callable<ResponseEntity<?>> updateManufacturer(
-        @RequestBody @Valid ManufacturerDto manufacturerDto,
+        @RequestPart ManufacturerDto manufacturer,
+        @RequestPart(required = false) MultipartFile image,
         @PathVariable long id
     ) 
     {
         return () -> {
-            Manufacturer manufacturer = manufacturerService
+            Manufacturer manufacturerPersisted = manufacturerService
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Manufacturer not found !"));
 
-            if(!manufacturer.getManufacturerName().equalsIgnoreCase(manufacturerDto.getManufacturerName())
-                && manufacturerService.existsByManufacturerName(manufacturerDto.getManufacturerName())) {
+            if(!manufacturerPersisted.getManufacturerName().equalsIgnoreCase(manufacturer.getManufacturerName())
+                && manufacturerService.existsByManufacturerName(manufacturer.getManufacturerName())) {
                     throw new EntityExistsException("Manufacturer Name is already exists !");
             }
-            manufacturerDto.setId(id);
-            Manufacturer newManufacturer = manufacturerService.save(manufacturerDto);
-            return ResponseEntity.ok(newManufacturer);
+            manufacturer.setId(id);
+            manufacturer.setImage(image);
+            return ResponseEntity.ok(manufacturerService.save(manufacturer));
         };
     }
 

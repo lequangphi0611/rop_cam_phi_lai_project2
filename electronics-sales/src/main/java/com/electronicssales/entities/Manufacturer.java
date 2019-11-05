@@ -11,12 +11,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,19 +41,23 @@ public class Manufacturer implements Serializable {
     private String manufacturerName;
 
     @OneToOne(
-        fetch = FetchType.LAZY
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     @JoinColumn(name = "logo_id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Image manufacturerLogo;
 
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     @OneToMany(
-        mappedBy = "manufacturer",
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
+        cascade = CascadeType.REMOVE,
+        mappedBy = "manufacturer"
     )
-    Collection<CategoryManufacturer> categoryManufacturers;
+    private Collection<Product> products;
 
     public Manufacturer(long id) {
         this.id = id;

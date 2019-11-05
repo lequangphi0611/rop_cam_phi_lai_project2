@@ -6,14 +6,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Category;
-import com.electronicssales.entities.CategoryManufacturer;
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.dtos.ManufacturerDto;
+import com.electronicssales.models.responses.BaseCategoryResponse;
 import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.models.responses.ICategoryReponse;
-import com.electronicssales.repositories.CategoryManufacturerRepository;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParameterTypeRepository;
 import com.electronicssales.services.CategoryService;
@@ -39,10 +38,6 @@ public class DefaultCategoryService implements CategoryService {
 
     @Lazy
     @Autowired
-    private CategoryManufacturerRepository categoryManufacturerRepository;
-
-    @Lazy
-    @Autowired
     private ParameterTypeRepository parameterTypeRepository;
 
     @Lazy
@@ -53,92 +48,25 @@ public class DefaultCategoryService implements CategoryService {
     @Autowired
     private Mapper<CategoryResponse, ICategoryReponse> categoryResponseMapper;
 
-    private Collection<CategoryManufacturer> createCategoryManufacturers(Collection<CategoryManufacturer> categoryManufacturers) {
-        return categoryManufacturers
-            .stream()
-            .map(categoryManufacturerRepository::persist)
-            .collect(Collectors.toList());
-    };
-
-    @Transactional
-    private boolean isNew(CategoryDto category) {
-        return !categoryRepository.existsById(category.getId())
-            && !categoryRepository.existsByCategoryName(category.getCategoryName());
-    }
-
-    private Collection<CategoryManufacturer> createCategoryManufacturers(Category category ,Collection<Long> manufacturerIds) {
-        Collection<CategoryManufacturer> categoryManufacturers = manufacturerIds
-            .stream()
-            .map(manufacturerId -> new CategoryManufacturer(
-                    category, 
-                    new Manufacturer(manufacturerId)
-            ))
-            .collect(Collectors.toList());
-
-        return createCategoryManufacturers(categoryManufacturers);
-    }
+    @Lazy
+    @Autowired
+    private Mapper<BaseCategoryResponse, Category> baseCategoryResponseMapper;
 
     @Transactional
     @Override
-    public Category saveCategory(CategoryDto categoryDto) {
-        if(isNew(categoryDto)) {
-            return createCategory(categoryDto);
-        }
-        return updateCategory(categoryDto);
-    }
-
-    @Transactional
-    private void saveCategoryParameters(Category category, Collection<ParameterType> parameterTypes) {
-        parameterTypes
-            .stream()   
-            .map(parameterTypeRepository::save)
-            .peek(parameterType -> categoryRepository.saveCategoryParameter(category, parameterType))
-            .collect(Collectors.toList());
-    }
-
-    @Transactional
-    @Override
-    public Category createCategory(CategoryDto categoryDto) {
+    public BaseCategoryResponse createCategory(CategoryDto categoryDto) {
         Category categoryTransient = categoryMapper.mapping(categoryDto);
-        Category categoryPersisted = categoryRepository.persist(categoryTransient);
+        Category categoryPersisted = categoryRepository.save(categoryTransient);
 
-        saveCategoryParameters(categoryPersisted, categoryDto.getParameterTypes());
-
-        createCategoryManufacturers(categoryPersisted, categoryDto.getManufacturersId());
-
-        return categoryPersisted;
+        return baseCategoryResponseMapper.mapping(categoryPersisted);
     }
 
     @Transactional
     @Override
-    public Category updateCategory(CategoryDto categoryDto) {
+    public BaseCategoryResponse updateCategory(CategoryDto categoryDto) {
         
         Category categoryTransient = categoryMapper.mapping(categoryDto);
-
-        // Delete all CategoryParameters
-        categoryRepository.deleteCategoryParametersByCategoryId(categoryTransient.getId());
-
-        // Delete all CategoryManufacturers
-        categoryManufacturerRepository.deleteByCategoryId(categoryTransient.getId());
-
-        // Save CategoryParameters
-        saveCategoryParameters(categoryTransient, categoryDto.getParameterTypes());
-
-        // Save CategoryManufacturers
-        createCategoryManufacturers(categoryTransient, categoryDto.getManufacturersId());
-
-        // Update Category
-        categoryRepository.merge(categoryTransient);
-        return categoryTransient;
-    }
-
-    @Transactional
-    @Override
-    public Collection<Category> saveAll(Collection<CategoryDto> categoryDtos) {
-        return categoryDtos
-            .stream()
-            .map(this::saveCategory)
-            .collect(Collectors.toList());
+        return baseCategoryResponseMapper.mapping(categoryRepository.save(categoryTransient));
     }
 
     @Transactional
@@ -196,18 +124,6 @@ public class DefaultCategoryService implements CategoryService {
         return parameterTypeRepository.findByCategoriesId(categoryId);
     }
 
-    @Transactional
-    @Override
-    public List<ManufacturerDto> fetchManufacturersByCategoryId(long categoryId) {
-        return categoryManufacturerRepository
-            .fetchCategoryManufacturersByCategoryId(categoryId)
-            .stream()
-            .map(categorymanufacturer -> manufacturerDtoMapper
-                .mapping(categorymanufacturer.getManufacturer()))
-            .collect(Collectors.toList());
-
-    }
-
     @Lazy
     @Component
     class CategoryMapper implements Mapper<Category, CategoryDto> {
@@ -217,12 +133,30 @@ public class DefaultCategoryService implements CategoryService {
             Category category = new Category();
             category.setId(categoryDto.getId());
             category.setCategoryName(categoryDto.getCategoryName());
-            if(categoryDto.getParentId() > 0) {
-                category.setParent(new Category(categoryDto.getParentId()));
-            }
+            Optional.ofNullable(categoryDto.getParentId())
+                .ifPresent(parentId -> category.setParent(Category.of(parentId)));
+
+            Optional.ofNullable(categoryDto.getParameterTypes())
+                .ifPresent(category::setParameterTypes);
             return category;
         }
 
+    }
+
+    @Lazy
+    @Component
+    class BaseCategoryMapper implements Mapper<BaseCategoryResponse, Category> {
+
+        @Override
+        public BaseCategoryResponse mapping(Category category) {
+            BaseCategoryResponse baseCategoryResponse = new BaseCategoryResponse();
+            baseCategoryResponse.setId(category.getId());
+            baseCategoryResponse.setCategoryName(category.getCategoryName());
+            Optional.ofNullable(category.getParent())
+                .ifPresent(parent -> baseCategoryResponse.setParentId(parent.getId()));
+            return baseCategoryResponse;
+        }
+        
     }
 
     @Lazy

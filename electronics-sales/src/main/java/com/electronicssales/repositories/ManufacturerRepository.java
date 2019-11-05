@@ -21,4 +21,6 @@ public interface ManufacturerRepository extends MyCustomizeRepository<Manufactur
 
     Optional<Manufacturer> findByManufacturerName(String manufacturerName);
 
+    List<Manufacturer> findByCategoryId(long categoryId);
+
 }

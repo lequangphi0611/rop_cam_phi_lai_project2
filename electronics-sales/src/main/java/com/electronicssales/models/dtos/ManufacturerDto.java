@@ -2,16 +2,23 @@ package com.electronicssales.models.dtos;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManufacturerDto {
 
-    private long id;
+    long id;
 
     @NotBlank
-    private String manufacturerName;
+    String manufacturerName;
 
-    private long logoId;
+    MultipartFile image;
+
+    Long categoryId; 
     
 }

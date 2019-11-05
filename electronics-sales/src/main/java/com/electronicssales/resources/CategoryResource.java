@@ -1,6 +1,5 @@
 package com.electronicssales.resources;
 
-import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import javax.persistence.EntityExistsException;
@@ -62,15 +61,6 @@ public class CategoryResource {
         };
     }
 
-    @PostMapping("/bulk")
-    public Callable<ResponseEntity<?>> createAll(@RequestBody Collection<CategoryDto> categoryDtos) {
-        return () -> {
-            return ResponseEntity
-            .created(null)
-            .body(categoryService.saveAll(categoryDtos));
-        };
-    }
-
     @GetMapping
     public Callable<ResponseEntity<?>> fetchCategories(
         @RequestParam(required = false, value = "q", defaultValue = "") 
@@ -81,7 +71,7 @@ public class CategoryResource {
 
     @GetMapping("/{categoryId}/manufacturers")
     public Callable<ResponseEntity<?>> fetchManufacturers(@PathVariable long categoryId) {
-        return () -> ResponseEntity.ok(categoryService.fetchManufacturersByCategoryId(categoryId));
+        return () -> ResponseEntity.ok(manufacturerService.findByCategoryId(categoryId));
     }
 
     @PutMapping("/{id}")

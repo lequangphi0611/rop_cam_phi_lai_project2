@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.Discount;
-import com.electronicssales.entities.Image;
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.entities.ParameterType;
 import com.electronicssales.entities.Product;
@@ -17,6 +16,7 @@ import com.electronicssales.models.dtos.ProductParameterDto;
 import com.electronicssales.models.responses.DiscountResponse;
 import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.responses.IParagraphResponse;
+import com.electronicssales.models.responses.ImageDataResponse;
 import com.electronicssales.models.responses.ParagraphResponse;
 import com.electronicssales.models.responses.ProductDiscountResponse;
 import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
@@ -25,7 +25,6 @@ import com.electronicssales.models.responses.ProductResponse;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParagraphRepository;
 import com.electronicssales.repositories.ProductCategoryRepository;
-import com.electronicssales.repositories.ProductImageRepository;
 import com.electronicssales.repositories.ProductParameterRepository;
 import com.electronicssales.repositories.ProductRepository;
 import com.electronicssales.services.ProductService;
@@ -49,10 +48,6 @@ public class DefaultProductService implements ProductService {
     @Lazy
     @Autowired
     private ParagraphRepository paragraphRepository;
-
-    @Lazy
-    @Autowired
-    private ProductImageRepository productImageRepository;
 
     @Lazy
     @Autowired
@@ -98,12 +93,7 @@ public class DefaultProductService implements ProductService {
 
         productParameterRepository.createAll(
             productPersisted, 
-            getProductParametersFrom(productDto.getProductParameterDtos())
-        );
-
-        productImageRepository.createAll(
-            productPersisted, 
-            getImagesByIds(productDto.getImageIds())
+            getProductParametersFrom(productDto.getProductParameters())
         );
     }
 
@@ -132,12 +122,7 @@ public class DefaultProductService implements ProductService {
 
         productParameterRepository.updateAll(
             productPersisted, 
-            getProductParametersFrom(productDto.getProductParameterDtos())
-        );
-
-        productImageRepository.updateAll(
-            productPersisted, 
-            getImagesByIds(productDto.getImageIds())
+            getProductParametersFrom(productDto.getProductParameters())
         );
     }
 
@@ -202,13 +187,6 @@ public class DefaultProductService implements ProductService {
         return productParameter;
     }
 
-    private Collection<Image> getImagesByIds(Collection<Long> imageIds) {
-        return imageIds
-            .stream()
-            .map(Image::new)
-            .collect(Collectors.toList());
-    }
-
     private Collection<Category> getCategoryIds(Collection<Long> categoryIds) {
         return categoryIds
             .stream()
@@ -228,6 +206,12 @@ public class DefaultProductService implements ProductService {
     @Override
     public Optional<Product> findByName(String productName) {
         return productRepository.findByProductName(productName);
+    }
+
+    @Override
+    public List<ImageDataResponse> getImages(long productId) {
+        // return productRepository.findImageByProductId(productId);
+        return null;
     }
 
     @Lazy
@@ -252,10 +236,6 @@ public class DefaultProductService implements ProductService {
     @Component
     public class ProductResponseMapper implements Mapper<ProductResponse, Product> {
 
-        @Lazy
-        @Autowired
-        private ProductRepository productRepository;
-
         @Override
         public ProductResponse mapping(Product product) {
             ProductResponse productResponse = (ProductResponse) new ProductDiscountResponse();
@@ -263,9 +243,7 @@ public class DefaultProductService implements ProductService {
             productResponse.setProductName(product.getProductName());
             productResponse.setQuantity(product.getQuantity());
             productResponse.setPrice(product.getPrice());
-            productResponse.setCategoryIds(productRepository.findCategoryIdsByProductId(product.getId()));
             productResponse.setManufacturerId(product.getManufacturer().getId());
-            productResponse.setImageIds(productRepository.findImageIdsByProductId(product.getId()));
             return productResponse;
         }
         

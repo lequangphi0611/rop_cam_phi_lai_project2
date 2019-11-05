@@ -1,18 +1,20 @@
 package com.electronicssales.services;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.models.dtos.ManufacturerDto;
+import com.electronicssales.models.responses.ManufacturerResponse;
 
 public interface ManufacturerService {
 
-    Collection<ManufacturerDto> findAll();
+    Collection<ManufacturerResponse> findAll();
 
-    Manufacturer save(ManufacturerDto manufacturerDto);
+    ManufacturerResponse save(ManufacturerDto manufacturerDto);
 
-    Collection<Manufacturer> saveAll(Collection<ManufacturerDto> manufacturerDtos);
+    Collection<ManufacturerResponse> saveAll(Collection<ManufacturerDto> manufacturerDtos);
 
     boolean existsByManufacturerName(String manufacturerName);
 
@@ -23,5 +25,7 @@ public interface ManufacturerService {
     Optional<Manufacturer> findByManufacturerName(String manufacturerName); 
 
     Optional<Manufacturer> findById(long id);
+
+    List<ManufacturerResponse> findByCategoryId(long categoryId);
     
 }

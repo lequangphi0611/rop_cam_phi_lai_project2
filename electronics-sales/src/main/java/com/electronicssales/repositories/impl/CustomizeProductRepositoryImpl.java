@@ -12,8 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import com.electronicssales.entities.Product;
-import com.electronicssales.entities.ProductCategory;
-import com.electronicssales.entities.ProductImage;
 import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.types.DiscountType;
 import com.electronicssales.models.types.FetchProductType;
@@ -88,21 +86,6 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         }
     };
 
-    private static final String  FIND_CATEGORY_IDS_BY_PRODUCT_ID_QUERY = new StringBuilder("SELECT ")
-            .append(PRODUCT_CATEGORY_PREFIX)
-            .append(".category.id FROM ")
-            .append(ProductCategory.class.getSimpleName().concat(" "))
-            .append(PRODUCT_CATEGORY_PREFIX)
-            .append(" WHERE ")
-            .append(PRODUCT_CATEGORY_PREFIX)
-            .append(".product.id = :productId")
-            .toString();
-
-    private static final String FIND_IMAGE_IDS_BY_PRODUCT_ID_QUERY = new StringBuilder("SELECT pi.image.id FROM ")
-            .append(ProductImage.class.getSimpleName())
-            .append(" pi WHERE pi.product.id = :productId")
-            .toString();
-
     @SuppressWarnings("unchecked")
     @Transactional
     @Override
@@ -139,23 +122,6 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
             .createQuery(builder.toString(), Long.class)
             .getSingleResult();
     }
-
-    @Transactional
-    @Override
-    public List<Long> findCategoryIdsByProductId(long productId) {
-        return entityManager.createQuery(FIND_CATEGORY_IDS_BY_PRODUCT_ID_QUERY, Long.class)
-            .setParameter("productId", productId)
-            .getResultList();
-    }
-
-    @Override
-    public List<Long> findImageIdsByProductId(long productId) {
-        return entityManager
-            .createQuery(FIND_IMAGE_IDS_BY_PRODUCT_ID_QUERY, Long.class)
-            .setParameter("productId", productId)
-            .getResultList();
-    }
-
 
     private StringBuilder buildFetchProductsQueryBy(FetchProductOption option, Map<String, Object> parameters) {
         StringBuilder builder = initQuery();

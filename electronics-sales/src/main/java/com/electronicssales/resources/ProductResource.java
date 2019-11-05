@@ -166,6 +166,11 @@ public class ProductResource {
         return () -> ResponseEntity.ok(productService.getProductParametersByProductId(id));
     }
 
+    @GetMapping(value = "/{id}/images")
+    public Callable<ResponseEntity<?>> fetchProductImages(@PathVariable long id) {
+        return () -> ResponseEntity.ok(productService.getImages(id));
+    }
+
     @DeleteMapping("/{id}")
     public Callable<ResponseEntity<?>> deleteProduct(@PathVariable long id) {
         return () -> {

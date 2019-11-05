@@ -69,7 +69,8 @@ public class Product {
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
+        cascade = CascadeType.REMOVE,
+        orphanRemoval = true
     )
     Collection<ProductCategory> productCategories;
 
@@ -78,11 +79,16 @@ public class Product {
     Manufacturer manufacturer;
 
     @OneToMany(
-        mappedBy = "product",
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
-    Collection<ProductImage> productImages;
+    @JoinTable(
+        name = "product_images",
+        joinColumns = @JoinColumn(name = "product_id"),
+        inverseJoinColumns = @JoinColumn(name = "image_id")
+    )
+    Collection<Image> images;
 
     @OneToMany(
         mappedBy = "product",
@@ -94,7 +100,8 @@ public class Product {
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
+        cascade = CascadeType.REMOVE,
+        orphanRemoval = true
     )
     Collection<ProductParameter> productParameters;
 

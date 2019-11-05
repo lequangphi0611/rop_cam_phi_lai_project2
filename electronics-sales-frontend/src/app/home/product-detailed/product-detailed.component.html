@@ -9,7 +9,7 @@
     <div class="row col-12">
       <div class="col-lg-5 col-12 mx-auto ">
         <app-product-image-preview
-          [images]="productImages"
+          [images]="productImages$ | async"
         ></app-product-image-preview>
       </div>
 

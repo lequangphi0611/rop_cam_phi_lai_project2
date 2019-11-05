@@ -2,7 +2,7 @@
   <div class="img-content p-3 d-flex register justify-content-center">
     <app-my-lazy-load-image
       [imageSrc]="
-        displayImage ? displayImage : images.length > 0 ? images[0] : ''
+        displayImage ? displayImage : images?.length > 0 ? images[0] : ''
       "
     ></app-my-lazy-load-image>
   </div>

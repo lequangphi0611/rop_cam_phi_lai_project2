@@ -16,8 +16,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,7 +47,6 @@ public class Category {
     @JoinColumn(name = "parent_id")
     Category parent;
 
-    @JsonIgnore
     @OneToMany(
         mappedBy = "category", 
         fetch = FetchType.LAZY,
@@ -57,10 +54,9 @@ public class Category {
     )
     Collection<ProductCategory> productCategories;
 
-    @JsonIgnore
     @ManyToMany(
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
+        cascade = CascadeType.ALL
     )
     @JoinTable(
         name = "categories_parameter_types",
@@ -69,7 +65,6 @@ public class Category {
     )
     Collection<ParameterType> parameterTypes;
 
-    @JsonIgnore
     @OneToMany(
         mappedBy = "parent", 
         fetch = FetchType.LAZY,
@@ -77,16 +72,19 @@ public class Category {
     )
     Collection<Category> childrens;
 
-    @JsonIgnore
     @OneToMany(
-        fetch = FetchType.LAZY, 
-        mappedBy = "category",
-        cascade = CascadeType.REMOVE
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.REMOVE,
+        mappedBy = "category"
     )
-    Collection<CategoryManufacturer> categoryManufacturers;
+    Collection<Manufacturer> manufacturers;
  
     public Category(long id) {
         this.id = id;
+    }
+
+    public static Category of(long id) {
+        return new Category(id);
     }
     
 }

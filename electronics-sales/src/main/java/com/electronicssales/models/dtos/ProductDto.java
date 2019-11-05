@@ -22,13 +22,13 @@ public class ProductDto {
 
     long price;
 
-    Collection<Long> categoriesId = new ArrayList<>();
+    Collection<Long> categoriesId;
 
     long manufacturerId;
 
-    Collection<Paragraph> paragraphs = new ArrayList<>();
+    Collection<Paragraph> paragraphs;
 
-    Collection<ProductParameterDto> productParameterDtos = new ArrayList<>();
+    Collection<ProductParameterDto> productParameters;
 
     Collection<Long> imageIds = new ArrayList<>();
     

@@ -16,9 +16,7 @@ export class ProductDetailedComponent implements OnInit, OnDestroy {
 
   product$: Observable<ProductView>;
 
-  productImages: string[] = [];
-
-  subcription: Subscription;
+  productImages$: Observable<string[]>;
 
   parameters$: Observable<ProductParameterView[]>;
 
@@ -36,19 +34,15 @@ export class ProductDetailedComponent implements OnInit, OnDestroy {
       switchMap(id => this.productService.getProduct(id))
     );
 
-    this.subcription = this.product$.subscribe(
-      product =>
-        (this.productImages = product.imageIds.map(
-          imageId => `/api/images/${imageId}`
-        ))
-    );
-
     this.parameters$ = this.productId$.pipe(
       switchMap(id => this.productService.getParameters(id)),
+    );
+
+    this.productImages$ = this.productId$.pipe(
+      switchMap(id => this.productService.getImages(id))
     );
   }
 
   ngOnDestroy(): void {
-    this.subcription.unsubscribe();
   }
 }

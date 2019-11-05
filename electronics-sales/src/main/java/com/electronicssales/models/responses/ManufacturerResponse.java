@@ -1,25 +1,17 @@
 package com.electronicssales.models.responses;
 
-import java.util.Collection;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductResponse {
-
+public class ManufacturerResponse {
+    
     long id;
 
-    String productName;
+    String manufacturerName;
 
-    Collection<Long> imageIds;
-
-    long price;
-
-    int quantity;
-
-    long manufacturerId;
+    long imageId;
     
 }

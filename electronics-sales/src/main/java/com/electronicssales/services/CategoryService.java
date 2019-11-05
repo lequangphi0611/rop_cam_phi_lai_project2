@@ -7,20 +7,16 @@ import java.util.Optional;
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.dtos.CategoryDto;
-import com.electronicssales.models.dtos.ManufacturerDto;
+import com.electronicssales.models.responses.BaseCategoryResponse;
 import com.electronicssales.models.responses.CategoryResponse;
 
 public interface CategoryService {
 
-    Category saveCategory(CategoryDto categoryDto);
+    BaseCategoryResponse createCategory(CategoryDto categoryDto);
 
-    Category createCategory(CategoryDto categoryDto);
-
-    Category updateCategory(CategoryDto categoryDto);
+    BaseCategoryResponse updateCategory(CategoryDto categoryDto);
 
     Optional<Category> findByCategoryName(String categoryName);
-
-    Collection<Category> saveAll(Collection<CategoryDto> categoryDtos);
     
     Collection<CategoryResponse> findAll(String nameKeyword);
 
@@ -35,7 +31,5 @@ public interface CategoryService {
     List<CategoryResponse> fetchChildrensOf(long parentId, String nameQuery);
 
     List<ParameterType> fetchParameterTypeByCategoryId(long categoryId);
-
-    List<ManufacturerDto> fetchManufacturersByCategoryId(long categoryId);
 
 }

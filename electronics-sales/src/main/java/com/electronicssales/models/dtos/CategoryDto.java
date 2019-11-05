@@ -1,6 +1,5 @@
 package com.electronicssales.models.dtos;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.validation.constraints.NotBlank;
@@ -17,11 +16,9 @@ public class CategoryDto {
     @NotBlank
     private String categoryName;
 
-    private long parentId;
+    private Long parentId;
 
-    private Collection<ParameterType> parameterTypes = new ArrayList<>();
-
-    private Collection<Long> manufacturersId = new ArrayList<>();
+    private Collection<ParameterType> parameterTypes;
 
     public CategoryDto() {
     }

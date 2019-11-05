@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.responses.ImageDataResponse;
 import com.electronicssales.models.responses.ParagraphResponse;
 import com.electronicssales.models.responses.ProductParameterResponse;
 
@@ -31,6 +32,8 @@ public interface ProductService {
     Optional<Product> findByProductId(long id);
 
     Optional<Product> findByName(String productName);
+
+    List<ImageDataResponse> getImages(long productId);
 
     void deleteById(long id);
 

@@ -33,7 +33,8 @@ export class ProductService {
   }
 
   existsByName(name: string): Observable<boolean> {
-    return this.http.head<any>(`/api/products/product-name/${name}`, {observe: 'response'})
+    return this.http
+      .head<any>(`/api/products/product-name/${name}`, { observe: 'response' })
       .pipe(
         map(() => true),
         catchError(() => {
@@ -46,6 +47,16 @@ export class ProductService {
     return this.http
       .get<ProductView>(`${ProductService.BASE_REQUEST}/${id}`)
       .pipe(map(product => ProductView.of(product)));
+  }
+
+  getImages(id: number): Observable<string[]> {
+    return this.http.get<{ data: string }[]>(`/api/products/${id}/images`).pipe(
+      map(datas => {
+        const dataStrs = [];
+        datas.map(data => data.data).forEach(data => dataStrs.push(data));
+        return dataStrs;
+      })
+    );
   }
 
   getParameters(productId: number): Observable<ProductParameterView[]> {
