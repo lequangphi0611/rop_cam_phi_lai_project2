@@ -20,6 +20,8 @@ public class CategoryDto {
 
     private Collection<ParameterType> parameterTypes;
 
+    private Collection<Long> manufacturerIds;
+
     public CategoryDto() {
     }
 

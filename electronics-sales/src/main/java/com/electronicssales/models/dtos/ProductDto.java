@@ -1,11 +1,12 @@
 package com.electronicssales.models.dtos;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.validation.constraints.NotBlank;
 
 import com.electronicssales.entities.Paragraph;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class ProductDto {
 
     long price;
 
-    Collection<Long> categoriesId;
+    Collection<Long> categoryIds;
 
     long manufacturerId;
 
@@ -30,6 +31,8 @@ public class ProductDto {
 
     Collection<ProductParameterDto> productParameters;
 
-    Collection<Long> imageIds = new ArrayList<>();
+    MultipartFile[] images;
+
+    Long quantity;
     
 }

@@ -136,8 +136,10 @@
   color: #5873fe;
 }
 .dropdown-content-body li {
-  padding: 15px;
+  /* padding: 15px; */
   border-top: 1px solid #eef5f9;
+  list-style-type:none;
+  left: 0px;
 }
 .dropdown-content-body li.active,
 .dropdown-content-body li:focus,
@@ -151,7 +153,7 @@
   color: #868e96;
 }
 .dropdown-content-body li:last-child {
-  padding: 5px 15px;
+  /* padding: 5px 15px;  */
 }
 .notification-heading {
   font-size: 13px;
@@ -205,6 +207,7 @@
 }
 .dropdown-profile li {
   padding: 7px 15px;
+  /* padding: 7px 0px 0px 5px; */
 }
 .dropdown-profile li a {
   display: block;
@@ -226,6 +229,7 @@
 .dropdown-profile li:last-child {
   padding: 7px 15px;
 }
+
 .header-link {
   position: relative;
   top: -3px;
@@ -235,7 +239,7 @@
 /*--------------------------------------------------------------------------------------------------------*/
 /*-------------Tổng quan--------------*/
 .total-cell{
-  background-color:#fbfdfd;  
+  background-color:#fbfdfd;
   border: 1px solid #e7e7e7;
   border-radius: 3px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -272,7 +276,7 @@ margin: 20px;
     padding: 20px;
 }
 .chart{
-  background-color:#fbfdfd;  
+  background-color:#fbfdfd;
   border: 1px solid #e7e7e7;
   border-radius: 3px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -287,7 +291,7 @@ margin: 20px;
   width: 600px;
 }
 .top{
-  background-color:#fbfdfd;  
+  background-color:#fbfdfd;
   border: 1px solid #e7e7e7;
   border-radius: 3px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -304,6 +308,150 @@ margin: 20px;
   margin: 20px;
 }
 .top-body{
-  margin: 20px 5px 20px 0px; 
+  margin: 20px 5px 20px 0px;
+  width: 100%;
+}
+/*-----------sản phẩm/ Ad-Product--------------*/
+
+a span:hover{
+  color:#852215;
+}
+a:link{
+  text-decoration: none;
+}
+
+.title{
+  color: #be2f2f;
+  /* text-align: center; */
+  margin: 20px;
+  float: left;
+  }
+.body-product{
+  padding-left: 4%;
+  margin: 20px 5px 20px 0px;
+  width: 100%;
+}
+.body-product-KT{
+  padding-left: 0px;
+}
+
+.body-product-file{
+  /* width: 10%; */
+  height: 30px;
+  /* margin: 10px; */
+  margin-top: 0px;
+  padding-top: 0px;
+}
+.body-product-image{
+  width: 180px;
+  height: 180px;
+  margin: 18px;
+}
+.btn-add-mt{
+  float: right;
+  margin-right: 10%;
+}
+.ht{
+  text-align: center;
+}
+
+/*----------------- Sản phẩm/Điều chỉnh,giảm giá-------------------------*/
+.search{
+  height: 60px;
+  /* background-color: aquamarine; */
+  padding-left: 30px;
+  padding-top: 10px;
+}
+select{
+  border-color:#b2cccc ;
+  background-color:#fbfdfd;
+  height: 40px;
+  /* width: 100%; */
+  padding-left: 0px;
+
+}
+.se3 button{
+  /* width: 100%; */
+  height: 40px;
+}
+.se2 input{
+  width: 100%;
+  height: 40px;
+}
+.sale-update{
+  height: 40px;
+  width: 100%;
+}
+.seleUp input{
+  width: 100%;
+
+}
+.input-group{
+  width: 70%;
+}
+
+/*-----------------Hãng sản xuất-------------------------*/
+.ad-hangsx{
+  background-color:#fbfdfd;
+  border: 1px solid #e7e7e7;
+  border-radius: 3px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+.ad-hangsx-body{
+  text-align: center;
+  padding-left: 120px;
+  padding-right: 100px;
+  background-color: #fbfdfd;
+}
+.table-hsx {
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+/*-----------------nhân viên-------------------------*/
+.body-employees{
+  padding-left: 4%;
+  margin: 20px 5px 20px 0px;
+  width: 100%;
+}
+.body-employees-KT{
+  padding-left: 0px;
+}
+
+.body-employees-file{
+  /* width: 10%; */
+  height: 30px;
+  /* margin: 10px; */
+  margin-top: 0px;
+  padding-top: 0px;
+}
+.body-employees-image{
+  width: 180px;
+  height: 180px;
+  margin: 18px;
+}
+.profile-img-card {
+  width: 156px;
+  height: 156px;
+  margin: 0 auto 10px;
+  display: block;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+}
+.profile-name-card {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px 0 0;
+  min-height: 1em;
+}
+.note {
+  color: red;
+}
+.body-employees-list{
+  padding-left: 8%;
+  margin: 20px 5px 20px 0px;
   width: 100%;
 }

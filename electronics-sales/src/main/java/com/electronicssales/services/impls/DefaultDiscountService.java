@@ -120,6 +120,7 @@ public class DefaultDiscountService implements DiscountService {
             discount.setId(discountDto.getId());
             DiscountType discountType = DiscountType.of(discountDto.getDiscountType())
                 .orElse(DiscountType.PERCENT);
+            // Optiona
             discount.setDiscountType(discountType);
             discount.setStartedTime(discountDto.getStatedTime());
             discount.setDiscountValue(discountDto.getDiscountValue());

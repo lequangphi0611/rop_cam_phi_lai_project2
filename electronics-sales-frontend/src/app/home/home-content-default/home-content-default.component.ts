@@ -1,9 +1,8 @@
-import { CategoryHomeDataService } from './../category-home-data.service';
+import { CategoryService } from './../../services/category.service';
 import { FetchProductOption } from './../../models/fetch-product-option.model';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CategoryService } from 'src/app/services/category.service';
 import { FetchProductType } from 'src/app/models/types/fetch-product-type.type';
 
 export interface ProductBanner {
@@ -27,14 +26,14 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
     fetchType: FetchProductType.ALL,
   };
 
-  constructor(private categoryHomeDataService: CategoryHomeDataService) {}
+  constructor(private categoryService: CategoryService) {}
 
   ngOnInit() {
     this.subCriptionProductBanners();
   }
 
   subCriptionProductBanners(): void {
-    this.subcription = this.categoryHomeDataService.categories$
+    this.subcription = this.categoryService.fetchCategories()
       .pipe(
         map(categories => {
           const productBanners: ProductBanner[] = [];

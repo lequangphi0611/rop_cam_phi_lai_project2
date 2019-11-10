@@ -17,7 +17,9 @@ import com.electronicssales.models.types.Role;
 
 import org.hibernate.annotations.Where;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
@@ -25,6 +27,8 @@ import lombok.Data;
 )
 @Where(clause = "actived=true")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -36,7 +40,7 @@ public class User {
 
     @OneToOne(
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE,
+        cascade = CascadeType.ALL,
         orphanRemoval = true
     )
     @JoinColumn(name = "avartar_id")
@@ -55,5 +59,13 @@ public class User {
     
     @Enumerated(EnumType.STRING)
     private Role role;
-    
+
+    public User(long id) {
+        this.id = id;
+    }
+
+    public static User of(long id) {
+        return new User(id);
+    }   
+
 }

@@ -1,5 +1,7 @@
 package com.electronicssales.resources;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,9 @@ import com.electronicssales.models.types.SortType;
 import com.electronicssales.services.ProductService;
 import com.electronicssales.services.ReviewService;
 import com.electronicssales.utils.Mapper;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -35,11 +40,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/products")
@@ -131,34 +137,36 @@ public class ProductResource {
     }
 
     @RequestMapping(path = "/product-name/{productName}", method = RequestMethod.HEAD)
-    public Callable<ResponseEntity<?>> existsByProductByName(@PathVariable String productName) {
-        return () -> {
-            Optional<Product> productFinded = productService.findByName(productName);
-            if(!productFinded.isPresent()) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok().build();
-        };
+    public ResponseEntity<?> existsByProductByName(@PathVariable String productName) {
+        Optional<Product> productFinded = productService.findByName(productName);
+        if (!productFinded.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping
-    public Callable<ResponseEntity<?>> createProduct(@RequestBody @Valid ProductDto productDto) {
-        return () -> {
-            this.validateProductBeforeCreate(productDto);
-            Product productCreated = productService.createProduct(productDto);
-            return ResponseEntity.created(null).body(productResponseMapper.mapping(productCreated));
-        };
+    @PostMapping(consumes = { "multipart/form-data" })
+    public ResponseEntity<?> createProduct(@RequestParam("product") String productDtoString,
+            @RequestParam(required = false) MultipartFile[] images)
+            throws JsonParseException, JsonMappingException, IOException {
+
+        ProductDto productDto = new ObjectMapper().readValue(productDtoString, ProductDto.class);
+
+        System.out.println(productDto.toString());
+        this.validateProductBeforeCreate(productDto);
+        productDto.setImages(images);
+        ProductResponse productCreated = productService.createProduct(productDto);
+        return ResponseEntity.created(null).body(productCreated);
     }
 
     @PutMapping("/{id}")
-    public Callable<ResponseEntity<?>> updateProduct(@RequestBody @Valid ProductDto productDto,
-            @PathVariable("id") long productId) {
-        return () -> {
-            productDto.setId(productId);
-            validateProductBeforeUpdate(productDto);
-            Product productUpdated = productService.updateProduct(productDto);
-            return ResponseEntity.created(null).body(productResponseMapper.mapping(productUpdated));
-        };
+    public ResponseEntity<?> updateProduct(@PathVariable("id") long productId, @RequestPart @Valid ProductDto product,
+            @RequestPart(required = false) MultipartFile[] images) {
+        product.setId(productId);
+        validateProductBeforeUpdate(product);
+        product.setImages(images);
+        ProductResponse productUpdated = productService.updateProduct(product);
+        return ResponseEntity.created(null).body(productUpdated);
     }
 
     @GetMapping("/{id}/parameters")
@@ -177,7 +185,7 @@ public class ProductResource {
             if (!productService.existsById(id)) {
                 return ResponseEntity.notFound().build();
             }
-    
+
             deleteProduct(id);
             return ResponseEntity.ok().build();
         };
@@ -189,7 +197,8 @@ public class ProductResource {
     }
 
     @GetMapping("/{id}/reviews")
-    public Callable<ResponseEntity<?>> fetchReviews(@PathVariable long id, @RequestParam(defaultValue = "0") int page, @RequestParam(required = false) Integer size) {
+    public Callable<ResponseEntity<?>> fetchReviews(@PathVariable long id, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size) {
         Pageable pageable = (size == null || size <= 0) ? null : PageRequest.of(page, size);
         return () -> ResponseEntity.ok(reviewService.findByProductId(id, pageable));
     }

@@ -11,8 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductParameterRepository 
-    extends JpaRepository<ProductParameter, Long>,
-    CustomizeProductParameterRepository {
+    extends JpaRepository<ProductParameter, Long> {
 
     String PRODUCT_PARAMETER_NATIVE_QUERY_BY_PRODUCT_ID = "SELECT t.id as parameterId,"
         +   " t.parameter_type_name AS parameterType,"

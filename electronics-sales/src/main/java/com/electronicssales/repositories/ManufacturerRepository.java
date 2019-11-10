@@ -13,6 +13,10 @@ public interface ManufacturerRepository extends MyCustomizeRepository<Manufactur
 
     String FIND_ALL_QUERY = "SELECT m FROM Manufacturer m ORDER BY manufacturerName ASC";
 
+    String FIND_BY_CATEGORY_ID = "SELECT m FROM Manufacturer m"
+        +   " JOIN m.categoryManufacturers cm"
+        +   " WHERE cm.category.id = ?1";
+
     @Override
     @Query(FIND_ALL_QUERY)
     List<Manufacturer> findAll();
@@ -21,6 +25,7 @@ public interface ManufacturerRepository extends MyCustomizeRepository<Manufactur
 
     Optional<Manufacturer> findByManufacturerName(String manufacturerName);
 
+    @Query(FIND_BY_CATEGORY_ID)
     List<Manufacturer> findByCategoryId(long categoryId);
 
 }

@@ -36,9 +36,7 @@ public class ImageResource {
         produces = MediaType.IMAGE_JPEG_VALUE
     )
     public Callable<byte[]> fetchImage(@PathVariable long id) {
-        return () -> {
-            return imageService.getImageDataById(id);
-        };
+        return () -> imageService.getImageDataById(id);
     }
 
     @PostMapping

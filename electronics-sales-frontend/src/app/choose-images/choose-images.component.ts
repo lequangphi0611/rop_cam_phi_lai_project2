@@ -1,0 +1,67 @@
+import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  Component,
+  OnInit,
+  EventEmitter,
+  Output,
+  OnDestroy,
+  Input,
+} from '@angular/core';
+import { filter, takeUntil } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-choose-images',
+  templateUrl: './choose-images.component.html',
+  styleUrls: ['./choose-images.component.css'],
+})
+export class ChooseImagesComponent implements OnInit, OnDestroy {
+  @Input() class = 'col-12';
+
+  @Input() index = 0;
+
+  @Output() onSelectFile = new EventEmitter<any>(true);
+
+  @Output() onRemovedFile = new EventEmitter<any>(true);
+
+  private filesSelected = new BehaviorSubject(null);
+
+  filesSelected$ = this.filesSelected.asObservable();
+
+  fileUrl: any;
+
+  constructor() {}
+
+  ngOnInit() {
+    this.filesSelected$
+      .pipe(
+        filter(file => {
+          if (file) {
+            return true;
+          }
+          this.fileUrl = null;
+          return false;
+        })
+      )
+      .subscribe(file => {
+        const reader = new FileReader();
+        reader.onload = event => (this.fileUrl = event.target['result']);
+        reader.readAsDataURL(file);
+      });
+  }
+
+  async onSelectedFile(event: Event) {
+    const file = event.target['files'][0];
+    this.onSelectFile.emit(file);
+    this.filesSelected.next(file);
+  }
+
+  async onRemoveFile() {
+    this.filesSelected.next(null);
+    this.onRemovedFile.emit();
+  }
+
+  ngOnDestroy(): void {
+    console.log('choose image destroy');
+    this.filesSelected.unsubscribe();
+  }
+}

@@ -10,6 +10,7 @@ import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.responses.ImageDataResponse;
 import com.electronicssales.models.responses.ParagraphResponse;
 import com.electronicssales.models.responses.ProductParameterResponse;
+import com.electronicssales.models.responses.ProductResponse;
 
 import org.springframework.data.domain.Page;
 
@@ -21,9 +22,9 @@ public interface ProductService {
 
     Collection<ProductParameterResponse> getProductParametersByProductId(long productId);
 
-    Product createProduct(ProductDto productDto);
+    ProductResponse createProduct(ProductDto productDto);
 
-    Product updateProduct(ProductDto productDto);
+    ProductResponse updateProduct(ProductDto productDto);
 
     boolean existsById(long productId);
 

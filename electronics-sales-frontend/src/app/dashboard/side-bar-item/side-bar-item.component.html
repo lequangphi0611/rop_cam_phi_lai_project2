@@ -1,0 +1,7 @@
+<ul>
+  <li *ngFor="let item of sideBarItems" routerLinkActive="active">
+      <a [routerLink]="item.links"
+        ><i class="item-icon" [ngClass]="item.fontAwesomeClass"></i> {{ item.name }}
+      </a>
+  </li>
+</ul>

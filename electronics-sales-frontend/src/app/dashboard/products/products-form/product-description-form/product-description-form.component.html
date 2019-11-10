@@ -1,0 +1,65 @@
+<div [formGroup]="descriptionForm">
+  <div formArrayName="descriptions">
+    <div
+      class=" border description-content my-3"
+      *ngFor="
+        let description of descriptions.controls;
+        let i = index
+      "
+
+    >
+      <div class="title">
+        <h5>Thêm mô tả</h5>
+      </div>
+      <div class="body-product ">
+        <form [formGroupName]="i" (change)="onValuesChange()">
+          <div class="form-group row col-12">
+            <label class="col-sm-2 col-form-label d-flex align-items-start pt-3"
+              >Mô tả :</label
+            >
+            <div class="col-sm-9">
+              <mat-form-field class="col-12 m-0 p-0">
+                <textarea
+                  formControlName="title"
+                  matInput
+                  [matTextareaAutosize]="true"
+                  placeholder="Nhập mô tả"
+                ></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="form-group row col-12">
+            <label class="col-sm-2 col-form-label d-flex align-items-start pt-3"
+              >Đặc điểm mô tả:</label
+            >
+            <div class="col-sm-9">
+              <mat-form-field class="col-12 m-0 p-0">
+                <textarea
+                  matInput
+                  formControlName="text"
+                  [matTextareaAutosize]="true"
+                  placeholder="Nhập đặc điểm mô tả"
+                ></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="btn-add-mt "></div>
+        </form>
+      </div>
+      <button
+        type="button"
+        class="btn btn-danger border btn-remove"
+        title="Xóa"
+        (click)="removeFormAt(i)"
+      >
+        <i class="fas fa-minus"></i>
+      </button>
+      <div class="clear"></div>
+    </div>
+
+    <button type="button my-3" (click)="addFormArray()" class="btn btn-link border">
+      <i class="fas fa-plus"></i> Thêm Mô Tả ...
+    </button>
+  </div>
+</div>

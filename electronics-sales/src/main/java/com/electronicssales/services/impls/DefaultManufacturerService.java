@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.electronicssales.entities.Category;
 import com.electronicssales.entities.Image;
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.models.dtos.ManufacturerDto;
@@ -107,8 +106,6 @@ public class DefaultManufacturerService implements ManufacturerService {
             Manufacturer manufacturer = new Manufacturer();
             manufacturer.setId(manufacturerDto.getId());
             manufacturer.setManufacturerLogo(Image.of(manufacturerDto.getImage()));
-            Optional.ofNullable(manufacturerDto.getCategoryId())
-                .ifPresent(categoryId -> manufacturer.setCategory(Category.of(categoryId)));
             manufacturer.setManufacturerName(manufacturerDto.getManufacturerName());
             return manufacturer;
         }

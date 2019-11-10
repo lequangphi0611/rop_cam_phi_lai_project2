@@ -1,11 +1,12 @@
-import { map, catchError } from 'rxjs/operators';
-import { ProductParameterView } from './../models/view-model/product-parameter.view';
-import { Page } from './../models/page.model';
-import { FetchProductOption } from './../models/fetch-product-option.model';
-import { Observable, from, of } from 'rxjs';
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { ProductView } from '../models/view-model/product.view.model';
+import { ProductDto } from './../models/dtos/product.dto';
+import { FetchProductOption } from './../models/fetch-product-option.model';
+import { Page } from './../models/page.model';
+import { ProductParameterView } from './../models/view-model/product-parameter.view';
 
 const AMPERSAND = '&';
 
@@ -27,14 +28,33 @@ export class ProductService {
           productPage.content = productPage.content.map(product =>
             ProductView.of(product)
           );
+          console.log(productPage);
           return productPage;
         })
       );
   }
 
+  parseFormDataFrom(productDto: ProductDto): FormData {
+    const formData = new FormData();
+    if (productDto.images) {
+      productDto.images.forEach(image => formData.append('images', image));
+    }
+    productDto.images = null;
+    formData.append('product', JSON.stringify(productDto));
+    return formData;
+  }
+
+  createProduct(productDto: ProductDto): Observable<ProductView> {
+    const body = this.parseFormDataFrom(productDto);
+    console.log({ body });
+    return this.http.post<ProductView>(ProductService.BASE_REQUEST, body);
+  }
+
   existsByName(name: string): Observable<boolean> {
     return this.http
-      .head<any>(`/api/products/product-name/${name}`, { observe: 'response' })
+      .head<any>(`${ProductService.BASE_REQUEST}/product-name/${name}`, {
+        observe: 'response',
+      })
       .pipe(
         map(() => true),
         catchError(() => {

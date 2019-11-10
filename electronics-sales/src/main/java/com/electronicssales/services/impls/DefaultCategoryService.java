@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Category;
+import com.electronicssales.entities.CategoryManufacturer;
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.dtos.CategoryDto;
@@ -55,38 +56,35 @@ public class DefaultCategoryService implements CategoryService {
     @Transactional
     @Override
     public BaseCategoryResponse createCategory(CategoryDto categoryDto) {
-        Category categoryTransient = categoryMapper.mapping(categoryDto);
-        Category categoryPersisted = categoryRepository.save(categoryTransient);
-
-        return baseCategoryResponseMapper.mapping(categoryPersisted);
+        return Optional.of(categoryDto)
+            .map(categoryMapper::mapping)
+            .map(categoryRepository::save)
+            .map(baseCategoryResponseMapper::mapping)
+            .get();
     }
 
     @Transactional
     @Override
     public BaseCategoryResponse updateCategory(CategoryDto categoryDto) {
-        
-        Category categoryTransient = categoryMapper.mapping(categoryDto);
-        return baseCategoryResponseMapper.mapping(categoryRepository.save(categoryTransient));
+        return Optional.of(categoryDto)
+            .map(categoryMapper::mapping)
+            .map(categoryRepository::save)
+            .map(baseCategoryResponseMapper::mapping)
+            .get();
     }
 
     @Transactional
     @Override
     public Collection<CategoryResponse> findAll(String nameKeyword) {
-        return categoryRepository
-            .fetchCategoriesNotHasParent(nameKeyword)
-            .stream()
-            .map(categoryResponseMapper::mapping)
-            .collect(Collectors.toList());
+        return categoryRepository.fetchCategoriesNotHasParent(nameKeyword).stream().map(categoryResponseMapper::mapping)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public List<CategoryResponse> fetchChildrensOf(long parentId, String nameQuery) {
-        return categoryRepository
-            .fetchChildrensOf(parentId, nameQuery)
-            .stream()
-            .map(categoryResponseMapper::mapping)
-            .collect(Collectors.toList());
+        return categoryRepository.fetchChildrensOf(parentId, nameQuery).stream().map(categoryResponseMapper::mapping)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -128,19 +126,31 @@ public class DefaultCategoryService implements CategoryService {
     @Component
     class CategoryMapper implements Mapper<Category, CategoryDto> {
 
+        @Autowired
+        private ParameterTypeRepository parameterTypeRepository;
+
         @Override
         public Category mapping(CategoryDto categoryDto) {
             Category category = new Category();
             category.setId(categoryDto.getId());
             category.setCategoryName(categoryDto.getCategoryName());
             Optional.ofNullable(categoryDto.getParentId())
-                .ifPresent(parentId -> category.setParent(Category.of(parentId)));
-
-            Optional.ofNullable(categoryDto.getParameterTypes())
-                .ifPresent(category::setParameterTypes);
+                    .ifPresent(parentId -> category.setParent(Category.of(parentId)));
+            Optional.ofNullable(categoryDto.getParameterTypes()).ifPresent(parameterTypes -> {
+                List<ParameterType> newParameterTypes = parameterTypes.stream()
+                        .map(parameterType -> parameterTypeRepository
+                                .findByParameterTypeName(parameterType.getParameterTypeName()).orElse(parameterType))
+                        .collect(Collectors.toList());
+                category.setParameterTypes(newParameterTypes);
+            });
+            Optional.ofNullable(categoryDto.getManufacturerIds()).ifPresent(manufacturerIds -> {
+                List<CategoryManufacturer> categoryManufacturers = manufacturerIds.stream()
+                        .map(manufacturerId -> CategoryManufacturer.of(category, Manufacturer.of(manufacturerId)))
+                        .collect(Collectors.toList());
+                category.setCategoryManufacturers(categoryManufacturers);
+            });
             return category;
         }
-
     }
 
     @Lazy
@@ -153,10 +163,10 @@ public class DefaultCategoryService implements CategoryService {
             baseCategoryResponse.setId(category.getId());
             baseCategoryResponse.setCategoryName(category.getCategoryName());
             Optional.ofNullable(category.getParent())
-                .ifPresent(parent -> baseCategoryResponse.setParentId(parent.getId()));
+                    .ifPresent(parent -> baseCategoryResponse.setParentId(parent.getId()));
             return baseCategoryResponse;
         }
-        
+
     }
 
     @Lazy
@@ -174,19 +184,15 @@ public class DefaultCategoryService implements CategoryService {
             categoryResponse.setCategoryName(iCategory.getCategoryName());
             categoryResponse.setProductCount(iCategory.getProductCount());
             categoryResponse.setParentId(iCategory.getParentId());
-            Collection<CategoryResponse> childrens = !categoryRepository.hasChildrens(iCategory.getId())
-                ? null 
-                : categoryRepository
-                    .fetchChildrensOf(iCategory.getId(), "")
-                    .stream()
-                    .map(this::mapping)
-                    .collect(Collectors.toList());
+            Collection<CategoryResponse> childrens = !categoryRepository.hasChildrens(iCategory.getId()) ? null
+                    : categoryRepository.fetchChildrensOf(iCategory.getId(), "").stream().map(this::mapping)
+                            .collect(Collectors.toList());
 
             categoryResponse.setChildrens(childrens);
 
             return categoryResponse;
         }
-        
+
     }
-    
+
 }

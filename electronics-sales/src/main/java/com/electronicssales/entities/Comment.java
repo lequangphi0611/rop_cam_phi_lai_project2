@@ -21,11 +21,15 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "comments")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Comment {
 
     @Id
@@ -72,5 +76,13 @@ public class Comment {
         cascade = CascadeType.ALL
     )
     private PostComment postComment;
+
+    public Comment(long id) {
+        this.id = id;
+    }
+
+    public static Comment of(long id) {
+        return new Comment(id);
+    }
     
 }

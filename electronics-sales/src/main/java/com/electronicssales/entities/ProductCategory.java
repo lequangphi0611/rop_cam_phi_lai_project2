@@ -25,7 +25,7 @@ public class ProductCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long id;
+    Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -34,5 +34,9 @@ public class ProductCategory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     Product product;
+
+    public static ProductCategory of(Category category, Product product) {
+        return new ProductCategory(null, category, product);
+    }
     
 }

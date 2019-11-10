@@ -1,226 +1,80 @@
 <div class="sidebar sidebar-hide-to-small sidebar-shrink sidebar-gestures">
   <div class="nano">
-      <div class="nano-content">
-          <div class="logo"><a href="Index.html">
-                  <!-- <img src="assets/images/logo.png" alt="" /> --><span>Infinity Shop</span></a></div>
-          <ul>
-              <li class="active"><a class="sidebar-sub-toggle"><i class="fas fa-home"></i> Tổng quan </a>
-              </li>
-              <li><a class="sidebar-sub-toggle"><i class="fas fa-file-invoice"></i>Bán hàng<span
-                          class="sidebar-collapse-icon ti-angle-down"></span></a>
-                  <ul>
-                      <li><a href="#">Danh sách đơn hàng</a></li>
-                      <li><a href="#">Đơn hàng chi tiết</a></li>
-
-                  </ul>
-              </li>
-              <li><a class="sidebar-sub-toggle"><i class="fas fa-shopping-cart"></i>Kho hàng<span
-                          class="sidebar-collapse-icon ti-angle-down"></span></a>
-                  <ul>
-                      <li><a href="">Kho</a></li>
-                      <li><a href="">Danh mục</a></li>
-                      <li><a href="">Nhập hàng</a></li>
-                      <li><a href="">Điều chỉnh, giảm giá</a></li>
-
-                  </ul>
-              </li>
-              <li><a class="sidebar-sub-toggle"><i class="fas fa-handshake"></i>Đối tác<span
-                          class="sidebar-collapse-icon ti-angle-down"></span></a>
-                  <ul>
-                      <li><a href="">Hãng sản xuất</a></li>
-                      <li><a href="">Khách hàng</a></li>
-                  </ul>
-              </li>
-              <li><a class="sidebar-sub-toggle"><i class="fas fa-newspaper"></i>Tin tức, bài viết<span
-                          class="sidebar-collapse-icon ti-angle-down"></span></a>
-                  <ul>
-                      <li><a href="">Tạo bài viết mới</a></li>
-                      <li><a href="">Tổng hợp bài viết</a></li>
-                  </ul>
-              </li>
-              <li><a class="sidebar-sub-toggle"><i class="fas fa-user-friends"></i>Quản lý nhân viên
-                      <span class="sidebar-collapse-icon ti-angle-down"></span></a>
-                  <ul>
-                      <li><a href="">Quản lý nhân viên</a></li>
-                      <li><a href="">Tài khoản của tôi</a></li>
-                  </ul>
-              </li>
-              <li><a class="sidebar-sub-toggle"><i class="fas fa-chart-bar"></i>Báo cáo<span
-                          class="sidebar-collapse-icon ti-angle-down"></span></a>
-                  <ul>
-                      <li><a href="">Báo cáo doanh thu</a></li>
-                      <li><a href="">..</a></li>
-                  </ul>
-              </li>
-              <li><a class="sidebar-sub-toggle"><i class="fas fa-comments"></i>Phản hồi đánh giá<span
-                          class="sidebar-collapse-icon ti-angle-down"></span></a>
-                  <ul>
-                      <li><a href="">Tổng hợp hộp thư</a></li>
-                  </ul>
-              </li>
-
-
-          </ul>
+    <div class="nano-content">
+      <div class="logo">
+        <a href="Index.html">
+          <!-- <img src="assets/images/logo.png" alt="" /> --><span
+            >Infinity Shop</span
+          ></a
+        >
       </div>
+      <app-side-bar-item [sideBarItems]="sideBarItems"></app-side-bar-item>
+    </div>
   </div>
 </div>
 <!-- /# sidebar -->
 <div class="header">
   <div class="container-fluid">
-      <div class="row">
-          <div class="col-lg-12">
-              <div class="float-left">
-                  <div class="hamburger sidebar-toggle">
-                      <span class="line"></span>
-                      <span class="line"></span>
-                      <span class="line"></span>
-                  </div>
-              </div>
-              <div class="float-right">
-                  <ul>
-
-                      <li class="header-icon dib"><i class="fas fa-street-view" title="Xem với tư cách khách hàng"></i>
-                      </li>
-                      <li class="header-icon dib"><i class="fas fa-bell" title="Thông báo mới"></i>
-                      </li>
-                      <li class="header-icon dib"><span class="user-avatar">Admin <i
-                                  class="fas fa-sort-down"></i></span>
-                          <div class="drop-down dropdown-profile">
-                              <div class="dropdown-content-body">
-                                  <ul>
-                                      <li><a href="#"><i class="fas fa-user"></i> <span>Tài khoản của
-                                                  tôi</span></a></li>
-                                      <li><a href="#"><i class="fas fa-cogs"></i> <span>Cài đặt</span></a></li>
-                                      <li><a href="#"><i class="fas fa-sign-out-alt"></i> <span>Đăng
-                                                  xuất</span></a></li>
-                                  </ul>
-                              </div>
-                          </div>
-                      </li>
-
-                  </ul>
-              </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="float-left">
+          <div class="hamburger sidebar-toggle">
+            <span class="line"></span>
+            <span class="line"></span>
+            <span class="line"></span>
           </div>
+        </div>
+        <div class="float-right">
+          <ul>
+            <li class="header-icon dib">
+              <i
+                class="fas fa-street-view"
+                title="Xem với tư cách khách hàng"
+              ></i>
+            </li>
+            <li class="header-icon dib">
+              <i class="fas fa-bell" title="Thông báo mới"></i>
+            </li>
+            <li class="header-icon dib">
+              <span class="user-avatar"
+                >Admin <i class="fas fa-sort-down"></i
+              ></span>
+              <div class="drop-down dropdown-profile">
+                <div class="dropdown-content-body">
+                  <ul>
+                    <li>
+                      <a href="#"
+                        ><i class="fas fa-user"></i>
+                        <span>Tài khoản của tôi</span></a
+                      >
+                    </li>
+                    <li>
+                      <a href="#"
+                        ><i class="fas fa-cogs"></i> <span>Cài đặt</span></a
+                      >
+                    </li>
+                    <li>
+                      <a href="#"
+                        ><i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span></a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
+    </div>
   </div>
 </div>
 <!-- menu-container -->
 <div class="clear"></div>
 <div class="content-wrap">
   <div class="main">
-      <div class="container-fluid">
-          <!-- /# row -->
-          <div class="total-cell border ">
-              <div class="total-cell-title">
-                  <h5>Tổng sản phẩm đã bán</h5>
-              </div>
-              <div class="row col-12">
-
-                  <div class="col-lg-4">
-                      <div class="card">
-                          <div class="stat-widget-two">
-                              <div class="stat-content">
-                                  <div class="stat-text">Điện thoại</div>
-                                  <div class="stat-digit"> 8500
-                                  </div>
-                              </div>
-                              <div class="progress">
-                                  <div class="progress-bar bg-danger" role="progressbar" style="width: 49%"
-                                      aria-valuenow="49" aria-valuemin="0" aria-valuemax="100">49%</div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col-lg-4">
-                      <div class="card">
-                          <div class="stat-widget-two">
-                              <div class="stat-content">
-                                  <div class="stat-text">Laptop</div>
-                                  <div class="stat-digit">7800</div>
-                              </div>
-                              <div class="progress">
-                                  <div class="progress-bar bg-warning" role="progressbar" style="width: 26%"
-                                      aria-valuenow="26" aria-valuemin="0" aria-valuemax="100">26%</div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col-lg-4">
-                      <div class="card">
-                          <div class="stat-widget-two">
-                              <div class="stat-content">
-                                  <div class="stat-text">Phụ kiện</div>
-                                  <div class="stat-digit">500</div>
-                              </div>
-                              <div class="progress">
-                                  <div class="progress-bar bg-success" role="progressbar" style="width: 25%"
-                                      aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <!-- /# column -->
-              </div>
-          </div>
-          <!-- /# row -->
-          <div class="clear"></div>
-          <div class="chart">
-              <div class="chart-title">
-                  <h5>Tổng doanh thu qua các năm</h5>
-              </div>
-              <div class="chart-body row col-12">
-                  <!-- column -->
-                  <canvas id="income" height="400" width="800"></canvas>
-              </div>
-          </div>
-          <div class="clear"></div>
-          <div class="top">
-              <div class="top-title col-7">
-                  <h5>Top sản phẩm bán chạy</h5>
-              </div>
-              <div class="dt-buttons col-4">
-                  <button type="button" class="btn btn-outline-success">Copy</button>
-                  <button type="button" class="btn btn-outline-success">CSV</button>
-                  <button type="button" class="btn btn-outline-success">Excel</button>
-                  <button type="button" class="btn btn-outline-success">PDF</button>
-                  <button type="button" class="btn btn-outline-success">Print</button>
-
-              </div>
-              <div class="top-body row col-12">
-                  <table class="table">
-                      <thead class="thead-light">
-                          <tr>
-                              <th >STT</th>
-                              <th >Tên sản phẩm</th>
-                              <th >Giá thành( vnđ )</th>
-                              <th >Lượt bán</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr>
-                              <th>1</th>
-                              <td>Điện thoại Iphone 7 Plus 64g</td>
-                              <td>8.000.000</td>
-                              <td><span class="badge badge-danger">32</span></td>
-                          </tr>
-                          <tr>
-                              <th scope="row">2</th>
-                              <td>ĐIện thoại Samsung Galaxy J6 Pro</td>
-                              <td>6.000.000</td>
-                              <td><span class="badge badge-danger">20</span></td>
-                          </tr>
-                          <tr>
-                              <th scope="row">3</th>
-                              <td>Tai nghe Bluetooth không dây ..</td>
-                              <td>3.000.000</td>
-                              <td><span class="badge badge-danger">19</span></td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-          </div>
-          <div class="clear"></div>
-
-      </div>
+    <div class="container-fluid">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>

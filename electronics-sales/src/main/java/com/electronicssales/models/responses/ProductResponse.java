@@ -1,6 +1,6 @@
 package com.electronicssales.models.responses;
 
-import java.util.Collection;
+import java.util.Date;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -14,12 +14,14 @@ public class ProductResponse {
 
     String productName;
 
-    Collection<Long> imageIds;
-
     long price;
 
     int quantity;
 
     long manufacturerId;
+
+    Date createdTime;
+
+    Date updatedTime;
     
 }

@@ -1,5 +1,7 @@
 package com.electronicssales.services.impls;
 
+import java.util.Optional;
+
 import com.electronicssales.entities.Image;
 import com.electronicssales.repositories.ImageRepository;
 import com.electronicssales.services.ImageService;
@@ -28,10 +30,10 @@ public class DefaultImageService implements ImageService {
 
     @Override
     public Image saveImage(byte[] imageData) {
-        Image image = new Image();
-        image.setData(imageData);
-
-        return this.saveImage(image);
+        return Optional.of(imageData)
+            .map(Image::of)
+            .map(this::saveImage)
+            .get();
     }
 
     @Override

@@ -18,7 +18,5 @@ public class ManufacturerDto {
     String manufacturerName;
 
     MultipartFile image;
-
-    Long categoryId; 
     
 }

@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -48,9 +47,12 @@ public class Manufacturer implements Serializable {
     @JoinColumn(name = "logo_id")
     private Image manufacturerLogo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @OneToMany(
+        fetch = FetchType.LAZY,
+        mappedBy = "manufacturer",
+        cascade = CascadeType.REMOVE
+    )
+    Collection<CategoryManufacturer> categoryManufacturers;
 
     @OneToMany(
         fetch = FetchType.LAZY,
@@ -61,6 +63,10 @@ public class Manufacturer implements Serializable {
 
     public Manufacturer(long id) {
         this.id = id;
+    }
+
+    public static Manufacturer of(long id) {
+        return new Manufacturer(id);
     }
     
 }

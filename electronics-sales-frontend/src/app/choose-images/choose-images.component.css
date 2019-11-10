@@ -1,0 +1,36 @@
+.choose-image-container,
+.choose-image-box {
+  min-width : 10rem;
+  max-width: 20rem;
+  min-height: 10rem;
+  max-height: 20rem;
+  position: relative;
+}
+
+.choose-image-box {
+  border: 1px solid #343a40;
+  cursor: pointer;
+  transition: all 0.8s;
+  border-radius: 0.5rem;
+}
+
+.choose-image-box:hover {
+  border: 2px solid #007bff;
+}
+
+.remove-img-icon .fa-times {
+  color: white;
+  cursor: pointer;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #dc3545;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.image-choosed {
+  max-width: 90%;
+  height: auto;
+}

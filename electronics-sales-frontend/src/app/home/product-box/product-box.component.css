@@ -15,10 +15,11 @@
 }
 .product .product-img {
   position: relative;
+  padding: 10px;
 }
 
 .product .product-img img {
-  height: 100%;
+  height: 90%;
   width: auto;
 }
 

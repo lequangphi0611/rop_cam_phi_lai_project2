@@ -35,12 +35,16 @@ public class ParameterType {
     )
     private String parameterTypeName;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "parameterTypes", fetch = FetchType.LAZY)
+    Collection<Category> categories;
+
     public ParameterType(long id) {
         this.id = id;
     }
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "parameterTypes", fetch = FetchType.LAZY)
-    Collection<Category> categories;
+    public static ParameterType of(long id) {
+        return new ParameterType(id);
+    }
 
 }

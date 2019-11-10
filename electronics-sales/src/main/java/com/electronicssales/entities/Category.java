@@ -74,10 +74,11 @@ public class Category {
 
     @OneToMany(
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE,
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
         mappedBy = "category"
     )
-    Collection<Manufacturer> manufacturers;
+    Collection<CategoryManufacturer> categoryManufacturers;
  
     public Category(long id) {
         this.id = id;

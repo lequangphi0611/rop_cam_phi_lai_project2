@@ -1,3 +1,4 @@
+import { ManufacturerService } from './services/manufacturer.service';
 import { CurrencyVNPipe } from './pipes/currency-vn.pipe';
 import { CategoryService } from './services/category.service';
 import { UserAuthenticatedService } from './services/user-authenticated.service';
@@ -42,6 +43,7 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
     AuthInterceptorService,
     UserAuthenticatedService,
     ProductService,
+    ManufacturerService,
   ],
   bootstrap: [AppComponent],
 })

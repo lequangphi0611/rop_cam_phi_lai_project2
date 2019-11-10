@@ -80,19 +80,12 @@ public class DefaultCommentService implements CommentService {
 
         @Override
         public Comment secondMapping(CommentDto commentDto) {
-            Comment comment = new Comment();
-            comment.setId(commentDto.getId());
+            Comment comment = Comment.of(commentDto.getId());
 
             Optional.ofNullable(commentDto.getParentId())
-                .ifPresent(parentId -> {
-                    Comment parent = new Comment();
-                    parent.setId(parentId);
-                    comment.setParentComment(parent);
-                });
+                .ifPresent(parentId -> comment.setParentComment(Comment.of(parentId)));
 
-            User user = new User();
-            user.setId(commentDto.getUserId());
-            comment.setUser(user);
+            comment.setUser(User.of(commentDto.getUserId()));
             comment.setParagraph(commentDto.getParagraph());
             return comment;
         }

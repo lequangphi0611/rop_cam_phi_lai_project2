@@ -1,18 +1,21 @@
 package com.electronicssales.services.impls;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.Discount;
-import com.electronicssales.entities.Manufacturer;
-import com.electronicssales.entities.ParameterType;
-import com.electronicssales.entities.Product;
+import com.electronicssales.entities.Image;
+import com.electronicssales.entities.ProductCategory;
 import com.electronicssales.entities.ProductParameter;
+import com.electronicssales.entities.Manufacturer;
+import com.electronicssales.entities.Product;
+import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.dtos.ProductDto;
-import com.electronicssales.models.dtos.ProductParameterDto;
 import com.electronicssales.models.responses.DiscountResponse;
 import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.responses.IParagraphResponse;
@@ -22,9 +25,9 @@ import com.electronicssales.models.responses.ProductDiscountResponse;
 import com.electronicssales.models.responses.ProductParameterRepositoryResponse;
 import com.electronicssales.models.responses.ProductParameterResponse;
 import com.electronicssales.models.responses.ProductResponse;
+import com.electronicssales.models.types.ProductStatus;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParagraphRepository;
-import com.electronicssales.repositories.ProductCategoryRepository;
 import com.electronicssales.repositories.ProductParameterRepository;
 import com.electronicssales.repositories.ProductRepository;
 import com.electronicssales.services.ProductService;
@@ -36,6 +39,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Lazy
 @Service
@@ -44,7 +48,7 @@ public class DefaultProductService implements ProductService {
     @Lazy
     @Autowired
     private ProductRepository productRepository;
-    
+
     @Lazy
     @Autowired
     private ParagraphRepository paragraphRepository;
@@ -52,10 +56,6 @@ public class DefaultProductService implements ProductService {
     @Lazy
     @Autowired
     private ProductParameterRepository productParameterRepository;
-
-    @Lazy
-    @Autowired
-    private ProductCategoryRepository productCategoryRepository;
 
     @Lazy
     @Autowired
@@ -80,32 +80,20 @@ public class DefaultProductService implements ProductService {
     @Override
     @Transactional
     public Product saveProduct(ProductDto productDto) {
-        Product productSaved = productRepository.save(productMapper.mapping(productDto));
-
-        return productSaved;
-    }
-
-    private void proccessAfterSaved(Product productPersisted, ProductDto productDto) {
-        productCategoryRepository.createAll(
-            productPersisted, 
-            getCategoryIds(productDto.getCategoriesId())
-        );
-
-        productParameterRepository.createAll(
-            productPersisted, 
-            getProductParametersFrom(productDto.getProductParameters())
-        );
+        return Optional.of(productDto)
+            .map(productMapper::mapping)
+            .map(productRepository::save)
+            .get();
     }
 
     @Transactional
     @Override
-    public Product createProduct(ProductDto productDto) {
-        Product productTransient = productMapper.mapping(productDto);
-        Product productPersisted = productRepository.persist(productTransient);
-
-        proccessAfterSaved(productPersisted, productDto);
-
-        return productPersisted;
+    public ProductResponse createProduct(ProductDto productDto) {
+        return Optional.of(productDto)
+            .map(productMapper::mapping)
+            .map(productRepository::save)
+            .map(productResponseMapper::mapping)
+            .get();
     }
 
     @Transactional
@@ -114,26 +102,14 @@ public class DefaultProductService implements ProductService {
         return productRepository.fetchProductsBy(option);
     }
 
-    private void proccessAfterUpdated(Product productPersisted, ProductDto productDto) {
-        productCategoryRepository.updateAll(
-            productPersisted, 
-            getCategoryIds(productDto.getCategoriesId())
-        );
-
-        productParameterRepository.updateAll(
-            productPersisted, 
-            getProductParametersFrom(productDto.getProductParameters())
-        );
-    }
-
     @Transactional
     @Override
-    public Product updateProduct(ProductDto productDto) {
-        Product productMapped = productMapper.mapping(productDto);
-
-        proccessAfterUpdated(productMapped, productDto);
-        
-        return productRepository.merge(productMapped);
+    public ProductResponse updateProduct(ProductDto productDto) {
+        return Optional.of(productDto)
+            .map(productMapper::mapping)
+            .map(productRepository::merge)
+            .map(productResponseMapper::mapping)
+            .get();
     }
 
     private ProductParameterResponse parseFrom(ProductParameterRepositoryResponse repoResponse) {
@@ -143,14 +119,11 @@ public class DefaultProductService implements ProductService {
         productParameterResponse.setParameterId(repoResponse.getParameterId());
         return productParameterResponse;
     }
- 
 
     @Override
     public Collection<ProductParameterResponse> getProductParametersByProductId(long productId) {
-        return productParameterRepository.fetchByProductId(productId)
-            .stream()
-            .map(this::parseFrom)
-            .collect(Collectors.toList());
+        return productParameterRepository.fetchByProductId(productId).stream().map(this::parseFrom)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -173,34 +146,10 @@ public class DefaultProductService implements ProductService {
         productRepository.deleteById(id);
     }
 
-    private Collection<ProductParameter> getProductParametersFrom(Collection<ProductParameterDto> productParameterDtos) {
-        return productParameterDtos
-            .stream()
-            .map(this::getProductParameterFrom)
-            .collect(Collectors.toList());
-    }
-
-    private ProductParameter getProductParameterFrom(ProductParameterDto productParameterDtos) {
-        ProductParameter productParameter = new ProductParameter();
-        productParameter.setParameterType(new ParameterType(productParameterDtos.getParameterTypeId()));
-        productParameter.setParameterValue(productParameterDtos.getParameterValue());
-        return productParameter;
-    }
-
-    private Collection<Category> getCategoryIds(Collection<Long> categoryIds) {
-        return categoryIds
-            .stream()
-            .map(Category::new)
-            .collect(Collectors.toList());
-    }
-
     @Override
     public List<ParagraphResponse> getDescriptionsOf(long productId) {
-        return productRepository
-            .findParagraphsByProductId(productId)
-            .stream()
-            .map(paragraphResponseMapper::mapping)
-            .collect(Collectors.toList());
+        return productRepository.findParagraphsByProductId(productId).stream().map(paragraphResponseMapper::mapping)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -210,8 +159,8 @@ public class DefaultProductService implements ProductService {
 
     @Override
     public List<ImageDataResponse> getImages(long productId) {
-        // return productRepository.findImageByProductId(productId);
-        return null;
+        return productRepository.findImageByProductId(productId).getImages().stream().map(image -> image.getData())
+                .map(ImageDataResponse::new).collect(Collectors.toList());
     }
 
     @Lazy
@@ -225,9 +174,42 @@ public class DefaultProductService implements ProductService {
             product.setPrice(productDto.getPrice());
             product.setManufacturer(new Manufacturer(productDto.getManufacturerId()));
             product.setProductName(productDto.getProductName());
-            product.setSalable(true);
+            product.setStatus(ProductStatus.SELLABLE);
             product.setDescriptions(productDto.getParagraphs());
+
+            Optional.ofNullable(productDto.getCategoryIds()).ifPresent(categoryIds -> {
+                List<ProductCategory> productCategories = categoryIds.stream()
+                        .map(categoryId -> ProductCategory.of(Category.of(categoryId), product))
+                        .collect(Collectors.toList());
+                product.setProductCategories(productCategories);
+            });
+
+            Optional.ofNullable(productDto.getImages()).ifPresent(files -> {
+                List<Image> images = mapToImages(files);
+                product.setImages(images);
+            });
+
+            Optional.ofNullable(productDto.getProductParameters()).ifPresent(productParameterDtos -> {
+                List<ProductParameter> productParameters = productParameterDtos.stream()
+                        .map(productParameterDto -> ProductParameter.of(product,
+                                ParameterType.of(productParameterDto.getParameterTypeId()),
+                                productParameterDto.getParameterValue()))
+                        .collect(Collectors.toList());
+
+                product.setProductParameters(productParameters);
+            });
             return product;
+        }
+
+        private List<Image> mapToImages(MultipartFile[] files) {
+            return Stream.of(files).map(file -> {
+                try {
+                    return file.getBytes();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }).filter(data -> data != null).map(Image::of).collect(Collectors.toList());
         }
 
     }
@@ -238,15 +220,17 @@ public class DefaultProductService implements ProductService {
 
         @Override
         public ProductResponse mapping(Product product) {
-            ProductResponse productResponse = (ProductResponse) new ProductDiscountResponse();
+            ProductResponse productResponse = new ProductDiscountResponse();
             productResponse.setId(product.getId());
             productResponse.setProductName(product.getProductName());
             productResponse.setQuantity(product.getQuantity());
             productResponse.setPrice(product.getPrice());
             productResponse.setManufacturerId(product.getManufacturer().getId());
+            productResponse.setCreatedTime(product.getCreatedTime());
+            productResponse.setUpdatedTime(product.getUpdatedTime());
             return productResponse;
         }
-        
+
     }
 
     @Lazy
@@ -263,16 +247,13 @@ public class DefaultProductService implements ProductService {
 
         @Override
         public ProductDiscountResponse mapping(Product product) {
-            ProductDiscountResponse productDiscountResponse = 
-               (ProductDiscountResponse) productResponseMapper.mapping(product);
-            Optional.ofNullable(product.getDiscount())
-                .ifPresent(discount -> 
-                    productDiscountResponse.setDiscount(discountResponseMapper.mapping(discount))
-                );
+            ProductDiscountResponse productDiscountResponse = (ProductDiscountResponse) productResponseMapper
+                    .mapping(product);
+            Optional.ofNullable(product.getDiscount()).ifPresent(
+                    discount -> productDiscountResponse.setDiscount(discountResponseMapper.mapping(discount)));
             return productDiscountResponse;
         }
-    
-    
+
     }
-    
+
 }

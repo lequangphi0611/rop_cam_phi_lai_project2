@@ -1,7 +1,13 @@
 package com.electronicssales.models.responses;
 
-public interface ImageDataResponse {
+import lombok.AccessLevel;
+import lombok.Value;
+import lombok.experimental.FieldDefaults;
 
-    byte[] getData();
+@Value
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ImageDataResponse {
+
+    byte[] data;
     
 }

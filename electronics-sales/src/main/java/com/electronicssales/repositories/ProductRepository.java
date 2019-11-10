@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.responses.IParagraphResponse;
-import com.electronicssales.models.responses.ImageDataResponse;
+import com.electronicssales.models.responses.ProductImageOnly;
 import com.electronicssales.models.responses.ProductQuantityOnly;
 
 import org.springframework.data.jpa.repository.Modifying;
@@ -42,8 +42,8 @@ public interface ProductRepository
     String GET_PRODUCT_QUANTITY = "SELECT p.quantity as quantity FROM products p"
         +   " WHERE p.id = ?1";
 
-    String FIND_IMAGE_BY_PRODUCT_ID = "SELECT i.data as data FROM Image i"
-            + " JOIN i.productImages pi WHERE pi.product.id = ?1";
+    String FIND_IMAGE_BY_PRODUCT_ID = "SELECT p FROM Product p"
+            + " JOIN FETCH p.images WHERE p.id = ?1";
 
     Optional<Product> findByProductName(String productName);
 
@@ -76,6 +76,6 @@ public interface ProductRepository
     @Query(value = GET_PRODUCT_QUANTITY, nativeQuery = true)
     ProductQuantityOnly getProductQuantity(long productId);
 
-    // @Query(FIND_IMAGE_BY_PRODUCT_ID)
-    // List<ImageDataResponse> findImageByProductId(long productId);
+    @Query(FIND_IMAGE_BY_PRODUCT_ID)
+    ProductImageOnly findImageByProductId(long productId);
 }

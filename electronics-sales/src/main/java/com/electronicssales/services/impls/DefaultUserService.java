@@ -1,6 +1,5 @@
 package com.electronicssales.services.impls;
 
-
 import java.util.Optional;
 
 import javax.persistence.EntityExistsException;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Lazy
 @Service
 public class DefaultUserService implements UserService {
@@ -45,11 +43,11 @@ public class DefaultUserService implements UserService {
     @Transactional
     @Override
     public User createUser(UserDto userDto, Role role) {
-        if(existByUsername(userDto.getUsername())) {
+        if (existByUsername(userDto.getUsername())) {
             throw new EntityExistsException("User is already exists !");
         }
 
-        User user = userDtoToUserMapper.mapping(userDto);
+        User user = Optional.of(userDto).map(userDtoToUserMapper::mapping).get();
         user.setRole(role);
         return userRepository.persist(user);
     }
@@ -57,21 +55,14 @@ public class DefaultUserService implements UserService {
     @Transactional
     @Override
     public User updateUser(UserDto newUserDto) {
-        User userPersisted = userRepository
-            .findByIdAndFetchUserInfo(newUserDto.getId())
-            .orElseThrow(() -> new EntityExistsException("User not found"));
-        
-        if(!userPersisted.getUsername().equals(newUserDto.getUsername())
-            && userRepository.existsByUsername(newUserDto.getUsername()))
-        {
+        User userPersisted = userRepository.findByIdAndFetchUserInfo(newUserDto.getId())
+                .orElseThrow(() -> new EntityExistsException("User not found"));
+
+        if (!userPersisted.getUsername().equals(newUserDto.getUsername())
+                && userRepository.existsByUsername(newUserDto.getUsername())) {
             throw new EntityExistsException(
-                new StringBuilder()
-                .append(User.class.getSimpleName().toUpperCase())
-                .append(" with USERNAME = \"")
-                .append(newUserDto.getUsername())
-                .append("\" is already exists !")
-                .toString()
-            );
+                    new StringBuilder().append(User.class.getSimpleName().toUpperCase()).append(" with USERNAME = \"")
+                            .append(newUserDto.getUsername()).append("\" is already exists !").toString());
         }
 
         User userTransient = userDtoToUserMapper.mapping(newUserDto);
@@ -84,9 +75,8 @@ public class DefaultUserService implements UserService {
     @Transactional
     @Override
     public UserInfoResponse getUserInfoByUsername(String username) {
-        User user = userRepository
-            .findByUsernameAndFetchUserInfo(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
+        User user = userRepository.findByUsernameAndFetchUserInfo(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
         return userInfoResponseMapper.mapping(user);
     }
 
@@ -101,13 +91,12 @@ public class DefaultUserService implements UserService {
     public boolean existsById(long userId) {
         return userRepository.existsById(userId);
     }
-    
+
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-         User user =  userRepository
-            .findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
         return UserPrincipal.of(user);
     }
 
@@ -119,7 +108,6 @@ public class DefaultUserService implements UserService {
     @Lazy
     @Component
     public class UserInfoMapper implements Mapper<UserInfo, UserDto> {
-
 
         @Override
         public UserInfo mapping(UserDto userDto) {
@@ -134,8 +122,7 @@ public class DefaultUserService implements UserService {
             userInfo.setGender(userDto.isGender());
             return userInfo;
         }
-    
-        
+
     }
 
     @Lazy
@@ -157,13 +144,12 @@ public class DefaultUserService implements UserService {
             user.setActived(true);
             user.setUsername(dto.getUsername());
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
-            if(dto.getAvartarId() > 0) {
-                user.setAvartar(new Image(dto.getAvartarId()));
-            }
+            Optional.ofNullable(dto.getAvartarId())
+                    .ifPresent(avartarId -> user.setAvartar(new Image(dto.getAvartarId())));
             user.setUserInfo(userInfoMapper.mapping(dto));
             return user;
         }
-        
+
     }
 
     @Lazy
@@ -185,11 +171,12 @@ public class DefaultUserService implements UserService {
             userInfoResponse.setEmail(userInfo.getEmail());
             userInfoResponse.setPhoneNumber(userInfo.getPhoneNumber());
             userInfoResponse.setAddress(userInfo.getAddress());
-            userInfoResponse.setAvartarId(user.getAvartar() != null ? user.getAvartar().getId() : 0);
+            Optional.ofNullable(user.getAvartar())
+                .ifPresent(avartar -> userInfoResponse.setAvartarId(avartar.getId()));
             userInfoResponse.setRole(user.getRole());
             return userInfoResponse;
         }
-        
+
     }
-    
+
 }

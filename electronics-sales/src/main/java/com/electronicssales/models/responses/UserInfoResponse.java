@@ -20,7 +20,7 @@ public class UserInfoResponse extends RequiredUserInfoDto {
 
     private Date birthday;
 
-    private long avartarId;
+    private Long avartarId;
 
     private Role role;
     

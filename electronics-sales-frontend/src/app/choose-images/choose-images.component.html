@@ -1,0 +1,26 @@
+<div [ngClass]="class" class="col-12 m-2" id="row{{index}}">
+  <input
+    #fileInput
+    hidden
+    accept="image/*"
+    type="file"
+    (change)="onSelectedFile($event)"
+  />
+  <div class="choose-image-container">
+    <div
+      class="choose-image-box p-3 d-flex flex-column justify-content-center align-items-center"
+      (click)="fileInput.click()"
+    >
+      <h3 *ngIf="!fileUrl">Chọn ảnh</h3>
+
+      <img *ngIf="fileUrl" class="image-choosed" [src]="fileUrl" alt="" />
+    </div>
+    <span
+      *ngIf="fileUrl"
+      [matTooltip]="'Xóa ảnh'"
+      (click)="onRemoveFile()"
+      class="remove-img-icon"
+      ><i class="fas fa-times"></i
+    ></span>
+  </div>
+</div>

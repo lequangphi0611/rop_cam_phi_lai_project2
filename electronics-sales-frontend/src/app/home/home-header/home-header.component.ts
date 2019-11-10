@@ -6,7 +6,6 @@ import { NavItemData } from './sub-navigation/sub-navigation.component';
 import { Component, OnInit } from '@angular/core';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { CategoryService } from 'src/app/services/category.service';
-import { CategoryHomeDataService } from '../category-home-data.service';
 
 const SUB_NAV_ITEMS: NavItemData[] = [
   {
@@ -62,8 +61,7 @@ export class HomeHeaderComponent implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
-    public userAuthenticatedService: UserAuthenticatedService,
-    private categoryHomeDataService: CategoryHomeDataService
+    public userAuthenticatedService: UserAuthenticatedService
   ) {}
 
   ngOnInit() {
@@ -73,7 +71,6 @@ export class HomeHeaderComponent implements OnInit {
       .fetchCategories()
       .pipe(
         map(categories => {
-          this.categoryHomeDataService.setValue(categories);
           return categories;
         })
       );

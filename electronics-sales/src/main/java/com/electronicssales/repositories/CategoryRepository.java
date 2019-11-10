@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CategoryRepository extends MyCustomizeRepository<Category, Long>, CustomizeCategoryRepository {
+public interface CategoryRepository extends MyCustomizeRepository<Category, Long> {
 
     String DELETE_CATEGORY_PARAMETERS_BY_CATEGORY_ID = "DELETE FROM categories_parameter_types"
         +   " WHERE category_id = ?1";

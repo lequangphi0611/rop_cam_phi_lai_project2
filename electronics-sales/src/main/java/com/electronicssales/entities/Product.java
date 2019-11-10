@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.electronicssales.models.types.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -55,7 +58,8 @@ public class Product {
 
     int quantity;
 
-    boolean salable;
+    @Enumerated(EnumType.ORDINAL)
+    ProductStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
@@ -69,7 +73,7 @@ public class Product {
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE,
+        cascade = CascadeType.ALL,
         orphanRemoval = true
     )
     Collection<ProductCategory> productCategories;
@@ -100,7 +104,7 @@ public class Product {
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE,
+        cascade = CascadeType.ALL,
         orphanRemoval = true
     )
     Collection<ProductParameter> productParameters;
@@ -123,6 +127,10 @@ public class Product {
 
     public Product(long id) {
         this.id = id;
+    }
+
+    public static Product of(long id) {
+        return new Product(id);
     }
 
 }
