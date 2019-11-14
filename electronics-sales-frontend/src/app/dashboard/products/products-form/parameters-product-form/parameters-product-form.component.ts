@@ -19,24 +19,22 @@ export class ParametersProductFormComponent implements OnInit, OnDestroy {
 
   @Output() onInit = new EventEmitter(true);
 
-  begin = 0;
+  clear = new BehaviorSubject(false);
 
-  parametersProductForm: FormGroup;
+  @Input() parametersProductForm: FormGroup;
 
   subcription: Subscription;
 
   constructor(private formBuilder: FormBuilder) {}
 
   ngOnInit() {
-    this.parametersProductForm = this.formBuilder.group({
-      parameters: this.formBuilder.array([]),
-    });
     this.subcription = this.parameterTypes$.subscribe(parameterTypes => {
       parameterTypes.forEach(parameterType => {
         this.parameters.push(
           this.createParameterGroupForm(
             parameterType.id,
-            parameterType.parameterTypeName
+            parameterType.parameterTypeName,
+            parameterType.parameterTypeValue
           )
         );
       });

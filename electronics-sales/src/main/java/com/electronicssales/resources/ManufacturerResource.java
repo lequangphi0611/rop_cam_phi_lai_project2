@@ -1,5 +1,6 @@
 package com.electronicssales.resources;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.persistence.EntityExistsException;
@@ -7,7 +8,10 @@ import javax.persistence.EntityNotFoundException;
 
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.models.dtos.ManufacturerDto;
+import com.electronicssales.models.responses.ManufacturerResponse;
 import com.electronicssales.services.ManufacturerService;
+import com.electronicssales.utils.Mapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -18,7 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,17 +34,31 @@ public class ManufacturerResource {
     @Autowired
     private ManufacturerService manufacturerService;
 
+    @Lazy
+    @Autowired
+    private Mapper<ManufacturerResponse, Manufacturer> manufacturerMapper;
+
+    @Lazy
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @GetMapping
-    public ResponseEntity<?> fetchManufacturers() {
-        return ResponseEntity.ok(manufacturerService.findAll());
+    public Callable<ResponseEntity<?>> fetchManufacturers() {
+        return () -> ResponseEntity.ok(manufacturerService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public Callable<ResponseEntity<?>> getManufacturer(@PathVariable long id) {
+        return () -> ResponseEntity.ok(manufacturerService.findById(id).map(manufacturerMapper::mapping).get());
     }
     
-    @PostMapping
+    @PostMapping(consumes = { "multipart/form-data" })
     public Callable<ResponseEntity<?>> createManufacturer(
-            @RequestPart ManufacturerDto manufacturer, 
-            @RequestPart(required = false) MultipartFile image) 
+            @RequestParam("manufacturer") String manufacturerStr, 
+            @RequestParam(required = false) MultipartFile image) 
     {
         return () -> {
+            ManufacturerDto manufacturer = this.objectMapper.readValue(manufacturerStr, ManufacturerDto.class);
             final String manufacturerName = manufacturer.getManufacturerName();
             if(manufacturerService.existsByManufacturerName(manufacturerName)) {
                 StringBuilder builder = new StringBuilder(Manufacturer.class.getSimpleName());
@@ -50,17 +68,17 @@ public class ManufacturerResource {
                     .append("' is already exists !");
                 throw new EntityExistsException(builder.toString());
             }
-            manufacturer.setImage(image);
+            Optional.ofNullable(image).ifPresent(manufacturer::setImage);
             return ResponseEntity
                 .created(null)
                 .body(manufacturerService.save(manufacturer));
         };
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
     public Callable<ResponseEntity<?>> updateManufacturer(
-        @RequestPart ManufacturerDto manufacturer,
-        @RequestPart(required = false) MultipartFile image,
+        @RequestParam("manufacturer") String manufacturerStr,
+        @RequestParam(required = false) MultipartFile image,
         @PathVariable long id
     ) 
     {
@@ -68,13 +86,13 @@ public class ManufacturerResource {
             Manufacturer manufacturerPersisted = manufacturerService
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Manufacturer not found !"));
-
+            ManufacturerDto manufacturer = this.objectMapper.readValue(manufacturerStr, ManufacturerDto.class);
             if(!manufacturerPersisted.getManufacturerName().equalsIgnoreCase(manufacturer.getManufacturerName())
                 && manufacturerService.existsByManufacturerName(manufacturer.getManufacturerName())) {
                     throw new EntityExistsException("Manufacturer Name is already exists !");
             }
             manufacturer.setId(id);
-            manufacturer.setImage(image);
+            Optional.ofNullable(image).ifPresent(manufacturer::setImage);
             return ResponseEntity.ok(manufacturerService.save(manufacturer));
         };
     }

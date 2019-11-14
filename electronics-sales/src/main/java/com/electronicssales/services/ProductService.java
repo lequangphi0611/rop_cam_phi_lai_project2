@@ -6,19 +6,18 @@ import java.util.Optional;
 
 import com.electronicssales.entities.Product;
 import com.electronicssales.models.dtos.ProductDto;
+import com.electronicssales.models.responses.BaseCategoryResponse;
 import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.responses.ImageDataResponse;
 import com.electronicssales.models.responses.ParagraphResponse;
 import com.electronicssales.models.responses.ProductParameterResponse;
 import com.electronicssales.models.responses.ProductResponse;
 
-import org.springframework.data.domain.Page;
-
 public interface ProductService {
 
     Product saveProduct(ProductDto productDto);
 
-    Page<Product> fetchProductsBy(FetchProductOption option);
+    List<ProductResponse> fetchProductsBy(FetchProductOption option);
 
     Collection<ProductParameterResponse> getProductParametersByProductId(long productId);
 
@@ -39,5 +38,7 @@ public interface ProductService {
     void deleteById(long id);
 
     List<ParagraphResponse> getDescriptionsOf(long productId);
+
+    List<BaseCategoryResponse> getCategoriesBy(long productId);
     
 }

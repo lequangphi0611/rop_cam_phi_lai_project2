@@ -1,1 +1,16 @@
-<app-products-form></app-products-form>
+<mat-tab-group dynamicHeight [backgroundColor]="'primary'" [selectedIndex]="selectedIndex" (selectedIndexChange)="changeSelectedIndex($event)">
+  <mat-tab label="Danh Sách Sản Phẩm">
+    <ng-template matTabContent>
+        <div class="p-5 col-12">
+            <app-products-data (onEditClicked)="onEdit($event)"></app-products-data>
+        </div>
+    </ng-template>
+
+  </mat-tab>
+  <mat-tab label="Cập Nhật Sản Phẩm">
+    <ng-template matTabContent>
+        <app-products-form (onCancleCliked)="onFormCancle()" [currentProduct$]="productEditable$"></app-products-form>
+    </ng-template>
+
+  </mat-tab>
+</mat-tab-group>

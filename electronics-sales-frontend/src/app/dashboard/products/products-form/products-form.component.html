@@ -6,12 +6,17 @@
   aria-labelledby="home-tab"
 >
   <div class="ad-product-new">
-    <app-base-product-form #base (onInit)="onBasicFormChange($event)" (onSelectedCategory)="onSelectedCategory($event)"></app-base-product-form>
+    <app-base-product-form
+    [basicProductForm]="basicForm"
+    [currentProduct$]="currentProduct$"
+    #base
+    (onSelectedCategory)="onSelectedCategory($event)"></app-base-product-form>
 
-    <app-parameters-product-form #parameters
+    <app-parameters-product-form
+      #parameters
+      [parametersProductForm]="parametersForm"
       *ngIf="(parameterTypes$ | async) && (parameterTypes$ | async)?.length > 0"
       [parameterTypes$]="parameterTypes$"
-      (onInit)="onParametersFormChange($event)"
     ></app-parameters-product-form>
 
     <div class=" border">
@@ -24,9 +29,11 @@
             <label class="col-3 col-form-label">Hình ảnh sản phẩm:</label>
             <div class="col-12">
               <app-multi-choose-images
+                [imageUrls$]="imageUrls$"
                 #multiChooseImages
                 class="row col-12"
               ></app-multi-choose-images>
+
             </div>
           </div>
         </form>
@@ -34,11 +41,11 @@
     </div>
     <div class="clear"></div>
 
-    <app-product-description-form (onInit)="onDecriptionFormChange($event)" #descriptions></app-product-description-form>
+    <app-product-description-form [descriptionForm]="descriptionsForm" [descriptions$]="descriptions$" #descriptions></app-product-description-form>
     <hr />
     <div class="clear"></div>
     <div class="ht">
-      <button type="reset" class="btn btn-danger">
+      <button type="reset" class="btn btn-danger" (click)="cancle()">
         <i class="fas fa-trash-alt"></i> Hủy
       </button>
       <button type="button" (click)="onSubmit()" class="btn btn-info">

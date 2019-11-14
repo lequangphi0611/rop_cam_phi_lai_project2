@@ -1,6 +1,7 @@
 package com.electronicssales;
 
 import com.electronicssales.repositories.impl.DefaultMyCustomizeRepositoryImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +23,12 @@ public class ElectronicsSalesApplication {
 	@Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
+	}
+
+	@Lazy
+	@Bean
+	public ObjectMapper getObjectMapper() {
+		return new ObjectMapper();
 	}
 
 	public static void main(String[] args) {

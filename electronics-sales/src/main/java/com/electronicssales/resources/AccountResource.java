@@ -12,6 +12,7 @@ import com.electronicssales.models.types.Role;
 import com.electronicssales.services.UserService;
 import com.electronicssales.utils.AuthenticateUtils;
 import com.electronicssales.utils.Mapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,6 +42,10 @@ public class AccountResource {
     @Lazy
     @Autowired
     private Mapper<UserInfoResponse, User> userInfoMapper;
+
+    @Lazy
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @GetMapping("/current")
     public Callable<ResponseEntity<?>> fetchCurrentUserInfo() {
@@ -67,16 +74,18 @@ public class AccountResource {
         };
     }
 
-    @PostMapping
+    @PostMapping(consumes = { "multipart/form-data" })
     public Callable<ResponseEntity<?>> createAdminAccount(@Valid @RequestBody UserDto userDto) {
         return () -> ResponseEntity.created(null)
             .body(userInfoMapper.mapping(userService.createUser(userDto, Role.EMPLOYEE)));
     }
 
-    @PutMapping("/{id}")
-    public Callable<ResponseEntity<?>> updateAccount(@RequestBody @Valid UserDto userDto, @PathVariable long id) {
+    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
+    public Callable<ResponseEntity<?>> updateAccount(@RequestParam("user") String userDtoStr, @PathVariable long id, @RequestParam(value = "avartar", required = false) MultipartFile avartar) {
         return () -> {
+            UserDto userDto = this.objectMapper.readValue(userDtoStr, UserDto.class);
             userDto.setId(id);
+            Optional.ofNullable(avartar).ifPresent(userDto::setAvartar);
             UserInfoResponse result = Optional.of(userDto).map(userService::updateUser).map(userInfoMapper::mapping).get();
             return ResponseEntity.ok(result);
         };

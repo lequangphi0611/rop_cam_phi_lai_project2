@@ -38,9 +38,8 @@ export class ProductDetailedComponent implements OnInit, OnDestroy {
       switchMap(id => this.productService.getParameters(id)),
     );
 
-    this.productImages$ = this.productId$.pipe(
-      switchMap(id => this.productService.getImages(id))
-    );
+    this.productImages$ = this.product$.pipe(switchMap(product => product.images$),
+      map(images => images.map(image => image.data)));
   }
 
   ngOnDestroy(): void {

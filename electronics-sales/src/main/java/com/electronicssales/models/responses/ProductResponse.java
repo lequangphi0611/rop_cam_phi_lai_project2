@@ -1,6 +1,7 @@
 package com.electronicssales.models.responses;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -18,10 +19,10 @@ public class ProductResponse {
 
     int quantity;
 
-    long manufacturerId;
+    Long manufacturerId;
 
     Date createdTime;
 
     Date updatedTime;
-    
+
 }

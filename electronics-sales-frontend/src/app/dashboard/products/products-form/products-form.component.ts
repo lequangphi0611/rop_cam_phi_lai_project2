@@ -1,3 +1,4 @@
+import { ProductDataView } from './../products-data/products-data.component';
 import { ProductParameterDto } from './../../../models/dtos/product-parameter.dto';
 import { ProductDto } from './../../../models/dtos/product.dto';
 import { ProductDescriptionFormComponent } from './product-description-form/product-description-form.component';
@@ -5,8 +6,16 @@ import { ParametersProductFormComponent } from './parameters-product-form/parame
 import { ParagraphDto } from './../../../models/dtos/paragraph.dto';
 import { MultiChooseImagesComponent } from './../../../multi-choose-images/multi-choose-images.component';
 import { ParameterTypeDto } from './../../../models/dtos/paramter-type.dto';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
 import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
 import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
@@ -35,20 +44,92 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
 
   subcription = new Subscription();
 
+  imagesUrls = new BehaviorSubject<any>(null);
+
+  imageUrls$ = this.imagesUrls.asObservable();
+
+  descriptions$: Observable<ParagraphDto[]>;
+
   images: File[];
+
+  @Input() currentProduct$: Observable<ProductDataView>;
+
+  @Output() onCancleCliked = new EventEmitter(true);
 
   constructor(
     private categoryService: CategoryService,
     private formBuilder: FormBuilder,
     private productService: ProductService
-  ) {}
+  ) {
+    this.initForm();
+  }
 
   ngOnInit() {
+    this.subcription.add(this.currentProduct$
+      .pipe(
+        filter(product => product != null),
+        switchMap(product => product.images$),
+        map(images => images.map(image => image.data)),
+        map(datas => {
+          return datas.map(data => `data:image/png;base64,${data}`);
+        })
+      )
+      .subscribe(datas => this.imagesUrls.next(datas)));
     this.subcription.add(
       this.multiChooseImages.imagesChoosed$.subscribe(images => {
         this.images = images;
       })
     );
+
+    this.parameterTypes$ = this.currentProduct$.pipe(
+      filter(value => value != null),
+      switchMap(product => this.productService.getParameters(product.id)),
+      map(productParameters =>
+        productParameters.map(productParameter => {
+          return {
+            id: productParameter.id,
+            parameterTypeName: productParameter.parameterType,
+            parameterTypeValue: productParameter.parameterValue,
+          };
+        })
+      )
+    );
+
+    this.descriptions$ = this.currentProduct$.pipe(
+      filter(value => value != null),
+      switchMap(product => this.productService.getDescriptions(product.id))
+    );
+  }
+
+  initForm() {
+    this.initBaseForm();
+    this.initParametersForm();
+    this.initDescriptionsForm();
+  }
+
+  initBaseForm() {
+    this.basicForm = this.formBuilder.group({
+      productName: [null, [Validators.required]],
+      categoryIds: this.formBuilder.array([
+        this.formBuilder.control(''),
+        this.formBuilder.control(''),
+      ]),
+      manufacturerId: [null],
+      price: [null, [Validators.required]],
+      quantity: [null],
+    });
+  }
+
+  initParametersForm() {
+    this.parametersForm = this.formBuilder.group({
+      parameters: this.formBuilder.array([]),
+    });
+  }
+
+  initDescriptionsForm() {
+    this.descriptionsForm = this.formBuilder.group({
+      descriptions: this.formBuilder.array([]),
+    });
   }
 
   onSelectedCategory(categoryId: number) {
@@ -57,19 +138,7 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subcription.unsubscribe();
-  }
-
-  onBasicFormChange(basicForm: FormGroup) {
-    this.basicForm = basicForm;
-  }
-
-  onDecriptionFormChange(descriptionForm: FormGroup) {
-    this.descriptionsForm = descriptionForm;
-    console.log('description init ', this.descriptionsForm.value);
-  }
-
-  onParametersFormChange(parameterForm: FormGroup) {
-    this.parametersForm = parameterForm;
+    this.imagesUrls.complete();
   }
 
   getProduct(): ProductDto {
@@ -78,7 +147,6 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
       ? this.parametersForm.value
       : null;
     const descriptionFormValue = this.descriptionsForm.value;
-    console.log({ descriptionFormValue });
     let productParameters = null;
     if (parametersFormValue) {
       productParameters = (parametersFormValue.parameters as Array<{
@@ -89,25 +157,39 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
         return { parameterTypeId: e.id, parameterValue: e.parameterValue };
       });
     }
-    const descriptionsProduct = (descriptionFormValue.descriptions as Array<{title: string, text: string}>)
-      .map(e => {
-        return {...e};
-      });
+    const descriptionsProduct = (descriptionFormValue.descriptions as Array<{
+      title: string;
+      text: string;
+    }>).map(e => {
+      return { title: e.title, text: e.text };
+    });
+    const categoryIds = (baseFormValue.categoryIds as Array<number>).filter(
+      v => v && v > 0
+    );
     return {
       productName: baseFormValue.productName,
-      categoryIds: baseFormValue.categoryIds,
+      categoryIds,
       manufacturerId: baseFormValue.manufacturerId,
+
       images: this.images,
       price: baseFormValue.price as number,
       productParameters,
-      paragraphs: descriptionsProduct
+      paragraphs: descriptionsProduct,
     };
+  }
+
+  cancle() {
+    this.onCancleCliked.emit();
+    this.initForm();
+    this.imagesUrls.next(null);
   }
 
   onSubmit() {
     const product = this.getProduct();
-
-    this.productService.createProduct(product)
-      .subscribe(console.log);
+    console.log(product);
+    this.currentProduct$.subscribe(console.log);
+    // this.productService
+    //   .createProduct(product)
+    //   .subscribe(() => console.log('ok'));
   }
 }

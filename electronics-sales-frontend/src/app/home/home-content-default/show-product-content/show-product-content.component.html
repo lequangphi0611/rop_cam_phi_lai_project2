@@ -1,18 +1,18 @@
-<div class="w-100 row mt-5" *ngIf="(productPage$ | async)?.content.length > 0">
+<div class="w-100 row mt-5" *ngIf="(products$ | async)?.length > 0">
   <div class="card col-12 p-0">
     <div class="card-header clearfix">
       <h6 class="float-left text-uppercase font-weight-bold">
         {{ productBanner.title }}
       </h6>
-      <a href="#" class="float-right"
-        >Xem tất cả {{ (productPage$ | async)?.totalElements }} sản phẩm
+      <a class="btn btn-link" class="float-right"
+        >Xem tất cả
       </a>
     </div>
     <div class="col-12 d-flex justify-content-start p-0 m-0">
-      <div *ngIf="!(productPage$ | async)" class="d-flex justify-content-center col-12">
+      <div *ngIf="!(products$ | async)" class="d-flex justify-content-center col-12">
         <mat-spinner></mat-spinner>
       </div>
-      <div class="col-3" *ngFor="let product of (productPage$ | async)?.content">
+      <div class="col-3" *ngFor="let product of (products$ | async)">
         <app-product-box [product]="product"></app-product-box>
       </div>
     </div>

@@ -4,4 +4,5 @@ export interface ParagraphDto {
   title?: string;
 
   text?: string;
+
 }

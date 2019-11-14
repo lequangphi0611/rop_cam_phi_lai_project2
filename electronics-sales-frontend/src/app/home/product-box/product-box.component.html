@@ -2,7 +2,7 @@
   <div class="product-img">
     <app-my-lazy-load-image
       class="image-fluid"
-      [imageSrc]="'data:image/jpg;base64,' + image"
+      [imageSrc]="'data:image/png;base64,' + (image$ | async)"
       (click)="goToDetail(product.id)"
     ></app-my-lazy-load-image>
     <div class="product-label" *ngIf="product.discount">

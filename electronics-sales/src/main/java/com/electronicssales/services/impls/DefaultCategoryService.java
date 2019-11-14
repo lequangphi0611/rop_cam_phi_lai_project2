@@ -56,21 +56,15 @@ public class DefaultCategoryService implements CategoryService {
     @Transactional
     @Override
     public BaseCategoryResponse createCategory(CategoryDto categoryDto) {
-        return Optional.of(categoryDto)
-            .map(categoryMapper::mapping)
-            .map(categoryRepository::save)
-            .map(baseCategoryResponseMapper::mapping)
-            .get();
+        return Optional.of(categoryDto).map(categoryMapper::mapping).map(categoryRepository::save)
+                .map(baseCategoryResponseMapper::mapping).get();
     }
 
     @Transactional
     @Override
     public BaseCategoryResponse updateCategory(CategoryDto categoryDto) {
-        return Optional.of(categoryDto)
-            .map(categoryMapper::mapping)
-            .map(categoryRepository::save)
-            .map(baseCategoryResponseMapper::mapping)
-            .get();
+        return Optional.of(categoryDto).map(categoryMapper::mapping).map(categoryRepository::save)
+                .map(baseCategoryResponseMapper::mapping).get();
     }
 
     @Transactional
@@ -184,7 +178,7 @@ public class DefaultCategoryService implements CategoryService {
             categoryResponse.setCategoryName(iCategory.getCategoryName());
             categoryResponse.setProductCount(iCategory.getProductCount());
             categoryResponse.setParentId(iCategory.getParentId());
-            Collection<CategoryResponse> childrens = !categoryRepository.hasChildrens(iCategory.getId()) ? null
+            List<CategoryResponse> childrens = !categoryRepository.hasChildrens(iCategory.getId()) ? null
                     : categoryRepository.fetchChildrensOf(iCategory.getId(), "").stream().map(this::mapping)
                             .collect(Collectors.toList());
 

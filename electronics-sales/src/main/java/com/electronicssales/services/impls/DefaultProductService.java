@@ -16,8 +16,11 @@ import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.entities.Product;
 import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.dtos.ProductDto;
+import com.electronicssales.models.responses.BaseCategoryResponse;
+import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.models.responses.DiscountResponse;
 import com.electronicssales.models.responses.FetchProductOption;
+import com.electronicssales.models.responses.ICategoryReponse;
 import com.electronicssales.models.responses.IParagraphResponse;
 import com.electronicssales.models.responses.ImageDataResponse;
 import com.electronicssales.models.responses.ParagraphResponse;
@@ -77,46 +80,42 @@ public class DefaultProductService implements ProductService {
     @Autowired
     private Mapper<ParagraphResponse, IParagraphResponse> paragraphResponseMapper;
 
+    @Lazy
+    @Autowired
+    private Mapper<BaseCategoryResponse, Category> baseCategoryResponseMapper;
+
     @Override
     @Transactional
     public Product saveProduct(ProductDto productDto) {
-        return Optional.of(productDto)
-            .map(productMapper::mapping)
-            .map(productRepository::save)
-            .get();
+        return Optional.of(productDto).map(productMapper::mapping).map(productRepository::save).get();
     }
 
     @Transactional
     @Override
     public ProductResponse createProduct(ProductDto productDto) {
-        return Optional.of(productDto)
-            .map(productMapper::mapping)
-            .map(productRepository::save)
-            .map(productResponseMapper::mapping)
-            .get();
+        return Optional.of(productDto).map(productMapper::mapping).map(productRepository::save)
+                .map(productResponseMapper::mapping).get();
     }
 
     @Transactional
     @Override
-    public Page<Product> fetchProductsBy(FetchProductOption option) {
-        return productRepository.fetchProductsBy(option);
+    public List<ProductResponse> fetchProductsBy(FetchProductOption option) {
+        return productRepository.fetchProductsBy(option).stream().map(productResponseMapper::mapping)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     @Override
     public ProductResponse updateProduct(ProductDto productDto) {
-        return Optional.of(productDto)
-            .map(productMapper::mapping)
-            .map(productRepository::merge)
-            .map(productResponseMapper::mapping)
-            .get();
+        return Optional.of(productDto).map(productMapper::mapping).map(productRepository::merge)
+                .map(productResponseMapper::mapping).get();
     }
 
     private ProductParameterResponse parseFrom(ProductParameterRepositoryResponse repoResponse) {
         ProductParameterResponse productParameterResponse = new ProductParameterResponse();
         productParameterResponse.setParameterType(repoResponse.getParameterType());
         productParameterResponse.setParameterValue(repoResponse.getParameterValue());
-        productParameterResponse.setParameterId(repoResponse.getParameterId());
+        productParameterResponse.setId(repoResponse.getId());
         return productParameterResponse;
     }
 
@@ -163,6 +162,12 @@ public class DefaultProductService implements ProductService {
                 .map(ImageDataResponse::new).collect(Collectors.toList());
     }
 
+    @Override
+    public List<BaseCategoryResponse> getCategoriesBy(long productId) {
+        return categoryRepository.findByProductId(productId).stream().map(baseCategoryResponseMapper::mapping)
+                .collect(Collectors.toList());
+    }
+
     @Lazy
     @Component
     class ProductMapper implements Mapper<Product, ProductDto> {
@@ -172,7 +177,12 @@ public class DefaultProductService implements ProductService {
             Product product = new Product();
             product.setId(productDto.getId());
             product.setPrice(productDto.getPrice());
-            product.setManufacturer(new Manufacturer(productDto.getManufacturerId()));
+            Optional.ofNullable(productDto.getManufacturerId()).ifPresent(manufacturerId -> {
+                if (manufacturerId > 0) {
+                    product.setManufacturer(Manufacturer.of(manufacturerId));
+                }
+                ;
+            });
             product.setProductName(productDto.getProductName());
             product.setStatus(ProductStatus.SELLABLE);
             product.setDescriptions(productDto.getParagraphs());
@@ -225,7 +235,10 @@ public class DefaultProductService implements ProductService {
             productResponse.setProductName(product.getProductName());
             productResponse.setQuantity(product.getQuantity());
             productResponse.setPrice(product.getPrice());
-            productResponse.setManufacturerId(product.getManufacturer().getId());
+            Optional<Manufacturer> manufacturerOptional = Optional.ofNullable(product.getManufacturer());
+            if (manufacturerOptional.isPresent()) {
+                productResponse.setManufacturerId(manufacturerOptional.map(manufacturer -> manufacturer.getId()).get());
+            }
             productResponse.setCreatedTime(product.getCreatedTime());
             productResponse.setUpdatedTime(product.getUpdatedTime());
             return productResponse;

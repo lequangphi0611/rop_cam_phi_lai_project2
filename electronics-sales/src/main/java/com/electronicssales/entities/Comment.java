@@ -73,7 +73,8 @@ public class Comment {
     @OneToOne(
         fetch = FetchType.LAZY,
         mappedBy = "comment",
-        cascade = CascadeType.ALL
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     private PostComment postComment;
 

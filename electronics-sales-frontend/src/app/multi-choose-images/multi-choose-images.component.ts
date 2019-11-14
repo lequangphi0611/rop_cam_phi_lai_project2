@@ -1,6 +1,6 @@
 import { ChooseImagesComponent } from './../choose-images/choose-images.component';
-import { filter } from 'rxjs/operators';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { filter, finalize } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import {
   Component,
   OnInit,
@@ -21,7 +21,7 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
 
   imagesChoosed = new BehaviorSubject<any>(null);
 
-  @Input() imagesInput: Observable<string[]>;
+  @Input() imageUrls$: Observable<string[]> = of(null);
 
   imagesChoosed$ = this.imagesChoosed.asObservable();
 
@@ -29,16 +29,36 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
 
   imagesChoosedArray: any[] = [];
 
+  subscription: Subscription = new Subscription();
+
   @ViewChild('multiFileContainer', { read: ViewContainerRef, static: true })
   container: ViewContainerRef;
 
   constructor(private comFacResolver: ComponentFactoryResolver) {}
 
   ngOnInit() {
+    this.subscription.add(
+      this.imageUrls$
+        .pipe(
+          filter(imageUrls => {
+            this.removeAll();
+            if (!imageUrls || imageUrls.length === 0) {
+              this.appendChooseImage();
+              return false;
+            }
+            return true;
+          })
+        )
+        .subscribe(imageUrls => {
+          this.removeAll();
+          imageUrls.forEach(url => this.appendChooseImage(url, imageUrls.length));
+        })
+    );
     this.appendChooseImage();
   }
 
-  appendChooseImage(): ChooseImagesComponent {
+  appendChooseImage(url?: string, max?: number): ChooseImagesComponent {
+    console.log('create');
     const chooseImageComponentElement = this.comFacResolver.resolveComponentFactory(
       ChooseImagesComponent
     );
@@ -50,28 +70,26 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
     chooseImageComponent.index = this.chooseImages.indexOf(
       chooseImageComponent
     );
+    chooseImageComponent.fileUrl = url;
     chooseImageComponent.onRemovedFile.subscribe(() => {
-      const index = this.chooseImages.indexOf(
-        chooseImageComponent
-      );
-      if (this.chooseImages.length > 1) {
+      const index = this.chooseImages.indexOf(chooseImageComponent);
+      this.chooseImages.splice(index, 1);
+      if (this.chooseImages.length >= 0) {
         dynamicComp.destroy();
       }
-
       this.imagesChoosedArray.splice(index, 1);
-      this.chooseImages.splice(index, 1);
       this.imagesChoosed.next(this.imagesChoosedArray);
     });
 
     chooseImageComponent.onSelectFile.subscribe((file: File) => {
-      const index = this.chooseImages.indexOf(
-        chooseImageComponent
-      );
+      const index = this.chooseImages.indexOf(chooseImageComponent);
       if (this.imagesChoosedArray[index]) {
         this.imagesChoosedArray[index] = file;
       } else {
         this.imagesChoosedArray.push(file);
-        this.appendChooseImage();
+        if (!max || max === 0 || (index + 1) === max) {
+          this.appendChooseImage();
+        }
       }
 
       this.imagesChoosed.next(this.imagesChoosedArray);
@@ -80,7 +98,12 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
     return chooseImageComponent;
   }
 
+  removeAll() {
+    this.chooseImages.forEach((component, i) => this.container.remove(i));
+  }
+
   ngOnDestroy() {
     this.imagesChoosed.unsubscribe();
+    this.subscription.unsubscribe();
   }
 }

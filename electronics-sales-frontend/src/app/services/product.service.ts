@@ -1,3 +1,7 @@
+import { ParagraphDto } from './../models/dtos/paragraph.dto';
+import { DiscountView } from './../models/view-model/discount.view';
+import { ImageView } from './../models/view-model/image-data.view';
+import { CategoryView } from './../models/view-model/category.view.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -20,17 +24,14 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  fetchProduct(option: FetchProductOption): Observable<Page<ProductView>> {
+  fetchProduct(option: FetchProductOption): Observable<ProductView[]> {
     return this.http
-      .get<Page<ProductView>>(this.buildRequestUrlFrom(option))
+      .get<ProductView[]>(this.buildRequestUrlFrom(option))
       .pipe(
-        map((productPage: Page<ProductView>) => {
-          productPage.content = productPage.content.map(product =>
-            ProductView.of(product)
-          );
-          console.log(productPage);
-          return productPage;
-        })
+        map((products: ProductView[]) =>
+          products.map(product => ProductView.of(product, this))
+        ),
+        catchError(() => of([]))
       );
   }
 
@@ -50,6 +51,10 @@ export class ProductService {
     return this.http.post<ProductView>(ProductService.BASE_REQUEST, body);
   }
 
+  getDiscount(productId: number): Observable<DiscountView> {
+    return null;
+  }
+
   existsByName(name: string): Observable<boolean> {
     return this.http
       .head<any>(`${ProductService.BASE_REQUEST}/product-name/${name}`, {
@@ -66,23 +71,25 @@ export class ProductService {
   getProduct(id: number): Observable<ProductView> {
     return this.http
       .get<ProductView>(`${ProductService.BASE_REQUEST}/${id}`)
-      .pipe(map(product => ProductView.of(product)));
+      .pipe(map(product => ProductView.of(product, this)));
   }
 
-  getImages(id: number): Observable<string[]> {
-    return this.http.get<{ data: string }[]>(`/api/products/${id}/images`).pipe(
-      map(datas => {
-        const dataStrs = [];
-        datas.map(data => data.data).forEach(data => dataStrs.push(data));
-        return dataStrs;
-      })
-    );
+  getImages(id: number): Observable<ImageView[]> {
+    return this.http.get<ImageView[]>(`/api/products/${id}/images`);
+  }
+
+  getCategories(productId: number): Observable<CategoryView[]> {
+    return this.http.get<CategoryView[]>(`${ProductService.BASE_REQUEST}/${productId}/categories`);
   }
 
   getParameters(productId: number): Observable<ProductParameterView[]> {
     return this.http.get<ProductParameterView[]>(
       `${ProductService.BASE_REQUEST}/${productId}/parameters`
     );
+  }
+
+  getDescriptions(productId: number): Observable<ParagraphDto[]> {
+    return this.http.get<ParagraphDto[]>(`${ProductService.BASE_REQUEST}/${productId}/descriptions`);
   }
 
   private buildRequestUrlFrom(option: FetchProductOption): string {

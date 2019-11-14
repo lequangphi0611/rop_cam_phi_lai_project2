@@ -6,6 +6,7 @@ import {
   Output,
   OnDestroy,
   Input,
+  ViewChild,
 } from '@angular/core';
 import { filter, takeUntil } from 'rxjs/operators';
 
@@ -27,11 +28,24 @@ export class ChooseImagesComponent implements OnInit, OnDestroy {
 
   filesSelected$ = this.filesSelected.asObservable();
 
-  fileUrl: any;
+  @Input() fileUrl: any;
 
   constructor() {}
 
   ngOnInit() {
+    if (this.fileUrl) {
+      fetch(this.fileUrl)
+        .then(res => res.blob())
+        .then(blob => {
+          const file = new File([blob], 'filename');
+          this.onSelectFile.emit(file);
+          this.filesSelected.next(file);
+        });
+    }
+    this.onFilesSelectedSubcription();
+  }
+
+  onFilesSelectedSubcription() {
     this.filesSelected$
       .pipe(
         filter(file => {
@@ -44,13 +58,22 @@ export class ChooseImagesComponent implements OnInit, OnDestroy {
       )
       .subscribe(file => {
         const reader = new FileReader();
-        reader.onload = event => (this.fileUrl = event.target['result']);
+        reader.onload = event => {
+          const urlResult = event.target['result'] as string;
+          const fileUrl = `data:image/png;base64,${urlResult.substr(urlResult.indexOf(',') + 1)}`;
+          this.fileUrl = fileUrl;
+        };
         reader.readAsDataURL(file);
       });
   }
 
   async onSelectedFile(event: Event) {
-    const file = event.target['files'][0];
+    const files = event.target['files'];
+    if (files.length === 0) {
+      this.onRemovedFile.emit();
+      return;
+    }
+    const file = files[0];
     this.onSelectFile.emit(file);
     this.filesSelected.next(file);
   }
@@ -61,7 +84,8 @@ export class ChooseImagesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('choose image destroy');
+    this.onRemoveFile();
+    console.log('img destroy');
     this.filesSelected.unsubscribe();
   }
 }

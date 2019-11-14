@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FetchProductType } from 'src/app/models/types/fetch-product-type.type';
+import { ProductSortType } from 'src/app/models/types/product-sort-type.type';
 
 export interface ProductBanner {
   title: string;
@@ -24,6 +25,7 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
     page: 0,
     size: 4,
     fetchType: FetchProductType.ALL,
+    productSortType: ProductSortType.TIME
   };
 
   constructor(private categoryService: CategoryService) {}

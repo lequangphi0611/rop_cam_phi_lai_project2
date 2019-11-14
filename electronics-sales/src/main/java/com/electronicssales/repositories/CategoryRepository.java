@@ -33,6 +33,8 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
 
     String HAS_CHILDRENS_QUERY = "SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Category c WHERE c.parent.id = ?1";
 
+    String FIND_BY_PRODUCT_ID = "SELECT c FROM Category c JOIN c.productCategories pc WHERE pc.product.id = ?1";
+
     boolean existsByCategoryName(String categoryName);   
 
     @Override
@@ -62,5 +64,8 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
         nativeQuery = true
     )
     void deleteCategoryParametersByCategoryId(long categoryId);
+
+    @Query(FIND_BY_PRODUCT_ID)
+    List<Category> findByProductId(long productId);
     
 }

@@ -5,16 +5,12 @@
   <div style="clear: both;"></div>
   <div class="body-product-KT" [formGroup]="parametersProductForm">
     <form formArrayName="parameters" (change)="onValuesChange()">
-      <div class="col-6" style="float: left;">
+      <div class="col-12 row">
         <div
-          class="form-group row col-12"
+          class="form-group row col-6"
           *ngFor="
             let parameter of parameters.controls
-              | sliceArray
-                : begin
-                : (parameters.controls.length % 2 === 0
-                    ? parameters.controls.length / 2 - 1
-                    : parameters.controls.length / 2);
+
             let i = index
           "
         >
@@ -33,32 +29,6 @@
               <mat-error *ngIf="parameters?.get('+i+')?.hasError('required')">
                 Vui lòng không để trống {{parameter.value["parameterTypeName"]}}
               </mat-error>
-            </mat-form-field>
-          </div>
-        </div>
-      </div>
-      <div class="col-6" style="float: left;">
-        <div
-          class="form-group row col-12"
-          *ngFor="
-            let parameter of parameters.controls
-              | sliceArray
-                : parameters.controls.length / 2
-                : parameters.controls.length;
-            let i = index
-          "
-        >
-          <label class="col-3 col-form-label d-flex align-items-center">{{
-            parameter.value["parameterTypeName"] + " :"
-          }}</label>
-          <div class="col-sm-9" [formGroupName]="i">
-            <mat-form-field class="col-12 m-0 p-0">
-              <input
-                class="m-0"
-                formControlName="parameterValue"
-                matInput
-                placeholder="Nhập thông số..."
-              />
             </mat-form-field>
           </div>
         </div>

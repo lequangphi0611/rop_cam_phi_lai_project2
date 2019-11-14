@@ -20,7 +20,7 @@ import {
   ],
 })
 export class ProductDescriptionFormComponent implements OnInit, OnDestroy {
-  descriptionForm: FormGroup;
+  @Input() descriptionForm: FormGroup;
 
   @Input() descriptions$: Observable<ParagraphDto[]> = of(null);
 
@@ -33,9 +33,6 @@ export class ProductDescriptionFormComponent implements OnInit, OnDestroy {
   constructor(private formBuilder: FormBuilder) {}
 
   ngOnInit() {
-    this.descriptionForm = this.formBuilder.group({
-      descriptions: this.formBuilder.array([]),
-    });
 
     this.subscription = this.descriptions$
       .pipe(filter(paragraphs => paragraphs && paragraphs.length > 0))
@@ -58,8 +55,8 @@ export class ProductDescriptionFormComponent implements OnInit, OnDestroy {
     const title = paragraphDto ? paragraphDto.title : [null];
     const text = paragraphDto ? paragraphDto.text : [null];
     return this.formBuilder.group({
-      title: [title],
-      text: [text],
+      title,
+      text,
     });
   }
 

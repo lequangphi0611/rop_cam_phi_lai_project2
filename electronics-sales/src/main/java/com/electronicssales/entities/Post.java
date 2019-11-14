@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -60,10 +61,14 @@ public class Post {
     @OneToMany(
         cascade = CascadeType.ALL,
         fetch = FetchType.LAZY,
-        mappedBy = "post",
         orphanRemoval = true
     )
-    private Collection<PostParagraph> postParagraphs;
+    @JoinTable(
+        name = "post_paragraphs",
+        joinColumns = @JoinColumn(name = "paragraph_id"),
+        inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private Collection<Paragraph> paragraphs;
 
     @OneToMany(
         cascade = CascadeType.ALL,

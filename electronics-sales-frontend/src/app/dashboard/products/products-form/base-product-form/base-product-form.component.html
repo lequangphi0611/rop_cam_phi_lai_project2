@@ -22,10 +22,10 @@
           >Loại sản phẩm (<span class="note">*</span>) :</label
         >
 
-        <div class="col-sm-9" formGroupName="categoryIdsForm">
+        <div class="col-sm-9" formArrayName="categoryIds">
           <mat-form-field class="col-12 m-0 p-0">
             <mat-label>--- Chọn loại sản phẩm ---</mat-label>
-            <mat-select formControlName="parentId" (selectionChange)="onSelectCategory($event); pushCategoryIdArray($event.value, 0)">
+            <mat-select formControlName="0" (selectionChange)="onSelectCategory($event.value);">
               <mat-option
                 *ngFor="let category of allCategories$ | async; let i = index"
                 [value]="category.id"
@@ -37,7 +37,7 @@
           </mat-form-field>
           <mat-form-field class="col-12 p-0" *ngIf="categoryChildrens">
             <mat-label>--- Chọn loại sản phẩm con ---</mat-label>
-            <mat-select formControlName="childrenId"  (selectionChange)="onSelectCategory($event, categoryChildrens); pushCategoryIdArray($event.value, 1)">
+            <mat-select formControlName="1"  (selectionChange)="onSelectCategory($event.value, categoryChildrens);">
               <mat-option
                 *ngFor="let category of categoryChildrens"
                 [value]="category.id"

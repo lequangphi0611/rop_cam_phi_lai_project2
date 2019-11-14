@@ -1,6 +1,7 @@
 package com.electronicssales.services;
 
 import com.electronicssales.entities.Image;
+import com.electronicssales.models.responses.ImageDataResponse;
 
 public interface ImageService {
 
@@ -8,6 +9,6 @@ public interface ImageService {
 
     Image saveImage(byte[] imageData);
 
-    byte[] getImageDataById(long id);
+    ImageDataResponse getImageDataById(long id);
     
 }

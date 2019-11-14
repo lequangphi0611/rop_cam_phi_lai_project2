@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProductView } from 'src/app/models/view-model/product.view.model';
@@ -13,15 +14,14 @@ export class ProductBoxComponent implements OnInit, OnDestroy {
 
   @Input() product: ProductView;
 
-  image: string;
-
   subcription: Subscription;
+
+  image$: Observable<string>;
 
   constructor(private router: Router, private productService: ProductService) { }
 
   ngOnInit() {
-    this.subcription = this.productService.getImages(this.product.id)
-      .subscribe(images => this.image = images[0]);
+    this.image$ = this.product.images$.pipe(map(images => images[0].data));
   }
 
   goToDetail(id: number): void {
@@ -29,6 +29,5 @@ export class ProductBoxComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subcription.unsubscribe();
   }
 }

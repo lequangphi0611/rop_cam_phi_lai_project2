@@ -3,6 +3,7 @@ package com.electronicssales.services.impls;
 import java.util.Optional;
 
 import com.electronicssales.entities.Image;
+import com.electronicssales.models.responses.ImageDataResponse;
 import com.electronicssales.repositories.ImageRepository;
 import com.electronicssales.services.ImageService;
 
@@ -37,11 +38,12 @@ public class DefaultImageService implements ImageService {
     }
 
     @Override
-    public byte[] getImageDataById(long id) {
+    public ImageDataResponse getImageDataById(long id) {
         return imageRepository
-            .findById(id)
-            .get()
-            .getData();
+        .findById(id)
+        .map(image -> image.getData())
+        .map(ImageDataResponse::new)
+        .get();
     }
 
     

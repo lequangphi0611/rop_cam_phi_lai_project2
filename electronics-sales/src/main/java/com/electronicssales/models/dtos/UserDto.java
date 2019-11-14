@@ -2,6 +2,8 @@ package com.electronicssales.models.dtos;
 
 import com.electronicssales.models.responses.UserInfoResponse;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -12,5 +14,7 @@ import lombok.ToString;
 public class UserDto extends UserInfoResponse {
 
     private String password;
+
+    private MultipartFile avartar;
         
 }

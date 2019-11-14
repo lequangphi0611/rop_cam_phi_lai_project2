@@ -38,7 +38,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @OneToOne(
+    @OneToOne (
         fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,
         orphanRemoval = true

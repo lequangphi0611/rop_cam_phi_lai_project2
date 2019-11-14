@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
@@ -47,8 +48,8 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     @Autowired
     private EntityManager entityManager;
 
-    private static final String[] PRODUCT_COLUMNS_STRING = { "id", "productName", "price", "quantity", "salable",
-            "createdTime", "updatedTime", "manufacturer", "discount" };
+    private static final String[] PRODUCT_COLUMNS_STRING = { "id", "productName", "price", "quantity", "status",
+            "createdTime", "updatedTime", "manufacturer", "discount"};
 
     private static final String[] DISCOUNT_COLUMNS_STRING = { "id", "discountValue", "startedTime", "discountType" };
 
@@ -74,25 +75,19 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     @SuppressWarnings("unchecked")
     @Transactional
     @Override
-    public Page<Product> fetchProductsBy(FetchProductOption option) {
+    public List<Product> fetchProductsBy(FetchProductOption option) {
         Map<String, Object> parameters = new HashMap<>();
         String sqlbuilded = buildFetchProductsQueryBy(option, parameters).toString();
         LOGGER.info("My JPQL Builded : {}", sqlbuilded);
 
         int firstResultIndex = option.getPageable().getPageNumber() * option.getPageable().getPageSize();
-        Query query = entityManager.createQuery(sqlbuilded.toString(), Product.class);
-        
+        Query query = entityManager.createQuery(sqlbuilded.toString(), Product.class)
+            .setFirstResult(firstResultIndex)
+            .setMaxResults(option.getPageable().getPageSize());
+
         parameters.forEach(query::setParameter);
 
-        int maxResult = query.getResultList().size();
-
-        query
-        .setFirstResult(firstResultIndex)
-        .setMaxResults(option.getPageable().getPageSize());
-
-        List<Product> products = (List<Product>) query.getResultList();
-        return new PageImpl<>(products, option.getPageable(), maxResult);
-
+        return (List<Product>) query.getResultList();
     }
 
     @Transactional
@@ -114,7 +109,8 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         buildConditionsQuery(builder, option, parameters);
 
         // Group by
-        boolean canGroup = (option.getProductSortType() != null && option.getProductSortType() == ProductSortType.REVIEWS)
+        boolean canGroup = (option.getProductSortType() != null
+                && option.getProductSortType() == ProductSortType.REVIEWS)
                 || (option.isFetchDiscount() && option.getFetchProductType() == FetchProductType.DISCOUNT);
         if (canGroup) {
             groupBy(builder);
@@ -157,8 +153,13 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     }
 
     private StringBuilder initQuery() {
-        return new StringBuilder("SELECT ").append(PRODUCT_PREFIX).append(" FROM ")
+        StringBuilder builder = new StringBuilder("SELECT ");
+        
+        builder
+                .append(PRODUCT_PREFIX)
+                .append(" FROM ")
                 .append(Product.class.getSimpleName()).append(" ").append(PRODUCT_PREFIX);
+        return builder;
     }
 
     private StringBuilder buildJoin(StringBuilder builder, FetchProductOption option) {
@@ -177,13 +178,10 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
             builder.append(" LEFT JOIN ").append(PRODUCT_PREFIX).append(".reviews ").append(REVIEWS_PREFIX);
         }
 
-        if (option.isFetchDiscount()) {
-            if (option.getFetchProductType() != FetchProductType.DISCOUNT) {
-                builder.append(" LEFT");
-            }
-
-            builder.append(" JOIN FETCH ").append(PRODUCT_PREFIX).append(".discount ").append(DISCOUNT_PREFIX);
+        if (option.getFetchProductType() != FetchProductType.DISCOUNT) {
+            builder.append(" LEFT");
         }
+        builder.append(" JOIN ").append(PRODUCT_PREFIX).append(".discount ").append(DISCOUNT_PREFIX);
 
         return builder;
     }

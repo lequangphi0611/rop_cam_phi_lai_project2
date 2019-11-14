@@ -144,8 +144,8 @@ public class DefaultUserService implements UserService {
             user.setActived(true);
             user.setUsername(dto.getUsername());
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
-            Optional.ofNullable(dto.getAvartarId())
-                    .ifPresent(avartarId -> user.setAvartar(new Image(dto.getAvartarId())));
+            Optional.ofNullable(dto.getAvartar())
+                    .ifPresent(avartar -> user.setAvartar(Image.of(avartar)));
             user.setUserInfo(userInfoMapper.mapping(dto));
             return user;
         }

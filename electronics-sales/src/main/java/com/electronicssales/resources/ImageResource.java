@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Image;
+import com.electronicssales.models.responses.ImageDataResponse;
 import com.electronicssales.services.ImageService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,13 @@ public class ImageResource {
         produces = MediaType.IMAGE_JPEG_VALUE
     )
     public Callable<byte[]> fetchImage(@PathVariable long id) {
-        return () -> imageService.getImageDataById(id);
+        return () -> imageService.getImageDataById(id).getData();
     }
+
+    @GetMapping("/{id}/data")
+    public Callable<ImageDataResponse> fetchData(@PathVariable long id) {
+        return () -> imageService.getImageDataById(id);
+    } 
 
     @PostMapping
     public Callable<ResponseEntity<?>> saveImage(@RequestBody MultipartFile file) throws IOException {

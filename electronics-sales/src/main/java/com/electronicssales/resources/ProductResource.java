@@ -67,6 +67,10 @@ public class ProductResource {
     @Autowired
     private Mapper<ProductDiscountResponse, Product> productDiscountResponseMapper;
 
+    @Lazy
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private boolean validateProductBeforeCreate(ProductDto product) {
         if (productService.existsByProductName(product.getProductName())) {
             throw new EntityExistsException("Product is already exists !");
@@ -116,13 +120,7 @@ public class ProductResource {
             option.setSortType(SortType.of(sortType));
             option.setFetchDiscount(fetchDiscount);
 
-            Mapper<? extends ProductResponse, Product> productMapper = fetchDiscount ? productDiscountResponseMapper
-                    : productResponseMapper;
-            Page<Product> productPage = productService.fetchProductsBy(option);
-            Page<? extends ProductResponse> productPageResult = new PageImpl<>(
-                    productPage.getContent().stream().map(productMapper::mapping).collect(Collectors.toList()),
-                    productPage.getPageable(), productPage.getTotalElements());
-            return ResponseEntity.ok(productPageResult);
+            return ResponseEntity.ok(productService.fetchProductsBy(option));
         };
     }
 
@@ -150,21 +148,22 @@ public class ProductResource {
             @RequestParam(required = false) MultipartFile[] images)
             throws JsonParseException, JsonMappingException, IOException {
 
-        ProductDto productDto = new ObjectMapper().readValue(productDtoString, ProductDto.class);
-
-        System.out.println(productDto.toString());
+        ProductDto productDto = this.objectMapper.readValue(productDtoString, ProductDto.class);
         this.validateProductBeforeCreate(productDto);
         productDto.setImages(images);
+        Optional.ofNullable(images).ifPresent(productDto::setImages);
         ProductResponse productCreated = productService.createProduct(productDto);
         return ResponseEntity.created(null).body(productCreated);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable("id") long productId, @RequestPart @Valid ProductDto product,
-            @RequestPart(required = false) MultipartFile[] images) {
+    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
+    public ResponseEntity<?> updateProduct(@PathVariable("id") long productId, @RequestParam String productStr,
+            @RequestParam(required = false) MultipartFile[] images)
+            throws JsonParseException, JsonMappingException, IOException {
+        ProductDto product = this.objectMapper.readValue(productStr, ProductDto.class);
         product.setId(productId);
         validateProductBeforeUpdate(product);
-        product.setImages(images);
+        Optional.ofNullable(images).ifPresent(product::setImages);
         ProductResponse productUpdated = productService.updateProduct(product);
         return ResponseEntity.created(null).body(productUpdated);
     }
@@ -196,11 +195,23 @@ public class ProductResource {
         return () -> ResponseEntity.ok(productService.getDescriptionsOf(productId));
     }
 
+    @GetMapping("/{id}/categories")
+    public Callable<ResponseEntity<?>> fetchCategories(@PathVariable("id") long productId) {
+        return () -> ResponseEntity.ok(productService.getCategoriesBy(productId));
+    }
+
     @GetMapping("/{id}/reviews")
     public Callable<ResponseEntity<?>> fetchReviews(@PathVariable long id, @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size) {
         Pageable pageable = (size == null || size <= 0) ? null : PageRequest.of(page, size);
         return () -> ResponseEntity.ok(reviewService.findByProductId(id, pageable));
+    }
+
+    @RequestMapping(value = "/productName/{productName}")
+    public Callable<ResponseEntity<?>> existsByProductName(@PathVariable String productName) {
+        return () -> productService.existsByProductName(productName)
+            ? ResponseEntity.ok().build()
+            : ResponseEntity.notFound().build();
     }
 
 }

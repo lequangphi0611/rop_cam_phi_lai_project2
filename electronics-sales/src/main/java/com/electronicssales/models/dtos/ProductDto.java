@@ -25,7 +25,7 @@ public class ProductDto {
 
     Collection<Long> categoryIds;
 
-    long manufacturerId;
+    Long manufacturerId;
 
     Collection<Paragraph> paragraphs;
 

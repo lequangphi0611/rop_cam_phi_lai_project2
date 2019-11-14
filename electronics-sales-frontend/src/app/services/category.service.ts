@@ -28,4 +28,8 @@ export class CategoryService {
       `${CategoryService.BASE_REQUEST}/${categoryId}/parameter-types`
     );
   }
+
+  getChildrens(categoryId: number): Observable<CategoryView[]> {
+    return this.http.get<CategoryView[]>(`${CategoryService.BASE_REQUEST}/${categoryId}/childrens`);
+  }
 }

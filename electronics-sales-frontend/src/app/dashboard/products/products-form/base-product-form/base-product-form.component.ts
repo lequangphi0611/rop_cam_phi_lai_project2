@@ -1,10 +1,18 @@
+import { ProductDataView } from './../../products-data/products-data.component';
 import { filter, switchMap, takeUntil, map } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { CategoryService } from 'src/app/services/category.service';
 import { ManufacturerView } from './../../../../models/view-model/manufacturer.view.model';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Output,
+  EventEmitter,
+  Input,
+} from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
 
 @Component({
@@ -16,7 +24,6 @@ import { MatSelectChange } from '@angular/material/select';
   ],
 })
 export class BaseProductFormComponent implements OnInit, OnDestroy {
-
   @Output() onChange = new EventEmitter(true);
 
   @Output() onInit = new EventEmitter(true);
@@ -29,7 +36,9 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
 
   manufacturers$: Observable<ManufacturerView[]>;
 
-  basicProductForm: FormGroup;
+  @Input() basicProductForm: FormGroup;
+
+  @Input() currentProduct$: Observable<ProductDataView>;
 
   constructor(
     private categoryService: CategoryService,
@@ -38,64 +47,90 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.categorySubcription();
-    this.basicProductForm = this.buildBaseProduct();
+    // this.basicProductForm = this.buildBaseProduct();
     this.onInit.emit(this.basicProductForm);
     this.onChange.emit(this.basicProductForm);
+
+    this.currentProduct$
+      .pipe(filter(product => product != null))
+      .subscribe(product => this.setFormValues(product));
   }
 
-  buildBaseProduct() {
-    return this.formBuilder.group({
-      productName: [null, [Validators.required]],
-      categoryIds: this.formBuilder.array([]),
-      categoryIdsForm: this.formBuilder.group({
-        parentId: [null],
-        childrenId: [null]
-      }),
-      manufacturerId: [null, [Validators.required]],
-      price: [null, [Validators.required]],
-      quantity: [null, [Validators.required]]
-    });
+  // buildBaseProduct() {
+  //   return this.formBuilder.group({
+  //     productName: [null, [Validators.required]],
+  //     categoryIds: this.formBuilder.array([
+  //       this.formBuilder.control(''),
+  //       this.formBuilder.control(''),
+  //     ]),
+  //     manufacturerId: [null, [Validators.required]],
+  //     price: [null, [Validators.required]],
+  //     quantity: [null, [Validators.required]],
+  //   });
+  // }
+
+  async setFormValues(product: ProductDataView) {
+    this.productNameControl.setValue(product.productName);
+    (await product.categories$.toPromise())
+      .filter((value, i) => i <= 1)
+      .map((category) => {
+        this.categoryService.getChildrens(category.id)
+          .pipe(filter(childrens => childrens && childrens.length > 0))
+          .subscribe(childrens => this.categoryChildrens = childrens);
+        this.fetchManufacturer(category.id);
+        return category.id;
+      })
+      .forEach((categoryId, i) =>
+        this.categoryIdsFormArray.at(i).setValue(categoryId)
+      );
+    this.priceControl.setValue(product.price);
+    this.manufacturerIdControl.setValue(product.manufacturerId);
+  }
+
+  get manufacturerIdControl() {
+    return this.basicProductForm.get('manufacturerId');
+  }
+
+  get productNameControl() {
+    return this.basicProductForm.get('productName');
   }
 
   get categoryIdsFormArray() {
     return this.basicProductForm.get('categoryIds') as FormArray;
   }
 
-  pushCategoryIdArray(item: number, index: number) {
-    const categoryFormCtrl = this.categoryIdsFormArray.at(index);
-    if (categoryFormCtrl) {
-      categoryFormCtrl.setValue(item);
-      return;
-    }
-
-    this.categoryIdsFormArray.push(this.formBuilder.control(item));
+  get priceControl() {
+    return this.basicProductForm.get('price');
   }
 
   categorySubcription() {
     this.allCategories$ = this.categoryService.fetchCategories();
   }
 
-  async onSelectCategory(
-    event: MatSelectChange,
-    categoriesParam?: CategoryView[]
-  ) {
-    const categoryId = event.value;
-    this.onSelectedCategory.emit(categoryId);
-    this.onChange.emit(this.basicProductForm);
+  async onSelectCategory(categoryId: number, categoriesParam?: CategoryView[]) {
     const categories =
       categoriesParam || (await this.allCategories$.toPromise());
     const category = categories.filter(e => e.id === categoryId)[0];
-    if (!categoriesParam) {
+    if (category && !categoriesParam) {
       if (!category.childrens || category.childrens.length === 0) {
         this.categoryChildrens = null;
       } else {
         this.categoryChildrens = category.childrens;
       }
     }
+    this.onCategoryValueChange(categoryId);
+  }
+
+  onCategoryValueChange(categoryId: number) {
+    this.onSelectedCategory.emit(categoryId);
+    this.onChange.emit(this.basicProductForm);
+    this.fetchManufacturer(categoryId);
+  }
+
+  fetchManufacturer(categoryId: number) {
     this.manufacturers$ = this.categoryService
       .getManufacturersBy(categoryId)
       .pipe(filter(manufacturers => manufacturers.length > 0));
-
   }
 
   trackByManufacturer(item: ManufacturerView, index: number) {
@@ -109,5 +144,4 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.onChange.unsubscribe();
   }
-
 }
