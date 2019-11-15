@@ -29,6 +29,10 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
 
   imagesChoosedArray: any[] = [];
 
+  hasAppend = new BehaviorSubject<boolean>(false);
+
+  hashAppend$ = this.hasAppend.asObservable();
+
   subscription: Subscription = new Subscription();
 
   @ViewChild('multiFileContainer', { read: ViewContainerRef, static: true })
@@ -41,24 +45,36 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
       this.imageUrls$
         .pipe(
           filter(imageUrls => {
-            this.removeAll();
             if (!imageUrls || imageUrls.length === 0) {
-              this.appendChooseImage();
+              this.init();
               return false;
             }
             return true;
           })
         )
         .subscribe(imageUrls => {
-          this.removeAll();
+          this.hasAppend.next(false);
           imageUrls.forEach(url => this.appendChooseImage(url, imageUrls.length));
         })
     );
-    this.appendChooseImage();
+    this.hashAppend$.subscribe((appendable) => {
+      if (appendable) {
+        this.appendChooseImage(null, this.imagesChoosedArray.length + 1);
+      } else {
+        this.removeAll();
+      }
+    });
   }
 
-  appendChooseImage(url?: string, max?: number): ChooseImagesComponent {
-    console.log('create');
+  init() {
+    this.chooseImages.forEach((c, i) => {
+      this.container.remove(i);
+      this.chooseImages.splice(i, 1);
+    });
+    this.hasAppend.next(true);
+  }
+
+  appendChooseImage(url?: string, max = 1): ChooseImagesComponent {
     const chooseImageComponentElement = this.comFacResolver.resolveComponentFactory(
       ChooseImagesComponent
     );
@@ -74,10 +90,10 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
     chooseImageComponent.onRemovedFile.subscribe(() => {
       const index = this.chooseImages.indexOf(chooseImageComponent);
       this.chooseImages.splice(index, 1);
-      if (this.chooseImages.length >= 0) {
+      this.imagesChoosedArray.splice(index, 1);
+      if (this.imagesChoosedArray.length >= 0) {
         dynamicComp.destroy();
       }
-      this.imagesChoosedArray.splice(index, 1);
       this.imagesChoosed.next(this.imagesChoosedArray);
     });
 
@@ -87,8 +103,8 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
         this.imagesChoosedArray[index] = file;
       } else {
         this.imagesChoosedArray.push(file);
-        if (!max || max === 0 || (index + 1) === max) {
-          this.appendChooseImage();
+        if (this.imagesChoosedArray.length === max) {
+          this.hasAppend.next(true);
         }
       }
 
@@ -99,11 +115,17 @@ export class MultiChooseImagesComponent implements OnInit, OnDestroy {
   }
 
   removeAll() {
-    this.chooseImages.forEach((component, i) => this.container.remove(i));
+    this.chooseImages
+      .filter(component => component.fileUrl == null)
+      .forEach((component, i) => {
+      this.container.remove(i);
+      this.chooseImages.splice(i, 1);
+    });
   }
 
   ngOnDestroy() {
-    this.imagesChoosed.unsubscribe();
+    this.imagesChoosed.complete();
     this.subscription.unsubscribe();
+    this.hasAppend.complete();
   }
 }

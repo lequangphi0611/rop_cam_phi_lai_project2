@@ -77,7 +77,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     @Override
     public List<Product> fetchProductsBy(FetchProductOption option) {
         Map<String, Object> parameters = new HashMap<>();
-        String sqlbuilded = buildFetchProductsQueryBy(option, parameters).toString();
+        String sqlbuilded = buildFetchProductsQueryBy(initQuery(), option, parameters).toString();
         LOGGER.info("My JPQL Builded : {}", sqlbuilded);
 
         int firstResultIndex = option.getPageable().getPageNumber() * option.getPageable().getPageSize();
@@ -93,14 +93,13 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     @Transactional
     @Override
     public long countAll() {
-        StringBuilder builder = new StringBuilder("SELECT COUNT(").append(PRODUCT_PREFIX).append(") FROM ")
-                .append(Product.class.getSimpleName()).append(" ").append(PRODUCT_PREFIX);
+        StringBuilder builder = countProductQuery();
 
         return entityManager.createQuery(builder.toString(), Long.class).getSingleResult();
     }
 
-    private StringBuilder buildFetchProductsQueryBy(FetchProductOption option, Map<String, Object> parameters) {
-        StringBuilder builder = initQuery();
+    private StringBuilder buildFetchProductsQueryBy(StringBuilder initBuilder, FetchProductOption option, Map<String, Object> parameters) {
+        StringBuilder builder = initBuilder;
 
         // JOIN
         buildJoin(builder, option);
@@ -120,6 +119,8 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         builder.append(buildOrderBy(option.getProductSortType(), option.getSortType()));
         return builder;
     }
+
+    
 
     private StringBuilder buildConditionsQuery(StringBuilder builder, FetchProductOption option,
             Map<String, Object> parameters) {
@@ -160,6 +161,11 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
                 .append(" FROM ")
                 .append(Product.class.getSimpleName()).append(" ").append(PRODUCT_PREFIX);
         return builder;
+    }
+
+    private StringBuilder countProductQuery() {
+        return new StringBuilder("SELECT COUNT(").append(PRODUCT_PREFIX).append(") FROM ")
+        .append(Product.class.getSimpleName()).append(" ").append(PRODUCT_PREFIX);
     }
 
     private StringBuilder buildJoin(StringBuilder builder, FetchProductOption option) {

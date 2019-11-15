@@ -17,13 +17,14 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
-import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subscription, Subject } from 'rxjs';
 import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { CategoryService } from 'src/app/services/category.service';
 import { ManufacturerView } from './../../../models/view-model/manufacturer.view.model';
 import { BaseProductFormComponent } from './base-product-form/base-product-form.component';
 import { ProductService } from 'src/app/services/product.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-products-form',
@@ -42,7 +43,9 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
 
   descriptionsForm: FormGroup;
 
-  subcription = new Subscription();
+  editMode = false;
+
+  private unscription$ = new Subject<void>();
 
   imagesUrls = new BehaviorSubject<any>(null);
 
@@ -52,6 +55,8 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
 
   images: File[];
 
+  productId: number;
+
   @Input() currentProduct$: Observable<ProductDataView>;
 
   @Output() onCancleCliked = new EventEmitter(true);
@@ -59,14 +64,17 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
   constructor(
     private categoryService: CategoryService,
     private formBuilder: FormBuilder,
-    private productService: ProductService
+    private productService: ProductService,
+    private _snackBar: MatSnackBar
   ) {
-    this.initForm();
+
   }
 
   ngOnInit() {
-    this.subcription.add(this.currentProduct$
+    this.initForm();
+    this.currentProduct$
       .pipe(
+        takeUntil(this.unscription$),
         filter(product => product != null),
         switchMap(product => product.images$),
         map(images => images.map(image => image.data)),
@@ -74,12 +82,20 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
           return datas.map(data => `data:image/png;base64,${data}`);
         })
       )
-      .subscribe(datas => this.imagesUrls.next(datas)));
-    this.subcription.add(
-      this.multiChooseImages.imagesChoosed$.subscribe(images => {
+      .subscribe(datas => this.imagesUrls.next(datas));
+
+    this.multiChooseImages.imagesChoosed$
+        .pipe(takeUntil(this.unscription$))
+        .subscribe(images => {
         this.images = images;
-      })
-    );
+      });
+
+    this.currentProduct$
+      .pipe(takeUntil(this.unscription$))
+      .subscribe(product => {
+        this.editMode = product != null;
+        this.productId = product ? product.id : null;
+      });
 
     this.parameterTypes$ = this.currentProduct$.pipe(
       filter(value => value != null),
@@ -136,11 +152,6 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
     this.parameterTypes$ = this.categoryService.getParameterTypesBy(categoryId);
   }
 
-  ngOnDestroy() {
-    this.subcription.unsubscribe();
-    this.imagesUrls.complete();
-  }
-
   getProduct(): ProductDto {
     const baseFormValue = this.basicForm.value;
     const parametersFormValue = this.parametersForm
@@ -184,12 +195,31 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
     this.imagesUrls.next(null);
   }
 
-  onSubmit() {
+  async onSubmit(): Promise<void> {
     const product = this.getProduct();
-    console.log(product);
-    this.currentProduct$.subscribe(console.log);
-    // this.productService
-    //   .createProduct(product)
-    //   .subscribe(() => console.log('ok'));
+    of(null)
+      .pipe(
+        takeUntil(this.unscription$),
+        switchMap(() => {
+          if (!this.editMode) {
+            return this.productService.createProduct(product);
+          }
+          product.id = this.productId;
+          return this.productService.updateProduct(product);
+        })
+      ).subscribe((result) => this.onSuccess(result));
+  }
+
+  onSuccess(result?: any) {
+    this.cancle();
+    this._snackBar.open('Thành công !', 'Đóng', {
+      duration: 2000
+    });
+  }
+
+  ngOnDestroy() {
+    this.unscription$.next();
+    this.unscription$.complete();
+    this.imagesUrls.complete();
   }
 }

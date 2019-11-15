@@ -1,6 +1,6 @@
-<div class="container col-12 d-flex justify-content-center">
+<div class="container col-12 d-flex flex-column justify-content-center">
   <div class="col-12">
-    <mat-table [dataSource]="dataSource" class="col-12">
+    <mat-table [dataSource]="dataSource" class="col-12" [trackBy]="trackById">
       <ng-container matColumnDef="image">
         <th mat-header-cell *matHeaderCellDef>Hình ảnh</th>
         <td mat-cell *matCellDef="let element" class="p-3 mx-2">
@@ -20,6 +20,13 @@
         <th mat-header-cell *matHeaderCellDef>Tên Sản Phẩm</th>
         <td mat-cell *matCellDef="let element" class="mx-2">
           {{ element.productName }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Đơn Giá</th>
+        <td mat-cell *matCellDef="let element" class="mx-2">
+          {{ element.price | currencyvn }}
         </td>
       </ng-container>
 
@@ -47,16 +54,15 @@
       <ng-container matColumnDef="delete">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell class="text-right" *matCellDef="let element" class="mx-2">
-              <button mat-raised-button color="warn">Xóa</button>
+              <button mat-raised-button color="warn" (click)="delete(element.id)">Xóa</button>
           </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </mat-table>
-
-    <div class="spinner-container" *ngIf="dataSource.loading$ | async">
-      <mat-spinner></mat-spinner>
-    </div>
+  </div>
+  <div class="spinner-container" *ngIf="dataSource.loading$ | async">
+    <mat-spinner></mat-spinner>
   </div>
 </div>

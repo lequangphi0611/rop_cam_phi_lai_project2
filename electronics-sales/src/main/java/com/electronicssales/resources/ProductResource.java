@@ -157,7 +157,7 @@ public class ProductResource {
     }
 
     @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
-    public ResponseEntity<?> updateProduct(@PathVariable("id") long productId, @RequestParam String productStr,
+    public ResponseEntity<?> updateProduct(@PathVariable("id") long productId, @RequestParam("product") String productStr,
             @RequestParam(required = false) MultipartFile[] images)
             throws JsonParseException, JsonMappingException, IOException {
         ProductDto product = this.objectMapper.readValue(productStr, ProductDto.class);
@@ -185,7 +185,7 @@ public class ProductResource {
                 return ResponseEntity.notFound().build();
             }
 
-            deleteProduct(id);
+            productService.deleteById(id);
             return ResponseEntity.ok().build();
         };
     }

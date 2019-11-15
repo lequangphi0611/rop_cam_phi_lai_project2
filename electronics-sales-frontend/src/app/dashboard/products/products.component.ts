@@ -33,7 +33,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.selectedIndex = index;
   }
 
-  onFormCancle() {
+  resetCurrentProductValue() {
     this.productEditable.next(null);
   }
 

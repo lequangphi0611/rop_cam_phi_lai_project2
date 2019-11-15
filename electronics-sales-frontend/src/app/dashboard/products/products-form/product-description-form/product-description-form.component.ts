@@ -1,5 +1,5 @@
 import { filter, takeUntil } from 'rxjs/operators';
-import { Observable, BehaviorSubject, Subscription, of } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, of, Subject } from 'rxjs';
 import { ParagraphDto } from './../../../../models/dtos/paragraph.dto';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import {
@@ -28,14 +28,14 @@ export class ProductDescriptionFormComponent implements OnInit, OnDestroy {
 
   @Output() onInit = new EventEmitter(true);
 
-  subscription: Subscription;
+  unscription$ = new Subject<void>();
 
   constructor(private formBuilder: FormBuilder) {}
 
   ngOnInit() {
 
-    this.subscription = this.descriptions$
-      .pipe(filter(paragraphs => paragraphs && paragraphs.length > 0))
+    this.descriptions$
+      .pipe(takeUntil(this.unscription$), filter(paragraphs => paragraphs && paragraphs.length > 0))
       .subscribe(paragraphs => {
         paragraphs.forEach(paragraph => this.addFormArray(paragraph));
       });
@@ -69,6 +69,7 @@ export class ProductDescriptionFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.unscription$.next();
+    this.unscription$.complete();
   }
 }

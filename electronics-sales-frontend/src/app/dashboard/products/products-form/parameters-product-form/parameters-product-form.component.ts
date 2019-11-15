@@ -1,6 +1,6 @@
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { map } from 'rxjs/operators';
-import { Observable, Subscription, BehaviorSubject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+import { Observable, Subscription, BehaviorSubject, Subject } from 'rxjs';
 import { ParameterTypeDto } from './../../../../models/dtos/paramter-type.dto';
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 
@@ -19,16 +19,18 @@ export class ParametersProductFormComponent implements OnInit, OnDestroy {
 
   @Output() onInit = new EventEmitter(true);
 
+  unscription$ = new Subject<void>();
+
   clear = new BehaviorSubject(false);
 
   @Input() parametersProductForm: FormGroup;
 
-  subcription: Subscription;
-
   constructor(private formBuilder: FormBuilder) {}
 
   ngOnInit() {
-    this.subcription = this.parameterTypes$.subscribe(parameterTypes => {
+    this.parameterTypes$
+    .pipe(takeUntil(this.unscription$))
+    .subscribe(parameterTypes => {
       parameterTypes.forEach(parameterType => {
         this.parameters.push(
           this.createParameterGroupForm(
@@ -60,7 +62,8 @@ export class ParametersProductFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subcription.unsubscribe();
+    this.unscription$.next();
+    this.unscription$.complete();
   }
 
   onValuesChange() {

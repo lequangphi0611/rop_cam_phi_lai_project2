@@ -47,7 +47,6 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.categorySubcription();
-    // this.basicProductForm = this.buildBaseProduct();
     this.onInit.emit(this.basicProductForm);
     this.onChange.emit(this.basicProductForm);
 
@@ -55,19 +54,6 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
       .pipe(filter(product => product != null))
       .subscribe(product => this.setFormValues(product));
   }
-
-  // buildBaseProduct() {
-  //   return this.formBuilder.group({
-  //     productName: [null, [Validators.required]],
-  //     categoryIds: this.formBuilder.array([
-  //       this.formBuilder.control(''),
-  //       this.formBuilder.control(''),
-  //     ]),
-  //     manufacturerId: [null, [Validators.required]],
-  //     price: [null, [Validators.required]],
-  //     quantity: [null, [Validators.required]],
-  //   });
-  // }
 
   async setFormValues(product: ProductDataView) {
     this.productNameControl.setValue(product.productName);
@@ -142,6 +128,5 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.onChange.unsubscribe();
   }
 }

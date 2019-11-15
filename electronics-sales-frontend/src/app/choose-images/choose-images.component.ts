@@ -24,6 +24,8 @@ export class ChooseImagesComponent implements OnInit, OnDestroy {
 
   @Output() onRemovedFile = new EventEmitter<any>(true);
 
+  currentFile: any = null;
+
   private filesSelected = new BehaviorSubject(null);
 
   filesSelected$ = this.filesSelected.asObservable();
@@ -57,6 +59,7 @@ export class ChooseImagesComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(file => {
+        this.currentFile = file;
         const reader = new FileReader();
         reader.onload = event => {
           const urlResult = event.target['result'] as string;
@@ -69,11 +72,12 @@ export class ChooseImagesComponent implements OnInit, OnDestroy {
 
   async onSelectedFile(event: Event) {
     const files = event.target['files'];
+    let file = null;
     if (files.length === 0) {
-      this.onRemovedFile.emit();
-      return;
+      file = this.currentFile;
+    } else {
+      file = files[0];
     }
-    const file = files[0];
     this.onSelectFile.emit(file);
     this.filesSelected.next(file);
   }
@@ -84,8 +88,7 @@ export class ChooseImagesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.onRemoveFile();
-    console.log('img destroy');
-    this.filesSelected.unsubscribe();
+    this.filesSelected.next(null);
+    this.filesSelected.complete();
   }
 }

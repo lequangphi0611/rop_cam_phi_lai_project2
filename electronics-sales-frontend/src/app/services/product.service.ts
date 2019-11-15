@@ -4,7 +4,7 @@ import { ImageView } from './../models/view-model/image-data.view';
 import { CategoryView } from './../models/view-model/category.view.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ProductView } from '../models/view-model/product.view.model';
 import { ProductDto } from './../models/dtos/product.dto';
@@ -47,8 +47,20 @@ export class ProductService {
 
   createProduct(productDto: ProductDto): Observable<ProductView> {
     const body = this.parseFormDataFrom(productDto);
-    console.log({ body });
     return this.http.post<ProductView>(ProductService.BASE_REQUEST, body);
+  }
+
+  updateProduct(productDto: ProductDto): Observable<ProductView> {
+    if (!productDto || !productDto.id) {
+      return throwError('product and id must be not null !');
+    }
+
+    const body = this.parseFormDataFrom(productDto);
+    return this.http.put<ProductView>(`${ProductService.BASE_REQUEST}/${productDto.id}`, body);
+  }
+
+  deleteProduct(productId: number): Observable<any> {
+    return this.http.delete(`${ProductService.BASE_REQUEST}/${productId}`);
   }
 
   getDiscount(productId: number): Observable<DiscountView> {

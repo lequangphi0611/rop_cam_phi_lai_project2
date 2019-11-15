@@ -4,30 +4,36 @@ import { ManufacturerView } from './../../../models/view-model/manufacturer.view
 import { CategoryService } from './../../../services/category.service';
 import { ManufacturerService } from './../../../services/manufacturer.service';
 import { DiscountView } from './../../../models/view-model/discount.view';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, takeUntil } from 'rxjs/operators';
 import { FetchProductOption } from './../../../models/fetch-product-option.model';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
 import { ProductView } from './../../../models/view-model/product.view.model';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { ProductService } from 'src/app/services/product.service';
 import { ProductSortType } from 'src/app/models/types/product-sort-type.type';
 import { SortType } from 'src/app/models/types/sort-type.type';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-products-data',
   templateUrl: './products-data.component.html',
   styleUrls: ['./products-data.component.css'],
 })
-export class ProductsDataComponent implements OnInit {
+export class ProductsDataComponent implements OnInit, OnDestroy {
   dataSource: ProductsDataSource;
 
+  unSubscription$ = new Subject();
+
   @Output() onEditClicked = new EventEmitter<any>(true);
+
+  @Output() onDeleted = new EventEmitter<any>(true);
 
   displayedColumns = [
     'image',
     'name',
+    'price',
     'quantity',
     'manufacturer',
     'edit',
@@ -38,10 +44,18 @@ export class ProductsDataComponent implements OnInit {
 
   elementSize = 100;
 
+  readonly defaultFetchOption: FetchProductOption = {
+    page: this.pageNumber,
+    size: this.elementSize,
+    productSortType: ProductSortType.TIME,
+    sortType: SortType.DESC,
+  };
+
   constructor(
     private productService: ProductService,
     private manufacturerService: ManufacturerService,
-    private router: Router
+    private router: Router,
+    private snackbar: MatSnackBar
   ) {}
 
   ngOnInit() {
@@ -49,17 +63,33 @@ export class ProductsDataComponent implements OnInit {
       this.productService,
       this.manufacturerService
     );
-    const option: FetchProductOption = {
-      page: this.pageNumber,
-      size: this.elementSize,
-      productSortType: ProductSortType.TIME,
-      sortType: SortType.DESC,
-    };
-    this.dataSource.init(option);
+    this.dataSource.init(this.defaultFetchOption);
   }
 
   goToEdit(product: ProductDataView) {
     this.onEditClicked.emit(product);
+  }
+
+  delete(id: number) {
+    this.productService
+    .deleteProduct(id)
+    .pipe(takeUntil(this.unSubscription$))
+    .subscribe(() => {
+      this.snackbar.open('Xóa thành công', 'Đóng', {
+        duration: 2000
+      });
+      this.dataSource.loadProducts(this.defaultFetchOption);
+      this.onDeleted.emit();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unSubscription$.next();
+    this.unSubscription$.complete();
+  }
+
+  trackById(index: number, item: ProductDataView) {
+    return item.id;
   }
 }
 
@@ -112,6 +142,7 @@ export class ProductsDataSource implements DataSource<ProductDataView> {
       .pipe(finalize(() => this.loadingSubject.next(false)))
       .subscribe(products => this.productSubject.next(products));
   }
+
 }
 
 export class ProductDataView extends ProductView {
