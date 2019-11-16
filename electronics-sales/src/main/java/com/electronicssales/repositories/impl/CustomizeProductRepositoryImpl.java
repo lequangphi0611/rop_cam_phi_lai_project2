@@ -26,8 +26,6 @@ import com.electronicssales.repositories.CustomizeProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -88,6 +86,19 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         parameters.forEach(query::setParameter);
 
         return (List<Product>) query.getResultList();
+    }
+
+    @Override
+    public long countBy(FetchProductOption option) {
+        Map<String, Object> parameters = new HashMap<>();
+        String sqlbuilded = buildFetchProductsQueryBy(initQuery(), option, parameters).toString();
+        LOGGER.info("My JPQL Builded : {}", sqlbuilded);
+
+        int firstResultIndex = option.getPageable().getPageNumber() * option.getPageable().getPageSize();
+        Query query = entityManager.createQuery(sqlbuilded.toString(), Product.class);
+
+        parameters.forEach(query::setParameter);
+        return query.getResultList().size();
     }
 
     @Transactional
@@ -184,10 +195,9 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
             builder.append(" LEFT JOIN ").append(PRODUCT_PREFIX).append(".reviews ").append(REVIEWS_PREFIX);
         }
 
-        if (option.getFetchProductType() != FetchProductType.DISCOUNT) {
-            builder.append(" LEFT");
+        if (option.getFetchProductType() == FetchProductType.DISCOUNT) {
+            builder.append(" JOIN ").append(PRODUCT_PREFIX).append(".discount ").append(DISCOUNT_PREFIX);
         }
-        builder.append(" JOIN ").append(PRODUCT_PREFIX).append(".discount ").append(DISCOUNT_PREFIX);
 
         return builder;
     }

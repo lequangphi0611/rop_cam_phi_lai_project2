@@ -20,10 +20,17 @@ const routes: Routes = [
           import('./products/products.module').then(m => m.ProductsModule),
       },
       {
+        path: 'manufacturer',
+        loadChildren: () =>
+          import('./manufacturer/manufacturer.module').then(
+            m => m.ManufacturerModule
+          ),
+      },
+      {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'overview'
-      }
+        redirectTo: 'overview',
+      },
     ],
   },
 ];

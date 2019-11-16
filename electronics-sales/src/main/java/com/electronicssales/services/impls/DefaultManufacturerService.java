@@ -15,6 +15,7 @@ import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,15 @@ public class DefaultManufacturerService implements ManufacturerService {
     @Override
     public Collection<ManufacturerResponse> findAll() {
         return manufacturerRepository.findAll()
+            .stream()
+            .map(manufacturerResponseMapper::mapping)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ManufacturerResponse> findAll(Pageable pageable) {
+        return manufacturerRepository.findAll(pageable)
+            .getContent()
             .stream()
             .map(manufacturerResponseMapper::mapping)
             .collect(Collectors.toList());

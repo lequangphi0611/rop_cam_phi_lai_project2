@@ -1,49 +1,47 @@
-import { Router } from '@angular/router';
-import { CategoryView } from './../../../models/view-model/category.view.model';
-import { ManufacturerView } from './../../../models/view-model/manufacturer.view.model';
 import { CategoryService } from './../../../services/category.service';
-import { ManufacturerService } from './../../../services/manufacturer.service';
-import { DiscountView } from './../../../models/view-model/discount.view';
-import { catchError, finalize, map, takeUntil } from 'rxjs/operators';
-import { FetchProductOption } from './../../../models/fetch-product-option.model';
-import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
-import { ProductView } from './../../../models/view-model/product.view.model';
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
-import { ProductService } from 'src/app/services/product.service';
+import { DataSource } from '@angular/cdk/table';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { finalize, map, takeUntil, tap } from 'rxjs/operators';
 import { ProductSortType } from 'src/app/models/types/product-sort-type.type';
 import { SortType } from 'src/app/models/types/sort-type.type';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ProductService } from 'src/app/services/product.service';
+import { FetchProductOption } from './../../../models/fetch-product-option.model';
+import { CategoryView } from './../../../models/view-model/category.view.model';
+import { DiscountView } from './../../../models/view-model/discount.view';
+import { ManufacturerView } from './../../../models/view-model/manufacturer.view.model';
+import { ProductView } from './../../../models/view-model/product.view.model';
+import { ManufacturerService } from './../../../services/manufacturer.service';
+import { ImportProductsComponent } from './../import-products/import-products.component';
 
 @Component({
   selector: 'app-products-data',
   templateUrl: './products-data.component.html',
   styleUrls: ['./products-data.component.css'],
 })
-export class ProductsDataComponent implements OnInit, OnDestroy {
+export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
   dataSource: ProductsDataSource;
 
   unSubscription$ = new Subject();
 
-  @Output() onEditClicked = new EventEmitter<any>(true);
-
-  @Output() onDeleted = new EventEmitter<any>(true);
-
-  displayedColumns = [
-    'image',
-    'name',
-    'price',
-    'quantity',
-    'manufacturer',
-    'categories',
-    'edit',
-    'delete',
-  ];
-
   pageNumber = 0;
 
-  elementSize = 100;
+  elementSize = 5;
+
+  maxSize = 0;
 
   readonly defaultFetchOption: FetchProductOption = {
     page: this.pageNumber,
@@ -52,19 +50,73 @@ export class ProductsDataComponent implements OnInit, OnDestroy {
     sortType: SortType.DESC,
   };
 
+  fetchOption = new BehaviorSubject<FetchProductOption>(
+    this.defaultFetchOption
+  );
+
+  fetchOption$ = this.fetchOption.asObservable();
+
+  currentOption: FetchProductOption = { ...this.defaultFetchOption };
+
+  categories$: Observable<CategoryView[]>;
+
+  @Output() onEditClicked = new EventEmitter<any>(true);
+
+  @Output() onDeleted = new EventEmitter<any>(true);
+
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+
+  displayedColumns = [
+    'image',
+    'name',
+    'price',
+    'quantity',
+    'manufacturer',
+    'categories',
+    'importQuantity',
+    'edit',
+    'delete',
+  ];
+
   constructor(
     private productService: ProductService,
     private manufacturerService: ManufacturerService,
     private router: Router,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private dialog: MatDialog,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit() {
+    this.fetchCategories();
+
+    this.fetchOption
+      .pipe(takeUntil(this.unSubscription$))
+      .subscribe(fetchOption => {
+        console.log(fetchOption);
+        this.fetchMaxSize(fetchOption);
+      });
+
     this.dataSource = new ProductsDataSource(
       this.productService,
       this.manufacturerService
     );
-    this.dataSource.init(this.defaultFetchOption);
+    this.dataSource.init(this.currentOption);
+  }
+
+  ngAfterViewInit() {
+    this.paginator.page.pipe(tap(() => this.loadProductsPage())).subscribe();
+  }
+
+  fetchCategories() {
+    this.categories$ = this.categoryService.fetchCategories();
+  }
+
+  fetchMaxSize(option: FetchProductOption) {
+    this.productService
+      .countProduct(option)
+      .pipe(takeUntil(this.unSubscription$))
+      .subscribe(v => (this.maxSize = v));
   }
 
   goToEdit(product: ProductDataView) {
@@ -73,24 +125,55 @@ export class ProductsDataComponent implements OnInit, OnDestroy {
 
   delete(id: number) {
     this.productService
-    .deleteProduct(id)
-    .pipe(takeUntil(this.unSubscription$))
-    .subscribe(() => {
-      this.snackbar.open('Xóa thành công', 'Đóng', {
-        duration: 2000
+      .deleteProduct(id)
+      .pipe(takeUntil(this.unSubscription$))
+      .subscribe(() => {
+        this.snackbar.open('Xóa thành công', 'Đóng', {
+          duration: 2000,
+        });
+        this.dataSource.loadProducts(this.currentOption);
+        this.onDeleted.emit();
       });
-      this.dataSource.loadProducts(this.defaultFetchOption);
-      this.onDeleted.emit();
-    });
+  }
+
+  openDialog(product: any) {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = true;
+
+    dialogConfig.minWidth = "40rem";
+
+    dialogConfig.data = {
+      product,
+    };
+
+    const dialogRef = this.dialog.open(ImportProductsComponent, dialogConfig);
+
+    dialogRef.componentInstance.onSaveSuccess
+      .pipe(takeUntil(this.unSubscription$))
+      .subscribe(() => this.dataSource.loadProducts(this.currentOption));
+  }
+
+  trackById(index: number, item: ProductDataView) {
+    return item.id;
+  }
+
+  loadProductsPage() {
+    this.currentOption.page = this.paginator.pageIndex;
+    this.currentOption.size = this.paginator.pageSize;
+    this.dataSource.loadProducts(this.currentOption);
+  }
+
+  onChangeCategory(categoryId: number) {
+    this.currentOption.categoriesId = categoryId === 0 ? [] : [categoryId];
+    this.fetchOption.next(this.currentOption);
+    this.dataSource.loadProducts(this.currentOption);
   }
 
   ngOnDestroy() {
     this.unSubscription$.next();
     this.unSubscription$.complete();
-  }
-
-  trackById(index: number, item: ProductDataView) {
-    return item.id;
   }
 }
 
@@ -143,7 +226,6 @@ export class ProductsDataSource implements DataSource<ProductDataView> {
       .pipe(finalize(() => this.loadingSubject.next(false)))
       .subscribe(products => this.productSubject.next(products));
   }
-
 }
 
 export class ProductDataView extends ProductView {

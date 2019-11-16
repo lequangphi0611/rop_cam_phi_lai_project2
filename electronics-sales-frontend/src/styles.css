@@ -13,3 +13,14 @@ a {
   cursor: pointer !important;
 }
 
+.mat-header-cell {
+  font-size: 1rem;
+  text-align: center;
+  align-items: center;
+  background: #343a40;
+  padding: 1rem 0 1rem 0 !important;
+  color: white;
+  text-align: center !important;
+  text-transform: capitalize;
+
+}

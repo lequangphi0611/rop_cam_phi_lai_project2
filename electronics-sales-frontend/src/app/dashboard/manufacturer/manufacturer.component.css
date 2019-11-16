@@ -1,0 +1,25 @@
+.manufacturer-img {
+  max-width: 5rem;
+}
+
+.mat-cell {
+  margin: 2rem;
+  padding: 1.5rem;
+  min-width: 12rem;
+
+  position: relative;
+}
+
+tr {
+  width: 100%;
+}
+
+.mat-column-logo {
+  text-align: left !important;
+  padding-left: 2rem !important;
+}
+
+.btn-action {
+  position: absolute;
+  right: 2.5rem;
+}

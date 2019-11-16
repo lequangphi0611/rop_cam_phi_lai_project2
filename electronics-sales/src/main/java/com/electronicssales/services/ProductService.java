@@ -40,5 +40,7 @@ public interface ProductService {
     List<ParagraphResponse> getDescriptionsOf(long productId);
 
     List<BaseCategoryResponse> getCategoriesBy(long productId);
+
+    long countProductBy(FetchProductOption option);
     
 }

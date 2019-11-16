@@ -8,6 +8,9 @@ import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.models.dtos.ManufacturerDto;
 import com.electronicssales.models.responses.ManufacturerResponse;
 
+import org.springframework.data.domain.Pageable;
+
+
 public interface ManufacturerService {
 
     Collection<ManufacturerResponse> findAll();
@@ -15,6 +18,8 @@ public interface ManufacturerService {
     ManufacturerResponse save(ManufacturerDto manufacturerDto);
 
     Collection<ManufacturerResponse> saveAll(Collection<ManufacturerDto> manufacturerDtos);
+
+    Collection<ManufacturerResponse> findAll(Pageable pageable);
 
     boolean existsByManufacturerName(String manufacturerName);
 

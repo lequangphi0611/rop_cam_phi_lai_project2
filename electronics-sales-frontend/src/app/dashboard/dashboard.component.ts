@@ -20,30 +20,15 @@ const SIDE_BAR_ITEMS: SideBarItem[] = [
     links: ['overview'],
   },
   {
+    name: 'Hãng sản xuất',
+    fontAwesomeClass: 'fas fa-handshake',
+    links: [`manufacturer`],
+  },
+  {
     name: 'Sản phẩm',
     fontAwesomeClass: 'fas fa-shopping-cart',
     links: [`product`],
   },
-  // {
-  //   name: 'Nhà sản xuất',
-  //   fontAwesomeClass: 'fas fa-handshake',
-  //   links: [''],
-  // },
-  // {
-  //   name: 'Tin tức, bài viết',
-  //   fontAwesomeClass: 'fas fa-newspaper',
-  //   links: ['']
-  // },
-  // {
-  //   name: 'Nhà sản xuất',
-  //   fontAwesomeClass: 'fas fa-handshake',
-  //   links: [''],
-  // },
-  // {
-  //   name: 'Nhà sản xuất',
-  //   fontAwesomeClass: 'fas fa-handshake',
-  //   links: [''],
-  // }
 ];
 
 @Component({

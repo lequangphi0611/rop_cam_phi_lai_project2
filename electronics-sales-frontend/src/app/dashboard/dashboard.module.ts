@@ -11,8 +11,7 @@ import { SideBarItemComponent } from './side-bar-item/side-bar-item.component';
   declarations: [DashboardComponent, SideBarItemComponent],
   imports: [
     CommonModule,
-    DashboardRoutingModule,
-    OverviewsModule
+    DashboardRoutingModule
   ]
 })
 export class DashboardModule { }

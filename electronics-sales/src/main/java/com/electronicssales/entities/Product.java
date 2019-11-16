@@ -125,6 +125,20 @@ public class Product {
     @JoinColumn(name = "discount_id")
     Discount discount;
 
+    @OneToMany(
+        cascade = CascadeType.REMOVE,
+        mappedBy = "product",
+        fetch = FetchType.LAZY
+    )
+    Collection<ImportInvoice> importInvoices;
+
+    @OneToMany(
+        cascade = CascadeType.REMOVE,
+        mappedBy = "product",
+        fetch = FetchType.LAZY
+    )
+    Collection<TransactionDetailed> transactionDetaileds;
+
     public Product(long id) {
         this.id = id;
     }

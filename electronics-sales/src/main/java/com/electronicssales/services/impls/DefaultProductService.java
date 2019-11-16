@@ -168,6 +168,11 @@ public class DefaultProductService implements ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public long countProductBy(FetchProductOption option) {
+        return productRepository.countBy(option);
+    }
+
     @Lazy
     @Component
     class ProductMapper implements Mapper<Product, ProductDto> {

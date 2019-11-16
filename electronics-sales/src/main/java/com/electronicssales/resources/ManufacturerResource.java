@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,8 +45,16 @@ public class ManufacturerResource {
     private ObjectMapper objectMapper;
 
     @GetMapping
-    public Callable<ResponseEntity<?>> fetchManufacturers() {
-        return () -> ResponseEntity.ok(manufacturerService.findAll());
+    public Callable<ResponseEntity<?>> fetchManufacturers(
+        @RequestParam(value="page", defaultValue = "0") int page,
+        @RequestParam(value="size", required = false) Integer size) {
+        return () -> {
+            if(size == null) {
+                return ResponseEntity.ok(manufacturerService.findAll());
+            }
+            Pageable pageable = PageRequest.of(page, size);
+            return ResponseEntity.ok(manufacturerService.findAll(pageable));
+        };
     }
 
     @GetMapping("/{id}")
@@ -55,7 +65,7 @@ public class ManufacturerResource {
     @PostMapping(consumes = { "multipart/form-data" })
     public Callable<ResponseEntity<?>> createManufacturer(
             @RequestParam("manufacturer") String manufacturerStr, 
-            @RequestParam(required = false) MultipartFile image) 
+            @RequestParam(value="logo", required = false) MultipartFile image) 
     {
         return () -> {
             ManufacturerDto manufacturer = this.objectMapper.readValue(manufacturerStr, ManufacturerDto.class);
@@ -78,7 +88,7 @@ public class ManufacturerResource {
     @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
     public Callable<ResponseEntity<?>> updateManufacturer(
         @RequestParam("manufacturer") String manufacturerStr,
-        @RequestParam(required = false) MultipartFile image,
+        @RequestParam(value="logo", required = false) MultipartFile image,
         @PathVariable long id
     ) 
     {
@@ -100,7 +110,6 @@ public class ManufacturerResource {
     @DeleteMapping("/{id}")
     public Callable<ResponseEntity<?>> deleteManufacturer(@PathVariable long id) {
         return () -> {
-            // requiredManufacturerId(id);
             manufacturerService.deleteById(id);
             return ResponseEntity.ok().build();
         };

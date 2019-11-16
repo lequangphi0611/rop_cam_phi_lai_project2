@@ -15,6 +15,7 @@ import { ProductDescriptionFormComponent } from './products-form/product-descrip
 import { ProductsFormComponent } from './products-form/products-form.component';
 import { ProductsRoutingModule } from './products-routing.module';
 import { ProductsComponent } from './products.component';
+import { ImportProductsComponent } from './import-products/import-products.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import { ProductsComponent } from './products.component';
     ProductDescriptionFormComponent,
     ProductsDataComponent,
     CategoriesPipe,
+    ImportProductsComponent,
   ],
   imports: [
     CommonModule,
@@ -39,5 +41,8 @@ import { ProductsComponent } from './products.component';
     MyLazyLoadImageModule,
     LazyLoadImageModule,
   ],
+  entryComponents: [
+    ImportProductsComponent
+  ]
 })
 export class ProductsModule {}

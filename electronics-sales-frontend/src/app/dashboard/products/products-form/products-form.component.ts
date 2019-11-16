@@ -210,7 +210,7 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
     return this.productService.createProduct(productDto)
       .pipe(switchMap(product => {
         const quantity = this.quantityControl.value || 0;
-        if (quantity < 0) {
+        if (quantity <= 0) {
           return of(product);
         }
         return this.importInvoice.create({

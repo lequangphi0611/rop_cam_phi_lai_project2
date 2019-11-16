@@ -9,6 +9,8 @@ public interface CustomizeProductRepository {
 
     List<Product> fetchProductsBy(FetchProductOption option);
 
+    long countBy(FetchProductOption option);
+
     long countAll();
     
 }

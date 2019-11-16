@@ -25,14 +25,18 @@ export class ProductService {
   constructor(private http: HttpClient) {}
 
   fetchProduct(option: FetchProductOption): Observable<ProductView[]> {
+    return this.http.get<ProductView[]>(this.buildRequestUrlFrom(option)).pipe(
+      map((products: ProductView[]) =>
+        products.map(product => ProductView.of(product, this))
+      ),
+      catchError(() => of([]))
+    );
+  }
+
+  countProduct(option: FetchProductOption): Observable<number> {
     return this.http
-      .get<ProductView[]>(this.buildRequestUrlFrom(option))
-      .pipe(
-        map((products: ProductView[]) =>
-          products.map(product => ProductView.of(product, this))
-        ),
-        catchError(() => of([]))
-      );
+      .get<{ count: number }>(this.countRequestUrl(option))
+      .pipe(map(c => c.count));
   }
 
   parseFormDataFrom(productDto: ProductDto): FormData {
@@ -56,7 +60,10 @@ export class ProductService {
     }
 
     const body = this.parseFormDataFrom(productDto);
-    return this.http.put<ProductView>(`${ProductService.BASE_REQUEST}/${productDto.id}`, body);
+    return this.http.put<ProductView>(
+      `${ProductService.BASE_REQUEST}/${productDto.id}`,
+      body
+    );
   }
 
   deleteProduct(productId: number): Observable<any> {
@@ -91,7 +98,9 @@ export class ProductService {
   }
 
   getCategories(productId: number): Observable<CategoryView[]> {
-    return this.http.get<CategoryView[]>(`${ProductService.BASE_REQUEST}/${productId}/categories`);
+    return this.http.get<CategoryView[]>(
+      `${ProductService.BASE_REQUEST}/${productId}/categories`
+    );
   }
 
   getParameters(productId: number): Observable<ProductParameterView[]> {
@@ -101,7 +110,19 @@ export class ProductService {
   }
 
   getDescriptions(productId: number): Observable<ParagraphDto[]> {
-    return this.http.get<ParagraphDto[]>(`${ProductService.BASE_REQUEST}/${productId}/descriptions`);
+    return this.http.get<ParagraphDto[]>(
+      `${ProductService.BASE_REQUEST}/${productId}/descriptions`
+    );
+  }
+
+  private countRequestUrl(option: FetchProductOption): string {
+    let builder = `${ProductService.BASE_REQUEST}/count`;
+    const parameters = this.createParametersFrom(option);
+    if (parameters.length === 0) {
+      return builder;
+    }
+    builder += `${QUESTION_MARK}${this.parseParameters(parameters)}`;
+    return builder;
   }
 
   private buildRequestUrlFrom(option: FetchProductOption): string {

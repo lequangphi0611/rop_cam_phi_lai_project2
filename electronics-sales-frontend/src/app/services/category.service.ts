@@ -1,9 +1,9 @@
-import { ParameterTypeDto } from './../models/dtos/paramter-type.dto';
-import { ManufacturerView } from './../models/view-model/manufacturer.view.model';
-import { CategoryView } from './../models/view-model/category.view.model';
-import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ParameterTypeDto } from './../models/dtos/paramter-type.dto';
+import { CategoryView } from './../models/view-model/category.view.model';
+import { ManufacturerView } from './../models/view-model/manufacturer.view.model';
 
 @Injectable({
   providedIn: 'root',
