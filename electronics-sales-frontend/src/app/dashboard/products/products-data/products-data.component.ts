@@ -36,6 +36,7 @@ export class ProductsDataComponent implements OnInit, OnDestroy {
     'price',
     'quantity',
     'manufacturer',
+    'categories',
     'edit',
     'delete',
   ];

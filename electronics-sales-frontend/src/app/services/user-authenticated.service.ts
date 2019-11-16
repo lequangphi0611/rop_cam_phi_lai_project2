@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { map, catchError } from 'rxjs/operators';
 import { AuthInterceptorService } from './../auth/auth-interceptor.service';
 import { CookieService } from 'ngx-cookie-service';
@@ -18,7 +19,8 @@ export class UserAuthenticatedService {
   constructor(
     private authenticatedService: AuthInterceptorService,
     private userService: UserService,
-    private cookie: CookieService
+    private cookie: CookieService,
+    private router: Router
   ) {}
 
   setUser(user: User) {
@@ -44,7 +46,9 @@ export class UserAuthenticatedService {
   load(): void {
     this.userService.getCurrentUser().subscribe(
       user => this.setUser(user),
-      (err: HttpErrorResponse) => console.log(`err : ${err.message}`)
+      (err: HttpErrorResponse) => {
+        this.router.navigate(['index', 'login']);
+      }
     );
   }
 

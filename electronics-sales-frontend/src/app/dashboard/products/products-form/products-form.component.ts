@@ -1,30 +1,17 @@
-import { ProductDataView } from './../products-data/products-data.component';
-import { ProductParameterDto } from './../../../models/dtos/product-parameter.dto';
-import { ProductDto } from './../../../models/dtos/product.dto';
-import { ProductDescriptionFormComponent } from './product-description-form/product-description-form.component';
-import { ParametersProductFormComponent } from './parameters-product-form/parameters-product-form.component';
-import { ParagraphDto } from './../../../models/dtos/paragraph.dto';
-import { MultiChooseImagesComponent } from './../../../multi-choose-images/multi-choose-images.component';
-import { ParameterTypeDto } from './../../../models/dtos/paramter-type.dto';
-import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  OnDestroy,
-  Input,
-  Output,
-  EventEmitter,
-} from '@angular/core';
-import { MatSelectChange } from '@angular/material/select';
-import { Observable, BehaviorSubject, of, Subscription, Subject } from 'rxjs';
-import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
-import { CategoryView } from 'src/app/models/view-model/category.view.model';
-import { CategoryService } from 'src/app/services/category.service';
-import { ManufacturerView } from './../../../models/view-model/manufacturer.view.model';
-import { BaseProductFormComponent } from './base-product-form/base-product-form.component';
-import { ProductService } from 'src/app/services/product.service';
+import { ProductView } from './../../../models/view-model/product.view.model';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { filter, map, switchMap, takeUntil, finalize } from 'rxjs/operators';
+import { CategoryService } from 'src/app/services/category.service';
+import { ImportInvoiceService } from 'src/app/services/import-invoice.service';
+import { ProductService } from 'src/app/services/product.service';
+import { ParagraphDto } from './../../../models/dtos/paragraph.dto';
+import { ParameterTypeDto } from './../../../models/dtos/paramter-type.dto';
+import { ProductDto } from './../../../models/dtos/product.dto';
+import { MultiChooseImagesComponent } from './../../../multi-choose-images/multi-choose-images.component';
+import { ProductDataView } from './../products-data/products-data.component';
 
 @Component({
   selector: 'app-products-form',
@@ -49,6 +36,10 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
 
   imagesUrls = new BehaviorSubject<any>(null);
 
+  proccessing = new BehaviorSubject(false);
+
+  proccessing$ = this.proccessing.asObservable();
+
   imageUrls$ = this.imagesUrls.asObservable();
 
   descriptions$: Observable<ParagraphDto[]>;
@@ -65,10 +56,9 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private formBuilder: FormBuilder,
     private productService: ProductService,
-    private _snackBar: MatSnackBar
-  ) {
-
-  }
+    private _snackBar: MatSnackBar,
+    private importInvoice: ImportInvoiceService
+  ) {}
 
   ngOnInit() {
     this.initForm();
@@ -85,8 +75,8 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
       .subscribe(datas => this.imagesUrls.next(datas));
 
     this.multiChooseImages.imagesChoosed$
-        .pipe(takeUntil(this.unscription$))
-        .subscribe(images => {
+      .pipe(takeUntil(this.unscription$))
+      .subscribe(images => {
         this.images = images;
       });
 
@@ -127,13 +117,17 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
     this.basicForm = this.formBuilder.group({
       productName: [null, [Validators.required]],
       categoryIds: this.formBuilder.array([
-        this.formBuilder.control(''),
+        this.formBuilder.control('', Validators.required),
         this.formBuilder.control(''),
       ]),
       manufacturerId: [null],
-      price: [null, [Validators.required]],
-      quantity: [null],
+      price: [0, [Validators.required]],
+      quantity: [0],
     });
+  }
+
+  get quantityControl() {
+    return this.basicForm.get('quantity');
   }
 
   initParametersForm() {
@@ -149,6 +143,7 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
   }
 
   onSelectedCategory(categoryId: number) {
+    this.initParametersForm();
     this.parameterTypes$ = this.categoryService.getParameterTypesBy(categoryId);
   }
 
@@ -189,31 +184,74 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
     };
   }
 
+  isValid() {
+    if (!this.basicForm) {
+      return false;
+    }
+
+    if (this.basicForm.invalid) {
+      return false;
+    }
+
+    if (this.parametersForm && this.parametersForm.invalid) {
+      return false;
+    }
+
+    return true;
+  }
+
   cancle() {
     this.onCancleCliked.emit();
     this.initForm();
     this.imagesUrls.next(null);
   }
 
+  createProduct(productDto: ProductDto): Observable<ProductView | any> {
+    return this.productService.createProduct(productDto)
+      .pipe(switchMap(product => {
+        const quantity = this.quantityControl.value || 0;
+        if (quantity < 0) {
+          return of(product);
+        }
+        return this.importInvoice.create({
+          productId: product.id,
+          quantity
+        });
+      }));
+  }
+
+  updateProduct(productDto: ProductDto): Observable<ProductView> {
+    return this.productService.updateProduct(productDto);
+  }
+
   async onSubmit(): Promise<void> {
+    this.proccessing.next(true);
     const product = this.getProduct();
     of(null)
       .pipe(
         takeUntil(this.unscription$),
         switchMap(() => {
           if (!this.editMode) {
-            return this.productService.createProduct(product);
+            return this.createProduct(product);
           }
           product.id = this.productId;
-          return this.productService.updateProduct(product);
-        })
-      ).subscribe((result) => this.onSuccess(result));
+          return this.updateProduct(product);
+        }),
+        finalize(() => this.proccessing.next(false))
+      )
+      .subscribe(
+        result => this.onSuccess(result),
+        err => this.onError(err)
+      );
+  }
+  onError(err: any): void {
+    console.log({err});
   }
 
   onSuccess(result?: any) {
     this.cancle();
     this._snackBar.open('Thành công !', 'Đóng', {
-      duration: 2000
+      duration: 2000,
     });
   }
 

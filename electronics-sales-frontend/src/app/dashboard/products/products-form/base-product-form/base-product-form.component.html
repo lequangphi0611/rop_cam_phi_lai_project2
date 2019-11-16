@@ -33,7 +33,11 @@
               >
                 {{ category.categoryName }}
               </mat-option>
+
             </mat-select>
+            <mat-error *ngIf="categoryIdsFormArray.at(0).hasError('required')">
+              Vui lòng chọn loại sản phẩm
+            </mat-error>
           </mat-form-field>
           <mat-form-field class="col-12 p-0" *ngIf="categoryChildrens">
             <mat-label>--- Chọn loại sản phẩm con ---</mat-label>
@@ -71,21 +75,24 @@
 
       <div class="form-group row col-12">
         <label class="col-2 col-form-label d-flex align-items-center"
-          >Giá bán (<span class="note">*</span>) :
+          >Đơn Giá (<span class="note">*</span>) :
         </label>
         <div class="col-sm-9">
           <mat-form-field class="col-12 m-0 p-0">
-            <input formControlName="price" matInput placeholder="Nhập giá bán" >
+            <input type="number" formControlName="price" matInput placeholder="Nhập đơn giá" >
+            <mat-error *ngIf="priceControl.hasError('required')">
+              Không được để trống đơn giá
+            </mat-error>
           </mat-form-field>
         </div>
       </div>
-      <div class="form-group row col-12">
+      <div class="form-group row col-12" *ngIf="!editMode">
         <label class="col-2 col-form-label d-flex align-items-center"
           >Số lượng kho hàng (<span class="note">*</span>) :
         </label>
         <div class="col-sm-9">
           <mat-form-field class="col-12 m-0 p-0">
-            <input formControlName="quantity" matInput placeholder="Nhập số lượng kho hàng" >
+            <input type="number" formControlName="quantity" matInput placeholder="Nhập số lượng kho hàng" >
           </mat-form-field>
         </div>
       </div>

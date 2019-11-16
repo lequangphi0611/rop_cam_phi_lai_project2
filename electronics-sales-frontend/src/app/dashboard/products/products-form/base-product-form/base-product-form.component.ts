@@ -30,6 +30,8 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
 
   @Output() onSelectedCategory = new EventEmitter();
 
+  @Input() editMode = false;
+
   allCategories$: Observable<CategoryView[]>;
 
   categoryChildrens: CategoryView[];

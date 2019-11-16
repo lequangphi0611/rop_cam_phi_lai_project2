@@ -9,6 +9,7 @@
     <app-base-product-form
     [basicProductForm]="basicForm"
     [currentProduct$]="currentProduct$"
+    [editMode]="editMode"
     #base
     (onSelectedCategory)="onSelectedCategory($event)"></app-base-product-form>
 
@@ -48,7 +49,7 @@
       <button type="reset" class="btn btn-danger" (click)="cancle()">
         <i class="fas fa-trash-alt"></i> Hủy
       </button>
-      <button type="button" (click)="onSubmit()" class="btn btn-info">
+      <button [disabled]="!isValid() || (proccessing$ | async)" type="button" (click)="onSubmit()" class="btn btn-info">
         <i class="fas fa-save"></i> Hoàn thành
       </button>
     </div>

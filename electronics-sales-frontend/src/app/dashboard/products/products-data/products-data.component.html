@@ -40,7 +40,15 @@
       <ng-container matColumnDef="manufacturer">
         <th mat-header-cell *matHeaderCellDef>Hãng sản xuất</th>
         <td mat-cell class="text-right" *matCellDef="let element" class="mx-2">
-          {{ (element.manufacturer$ | async)?.manufacturerName }}
+          {{ (element.manufacturer$ | async)?.manufacturerName ? (element.manufacturer$ | async)?.manufacturerName : 'Không' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="categories">
+        <th mat-header-cell *matHeaderCellDef>Loại Sản Phẩm</th>
+        <td mat-cell class="text-right" *matCellDef="let element" class="mx-2">
+          <mat-spinner *ngIf="!(element.categories$ | async) || (element.categories$ | async)?.length < 0"></mat-spinner>
+          {{ (element.categories$ | async) | categoriesData }}
         </td>
       </ng-container>
 

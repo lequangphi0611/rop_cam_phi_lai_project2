@@ -1,5 +1,5 @@
 .product-img {
-  max-width: 15rem;
+  max-width: 8.5rem;
 
 }
 
@@ -9,6 +9,10 @@
   align-items: center;
 }
 
+.mat-column-name {
+  max-width: 10rem;
+}
+
 .mat-cell {
-  padding: 2rem !important;
+  padding: 1.5rem;
 }
