@@ -33,7 +33,7 @@
       <ng-container matColumnDef="edit">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell class="text-right" *matCellDef="let element" class="mx-2">
-          <button class="btn-action" mat-raised-button color="primary">
+          <button (click)="openEditForm(element)" class="btn-action" mat-raised-button color="primary">
             Sửa
           </button>
         </td>

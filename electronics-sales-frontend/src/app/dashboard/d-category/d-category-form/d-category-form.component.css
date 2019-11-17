@@ -1,0 +1,10 @@
+.mat-card-header {
+  justify-content: center;
+  text-align: center;
+}
+
+.mat-card-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

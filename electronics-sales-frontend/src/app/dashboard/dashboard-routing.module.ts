@@ -1,7 +1,5 @@
-import { OverviewsComponent } from './overviews/overviews.component';
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
+import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 
 const routes: Routes = [
@@ -25,6 +23,11 @@ const routes: Routes = [
           import('./manufacturer/manufacturer.module').then(
             m => m.ManufacturerModule
           ),
+      },
+      {
+        path: 'category',
+        loadChildren: () =>
+          import('./d-category/d-category.module').then(m => m.DCategoryModule),
       },
       {
         path: '',

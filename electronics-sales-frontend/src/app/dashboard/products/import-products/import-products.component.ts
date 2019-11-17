@@ -18,8 +18,6 @@ export class ImportProductsComponent implements OnInit, OnDestroy {
 
   private unscription$ = new Subject();
 
-  @Output() onSaveSuccess = new EventEmitter(true);
-
   constructor(
     private formBuilder: FormBuilder,
     private importInvoiceService: ImportInvoiceService,
@@ -44,7 +42,7 @@ export class ImportProductsComponent implements OnInit, OnDestroy {
   }
 
   close() {
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
   getImportInvoice(): ImportInvoiceDto {
@@ -63,11 +61,10 @@ export class ImportProductsComponent implements OnInit, OnDestroy {
       });
   }
   onSuccess() {
-    this.onSaveSuccess.emit();
     this.snackbar.open('Nhập số lượng thành công !', 'Đóng', {
       duration: 2000
-    })
-    this.quantityControl.setValue(1);
+    });
+    this.dialogRef.close(true);
   }
 
   ngOnDestroy() {

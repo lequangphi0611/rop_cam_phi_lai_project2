@@ -10,6 +10,8 @@ import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.responses.BaseCategoryResponse;
 import com.electronicssales.models.responses.CategoryResponse;
 
+import org.springframework.data.domain.Pageable;
+
 public interface CategoryService {
 
     BaseCategoryResponse createCategory(CategoryDto categoryDto);
@@ -18,7 +20,11 @@ public interface CategoryService {
 
     Optional<Category> findByCategoryName(String categoryName);
     
-    Collection<CategoryResponse> findAll(String nameKeyword);
+    Collection<CategoryResponse> findAllAndFetchChildrens(String nameKeyword);
+
+    Collection<BaseCategoryResponse> findAll(Pageable pageable, String nameKeyword);
+
+    Collection<BaseCategoryResponse> findAll(String nameKeyword);
 
     Optional<Category> findById(long id);
 

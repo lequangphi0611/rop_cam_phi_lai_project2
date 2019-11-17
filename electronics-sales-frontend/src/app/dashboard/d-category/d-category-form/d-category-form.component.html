@@ -1,0 +1,98 @@
+<div class="col-12">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title class="text-center">Thông Tin Cập Nhật</mat-card-title>
+    </mat-card-header>
+    <mat-divider class="px-2"></mat-divider>
+    <mat-card-content class="py-5">
+      <form [formGroup]="categoryForm" class="col-12" (submit)="onSubmit()">
+        <div class="form-group row col-12 pr-0">
+          <label class="col-4 col-form-label d-flex align-items-center"
+            >Tên loại sản phẩm (*) :
+          </label>
+          <div class="col-7 pr-0">
+            <mat-form-field class="col-12 m-0 p-0">
+              <input
+                matInput
+                placeholder="Nhập tên loại sản phẩm"
+                formControlName="categoryName"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-group row col-12 pr-0">
+            <label class="col-4 col-form-label d-flex align-items-center"
+              >Thuộc Danh Mục :
+            </label>
+            <div class="col-7 pr-0">
+              <mat-form-field class="col-12 m-0 p-0">
+                <mat-label>Chọn danh mục</mat-label>
+                <mat-select formControlName="parentId">
+                  <mat-option [value]="0">Không</mat-option>
+                  <mat-option
+                    *ngFor="let parent of parent$ | async"
+                    [value]="parent.id"
+                    >{{ parent.categoryName }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        <div class="form-group row col-12 pr-0">
+          <label class="col-4 col-form-label d-flex align-items-center"
+            >Hãng sản xuất :
+          </label>
+          <div class="col-7 pr-0">
+            <mat-form-field class="col-12 m-0 p-0">
+              <mat-label>Chọn Hãng Sản Xuất</mat-label>
+              <mat-select formControlName="manufacturerIds" multiple>
+                <mat-option
+                  *ngFor="let manufacturer of manufacturers$ | async"
+                  [value]="manufacturer.id"
+                  >{{ manufacturer.manufacturerName }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-group row col-12 pr-0">
+          <label class="col-4 col-form-label d-flex align-items-center"
+            >Thông số kỹ thuật:
+          </label>
+          <div class="col-7 pr-0">
+            <mat-form-field class="col-12 m-0 p-0">
+              <mat-label>Chọn những thông số kỹ thuật cần thiết</mat-label>
+              <mat-select formControlName="parameterTypes" multiple [compareWith]="compartParameterType">
+                <mat-option
+                  *ngFor="let parameterType of parameterTypes$ | async"
+                  [value]="parameterType"
+                  >{{ parameterType.parameterTypeName }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-1 pt-1 " [matTooltip]="'Thêm Thông Số Mới'">
+            <button mat-icon-button color="primary">
+              <mat-icon>add_box</mat-icon>
+            </button>
+          </div>
+          </div>
+
+      </form>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions>
+      <button mat-raised-button class="col-4 m-2">HỦY</button>
+      <button
+        mat-raised-button
+        (click)="onSubmit()"
+        color="primary"
+        class="col-4 m-2"
+      >
+        LƯU
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

@@ -1,20 +1,22 @@
 <h2 mat-dialog-title [matTooltip]="product.productName">{{ product.productName | cutString: 20 }}</h2>
 
-<mat-dialog-content [formGroup]="importForm">
-  <mat-form-field class="w-100 p-0 m-0">
-    <input
-      matInput
-      type="number"
-      placeholder="Nhập số lượng sản phẩm"
-      formControlName="quantity"
-    />
-    <mat-error *ngIf="quantityControl.hasError('required')">
-      Không được để trống
-    </mat-error>
-    <mat-error *ngIf="quantityControl.hasError('min')">
-      Số lượng sản phẩm phải lớn hơn 0
-    </mat-error>
-  </mat-form-field>
+<mat-dialog-content>
+  <form [formGroup]="importForm" class="w-100" (submit)="save()">
+    <mat-form-field class="w-100 p-0 m-0">
+      <input
+        matInput
+        type="number"
+        placeholder="Nhập số lượng sản phẩm"
+        formControlName="quantity"
+      />
+      <mat-error *ngIf="quantityControl.hasError('required')">
+        Không được để trống
+      </mat-error>
+      <mat-error *ngIf="quantityControl.hasError('min')">
+        Số lượng sản phẩm phải lớn hơn 0
+      </mat-error>
+    </mat-form-field>
+  </form>
 </mat-dialog-content>
 
 <mat-dialog-actions>

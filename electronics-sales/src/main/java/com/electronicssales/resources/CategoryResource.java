@@ -9,12 +9,17 @@ import javax.validation.Valid;
 import com.electronicssales.entities.Category;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.responses.CategoryResponse;
+import com.electronicssales.models.types.CategoryFetchType;
 import com.electronicssales.services.CategoryService;
 import com.electronicssales.services.ManufacturerService;
 import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -64,9 +69,30 @@ public class CategoryResource {
     @GetMapping
     public Callable<ResponseEntity<?>> fetchCategories(
         @RequestParam(required = false, value = "q", defaultValue = "") 
-        String query) 
+        String query,
+        @RequestParam(required = false, defaultValue = "PARENT_ONLY")
+        String fetchType,
+        @RequestParam(required = false, defaultValue = "0")
+        int page,
+        @RequestParam(required = false)
+        Integer size,
+        @RequestParam(required = false, defaultValue = "id")
+        String sortBy,
+        @RequestParam(required = false, defaultValue = "desc")
+        String sortType) 
     {
-        return () -> ResponseEntity.ok(categoryService.findAll(query));
+        return () -> {
+            CategoryFetchType fetch = CategoryFetchType.of(fetchType).get();
+            if(fetch == CategoryFetchType.PARENT_ONLY) {
+                return ResponseEntity.ok(categoryService.findAllAndFetchChildrens(query));
+            }
+            if(size == null || size < 0) {
+                return ResponseEntity.ok(categoryService.findAll(query));
+            }
+            Direction direction = Direction.valueOf(sortType.toUpperCase());
+            Pageable pageable = PageRequest.of(page, size, new Sort(direction, sortBy));
+            return ResponseEntity.ok(categoryService.findAll(pageable, query));
+        };
     }
 
     @GetMapping("/{categoryId}/manufacturers")

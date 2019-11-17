@@ -94,7 +94,6 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         String sqlbuilded = buildFetchProductsQueryBy(initQuery(), option, parameters).toString();
         LOGGER.info("My JPQL Builded : {}", sqlbuilded);
 
-        int firstResultIndex = option.getPageable().getPageNumber() * option.getPageable().getPageSize();
         Query query = entityManager.createQuery(sqlbuilded.toString(), Product.class);
 
         parameters.forEach(query::setParameter);

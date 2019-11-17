@@ -16,14 +16,18 @@ import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.models.responses.ICategoryReponse;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParameterTypeRepository;
+import com.electronicssales.repositories.ProductCategoryRepository;
+import com.electronicssales.repositories.ProductRepository;
 import com.electronicssales.services.CategoryService;
 import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Lazy
 @Service
@@ -69,9 +73,27 @@ public class DefaultCategoryService implements CategoryService {
 
     @Transactional
     @Override
-    public Collection<CategoryResponse> findAll(String nameKeyword) {
+    public Collection<CategoryResponse> findAllAndFetchChildrens(String nameKeyword) {
         return categoryRepository.fetchCategoriesNotHasParent(nameKeyword).stream().map(categoryResponseMapper::mapping)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<BaseCategoryResponse> findAll(Pageable pageable, String nameKeyword) {
+        String keyword = Optional.ofNullable(nameKeyword).orElse("");
+        return categoryRepository.findAll(pageable, keyword)
+            .stream()
+            .map(baseCategoryResponseMapper::mapping)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<BaseCategoryResponse> findAll(String nameKeyword) {
+        String keyword = Optional.ofNullable(nameKeyword).orElse("");
+        return categoryRepository.findAll(keyword)
+            .stream()
+            .map(baseCategoryResponseMapper::mapping)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -151,11 +173,15 @@ public class DefaultCategoryService implements CategoryService {
     @Component
     class BaseCategoryMapper implements Mapper<BaseCategoryResponse, Category> {
 
+        @Autowired
+        private ProductCategoryRepository productCategoryRepository;
+
         @Override
         public BaseCategoryResponse mapping(Category category) {
             BaseCategoryResponse baseCategoryResponse = new BaseCategoryResponse();
             baseCategoryResponse.setId(category.getId());
             baseCategoryResponse.setCategoryName(category.getCategoryName());
+            baseCategoryResponse.setProductCount(productCategoryRepository.countByCategoryId(category.getId()));
             Optional.ofNullable(category.getParent())
                     .ifPresent(parent -> baseCategoryResponse.setParentId(parent.getId()));
             return baseCategoryResponse;

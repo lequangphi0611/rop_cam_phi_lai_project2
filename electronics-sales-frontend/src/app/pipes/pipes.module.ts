@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 import { DiscountPipe } from './discount.pipe';
 import { CutStringPipe } from './cut-string.pipe';
 import { SliceArrayPipe } from './slice-array.pipe';
+import { JoinPipe } from './join.pipe';
 
 @NgModule({
-  declarations: [CurrencyVNPipe, DiscountPipe, CutStringPipe, SliceArrayPipe],
+  declarations: [CurrencyVNPipe, DiscountPipe, CutStringPipe, SliceArrayPipe, JoinPipe],
   imports: [CommonModule],
-  exports: [CurrencyVNPipe, DiscountPipe, CutStringPipe, SliceArrayPipe],
+  exports: [CurrencyVNPipe, DiscountPipe, CutStringPipe, SliceArrayPipe, JoinPipe],
 })
 export class PipesModule {}

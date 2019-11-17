@@ -25,6 +25,11 @@ const SIDE_BAR_ITEMS: SideBarItem[] = [
     links: [`manufacturer`],
   },
   {
+    name: 'Loại sản phẩm',
+    fontAwesomeClass: 'fas fa-clipboard-list',
+    links: [`category`],
+  },
+  {
     name: 'Sản phẩm',
     fontAwesomeClass: 'fas fa-shopping-cart',
     links: [`product`],

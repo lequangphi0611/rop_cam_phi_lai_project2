@@ -1,23 +1,25 @@
 <h2 mat-dialog-title>Hãng Sản Xuất</h2>
 <mat-divider></mat-divider>
-<mat-dialog-content class="my-2">
-  <div class="col-12" [formGroup]="manufacturerForm">
+<mat-dialog-content class="my-2 mat-dialog-content-manufacturer">
+  <div class="col-12" >
     <div class="col-12 p-0 m-2">
       <div class="form-group row">
         <label class="col-sm-3 col-form-label p-0 mr-3 pt-3"
           >Tên Hãng Sản Xuất :</label
         >
-        <div class="col-sm-8 p-0">
-          <mat-form-field class="w-100 p-0 m-0 mb-5">
-            <input matInput formControlName="manufacturerName" type="text" placeholder="Nhập tên hãng sản xuất" />
-          </mat-form-field>
-        </div>
+        <form class='col-8' [formGroup]="manufacturerForm" (submit)="submit()">
+          <div class="col-12 p-0">
+            <mat-form-field class="w-100 p-0 m-0 mb-5">
+              <input matInput formControlName="manufacturerName" type="text" placeholder="Nhập tên hãng sản xuất" />
+            </mat-form-field>
+          </div>
+        </form>
       </div>
 
       <div class="form-group row">
         <label class="col-sm-3 col-form-label p-0 mr-3 pt-2">Logo : </label>
         <div class="col-sm-5 p-0">
-          <app-choose-images (onSelectFile)="onFileSelected($event)" (onRemovedFile)="onFileRemoved()"></app-choose-images>
+          <app-choose-images [fileUrl]="this.fileUrl" (onSelectFile)="onFileSelected($event)" (onRemovedFile)="onFileRemoved()"></app-choose-images>
         </div>
       </div>
     </div>

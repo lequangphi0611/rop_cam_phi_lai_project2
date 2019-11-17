@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.electronicssales.entities.Category;
 import com.electronicssales.models.responses.ICategoryReponse;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,6 +32,8 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     +   " AND c.category_name LIKE %:nameKeyword%"
     +   " GROUP BY c.id, c.category_name, c.parent_id";
 
+    String FETCH_ALL_CATEGORIES = "SELECT c FROM Category c WHERE c.categoryName like %:nameKeyword%";
+
     String HAS_CHILDRENS_QUERY = "SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Category c WHERE c.parent.id = ?1";
 
     String FIND_BY_PRODUCT_ID = "SELECT c FROM Category c JOIN c.productCategories pc WHERE pc.product.id = ?1";
@@ -41,6 +44,12 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     @Query("SELECT c FROM Category c ORDER BY c.categoryName ASC")
     List<Category> findAll();
 
+    @Query(FETCH_ALL_CATEGORIES)
+    List<Category> findAll(@Param("nameKeyword") String nameKeyword);
+
+    @Query(FETCH_ALL_CATEGORIES)
+    List<Category> findAll(Pageable pageable, @Param("nameKeyword") String nameKeyword);
+
     @Query(value = FETCH_CATEGORIES_NOT_HAS_PARENT, nativeQuery = true)
     List<ICategoryReponse> fetchCategoriesNotHasParent(@Param(value = "nameKeyword") String nameKeyword);
 
@@ -48,6 +57,8 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     List<ICategoryReponse> fetchChildrensOf(
         @Param(value = "parentId") long parentId, 
         @Param(value = "nameKeyword") String nameKeyword);
+
+    
 
     List<Category> findByParentId(long parentId); 
 

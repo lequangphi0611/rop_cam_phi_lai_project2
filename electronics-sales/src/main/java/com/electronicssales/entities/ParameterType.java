@@ -43,8 +43,19 @@ public class ParameterType {
         this.id = id;
     }
 
+    public ParameterType(long id, String parameterTypeName) {
+        this.id = id;
+        this.parameterTypeName = parameterTypeName;
+    }
+
     public static ParameterType of(long id) {
         return new ParameterType(id);
     }
+
+    public static ParameterType of(long id, String parameterTypeName) {
+        return new ParameterType(id, parameterTypeName);
+    }
+
+
 
 }

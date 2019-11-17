@@ -15,7 +15,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { finalize, map, takeUntil, tap } from 'rxjs/operators';
+import { finalize, map, takeUntil, tap, filter } from 'rxjs/operators';
 import { ProductSortType } from 'src/app/models/types/product-sort-type.type';
 import { SortType } from 'src/app/models/types/sort-type.type';
 import { ProductService } from 'src/app/services/product.service';
@@ -142,16 +142,14 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
     dialogConfig.disableClose = false;
     dialogConfig.autoFocus = true;
 
-    dialogConfig.minWidth = "40rem";
-
     dialogConfig.data = {
       product,
     };
 
     const dialogRef = this.dialog.open(ImportProductsComponent, dialogConfig);
 
-    dialogRef.componentInstance.onSaveSuccess
-      .pipe(takeUntil(this.unSubscription$))
+    dialogRef.afterClosed()
+      .pipe(filter(v => v))
       .subscribe(() => this.dataSource.loadProducts(this.currentOption));
   }
 

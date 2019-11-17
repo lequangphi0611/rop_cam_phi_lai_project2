@@ -15,6 +15,6 @@ public class CategoryResponse {
 
     List<CategoryResponse> childrens;
 
-    private int productCount;
+    int productCount;
 
 }

@@ -7,7 +7,7 @@
   padding: 1.5rem;
   min-width: 12rem;
 
-  position: relative;
+  /* position: relative; */
 }
 
 tr {
@@ -17,6 +17,10 @@ tr {
 .mat-column-logo {
   text-align: left !important;
   padding-left: 2rem !important;
+}
+
+.mat-cell {
+  position: relative;
 }
 
 .btn-action {

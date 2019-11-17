@@ -10,11 +10,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BaseCategoryResponse {
 
-    long id;
+    Long id;
     
     String categoryName;
 
     Long parentId;
+
+    int productCount;
 
 
 }

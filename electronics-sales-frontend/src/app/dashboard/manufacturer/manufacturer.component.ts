@@ -38,6 +38,11 @@ export class ManufacturerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   defaultSize = 5;
 
+  readonly defautDialogConfig: MatDialogConfig = {
+    autoFocus: true,
+    disableClose: false
+  };
+
   constructor(
     private manufacturerService: ManufacturerService,
     private dialog: MatDialog,
@@ -72,10 +77,32 @@ export class ManufacturerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openAddForm() {
-    const dialogConfig = new MatDialogConfig();
+    const dialogConfig = {...this.defautDialogConfig};
 
-    dialogConfig.disableClose = false;
-    dialogConfig.autoFocus = false;
+    dialogConfig.data = {
+      edit: false
+    };
+
+    const dialogRef = this.dialog.open(ManufacturerFormDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed()
+    .pipe(
+      filter(v => v),
+      tap(() => {
+        this.paginator.pageIndex = this.defaultPage;
+        this.valueChanged$.next(true);
+      })
+    )
+    .subscribe();
+  }
+
+  openEditForm(manufacturer: ManufacturerView) {
+    const dialogConfig = {...this.defautDialogConfig};
+
+    dialogConfig.data = {
+      edit: true,
+      manufacturer
+    };
 
     const dialogRef = this.dialog.open(ManufacturerFormDialogComponent, dialogConfig);
 
