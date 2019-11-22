@@ -96,6 +96,11 @@ public class CategoryResource {
         };
     }
 
+    @GetMapping("/products-sellable")
+    public Callable<ResponseEntity<?>> fetchCategoriesHasProductSellable() {
+        return () -> ResponseEntity.ok(this.categoryService.fetchCategoriesHasProductSellable());
+    }
+
     @GetMapping("/{categoryId}/manufacturers")
     public Callable<ResponseEntity<?>> fetchManufacturers(@PathVariable long categoryId) {
         return () -> ResponseEntity.ok(manufacturerService.findByCategoryId(categoryId));

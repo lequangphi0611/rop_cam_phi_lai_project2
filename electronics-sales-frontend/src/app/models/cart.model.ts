@@ -1,3 +1,4 @@
+import { ProductView } from './view-model/product.view.model';
 import { CartItem } from './cart-item.model';
 
 export class Cart {
@@ -13,21 +14,30 @@ export class Cart {
       .findIndex(productId => productId === cartItem.productId);
   }
 
-  push(cartItem: CartItem) {
-    const {quantity} = cartItem;
-    const cartItemIndex = this.indexOf(cartItem);
-    console.log({cartItemIndex});
+  push (product: ProductView, quantity: number): boolean {
+    console.log('add cart', product, quantity);
+    if (product.quantity <= 0) {
+      return false;
+    }
+
+    const cartItemIndex = this.indexOf({productId: product.id, quantity});
+    const cartItem = {productId: product.id, quantity};
     if (cartItemIndex < 0) {
       this.cartItems.push(cartItem);
-      return;
+      return true;
     }
 
     if (cartItem.quantity < 0) {
       this.reduceOf(cartItemIndex, quantity);
-      return;
+      return true;
     }
 
+    const oldCartItem = this.cartItems[cartItemIndex];
+    if (oldCartItem.quantity + quantity > product.quantity) {
+      return false;
+    }
     this.increaseOf(cartItemIndex, quantity);
+    return true;
   }
 
   private reduceOf(index: number, quantityReduced: number) {

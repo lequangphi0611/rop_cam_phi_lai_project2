@@ -215,7 +215,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     }
 
     private StringBuilder buildConditionsByFetchTypeEqualsSalable() {
-        return new StringBuilder(PRODUCT_COLUMNS.get("status")).append(" = ").append(ProductStatus.SELLABLE);
+        return new StringBuilder(PRODUCT_COLUMNS.get("status")).append(" = ").append(ProductStatus.SELLABLE.getValue());
     }
 
     private StringBuilder buildConditionsByFetchTypeEqualsSelling() {
@@ -224,7 +224,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     }
 
     private StringBuilder buildConditionsByFetchTypeEqualsUnselling() {
-        return new StringBuilder(PRODUCT_COLUMNS.get("status")).append(" = ").append(ProductStatus.UNSELLABLE);
+        return new StringBuilder(PRODUCT_COLUMNS.get("status")).append(" = ").append(ProductStatus.UNSELLABLE.getValue());
     }
 
     private StringBuilder buildOrderBy(ProductSortType productSortType, SortType sortType) {

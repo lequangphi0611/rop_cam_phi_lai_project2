@@ -1,8 +1,11 @@
 package com.electronicssales.services.impls;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Category;
@@ -94,6 +97,53 @@ public class DefaultCategoryService implements CategoryService {
             .stream()
             .map(baseCategoryResponseMapper::mapping)
             .collect(Collectors.toList());
+    }
+
+    private CategoryResponse mappingNotFetchChilds(ICategoryReponse iCategory) {
+        CategoryResponse categoryResponse = new CategoryResponse();
+        categoryResponse.setId(iCategory.getId());
+        categoryResponse.setCategoryName(iCategory.getCategoryName());
+        categoryResponse.setProductCount(iCategory.getProductCount());
+        categoryResponse.setParentId(iCategory.getParentId());
+        return categoryResponse;
+    }
+
+    public List<CategoryResponse> groupingCategoryResponse(Collection<CategoryResponse> categoryResponses) {
+        Comparator<CategoryResponse> compare = (ob1, ob2) -> ob2.getProductCount() - ob1.getProductCount();
+        List<CategoryResponse> parents = categoryResponses
+            .parallelStream()
+            .sorted(compare)
+            .filter(v -> v.getParentId() == null)
+            .collect(Collectors.toList());
+        categoryResponses
+            .parallelStream()
+            .filter(v -> v.getParentId() != null && v.getParentId() > 0)
+            .sorted(compare)
+            .forEach(child -> {
+                Optional<CategoryResponse> categoryOptional = parents
+                    .stream()
+                    .filter(v -> v.getId() == child.getParentId())
+                    .findFirst();
+                if(!categoryOptional.isPresent()) {
+                    return;
+                }
+
+                CategoryResponse category = categoryOptional.get();
+                if(category.getChildrens() == null) {
+                    category.setChildrens(new ArrayList<>());
+                }
+                category.getChildrens().add(child);
+            });
+        return parents;
+    }
+
+    @Override
+    public List<CategoryResponse> fetchCategoriesHasProductSellable() {
+        List<CategoryResponse> categoryResponses = categoryRepository.fetchCategoriesHasProductSellable()
+            .stream()
+            .map(this::mappingNotFetchChilds)
+            .collect(Collectors.toList());
+        return groupingCategoryResponse(categoryResponses);
     }
 
     @Override

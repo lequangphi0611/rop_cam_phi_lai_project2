@@ -18,6 +18,10 @@ export class CategoryService {
     return this.http.get<CategoryView[]>(`${CategoryService.BASE_REQUEST}`);
   }
 
+  fetchCategoriesHasProductSellable(): Observable<CategoryView[]> {
+    return this.http.get<CategoryView[]>(`${CategoryService.BASE_REQUEST}/products-sellable`);
+  }
+
   create(category: CategoryDto): Observable<CategoryView> {
     return this.http.post<CategoryView>(
       `${CategoryService.BASE_REQUEST}`,

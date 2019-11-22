@@ -109,7 +109,8 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   fetchCategories() {
-    this.categories$ = this.categoryService.fetchCategories();
+    this.categories$ = this.categoryService.fetchCategories()
+      .pipe(map(categories => categories.filter(category => category.productCount > 0)));
   }
 
   fetchMaxSize(option: FetchProductOption) {

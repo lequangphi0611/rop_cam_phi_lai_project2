@@ -74,12 +74,7 @@ export class HomeHeaderComponent implements OnInit {
   ngOnInit() {
     this.navItems$ = of(SUB_NAV_ITEMS);
     this.navItemRight$ = of(NAV_ITEMS_RIGHT);
-    this.categories$ = this.categoryService.fetchCategories().pipe(
-      map(categories => {
-        return categories
-        .filter(v => v.productCount > 0);
-      })
-    );
+    this.categories$ = this.categoryService.fetchCategoriesHasProductSellable();
     this.currUser$ = this.userAuthenticatedService.user$;
     this.seachForm = this.formBuilder.group({
       search: [null],

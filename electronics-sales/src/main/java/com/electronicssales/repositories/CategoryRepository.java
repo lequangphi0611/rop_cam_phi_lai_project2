@@ -2,6 +2,7 @@ package com.electronicssales.repositories;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.models.responses.ICategoryReponse;
@@ -16,21 +17,24 @@ import org.springframework.stereotype.Repository;
 public interface CategoryRepository extends MyCustomizeRepository<Category, Long> {
 
     String DELETE_CATEGORY_PARAMETERS_BY_CATEGORY_ID = "DELETE FROM categories_parameter_types"
-        +   " WHERE category_id = ?1";
+            + " WHERE category_id = ?1";
 
-    String FETCH_CATEGORIES_NOT_HAS_PARENT = "SELECT c.id, c.category_name AS categoryName, 0 AS parentId" 
-        +   ", COUNT(pc.id) AS productCount FROM categories c"
-        +   " LEFT OUTER JOIN product_categories pc" 
-        +   " ON c.id = pc.category_id WHERE c.parent_id IS NULL"
-        +   " AND c.category_name LIKE %:nameKeyword%"
-        +   " GROUP BY c.id, c.category_name, c.parent_id";
+    String FETCH_CATEGORIES_NOT_HAS_PARENT = "SELECT c.id, c.category_name AS categoryName, 0 AS parentId"
+            + ", COUNT(pc.id) AS productCount FROM categories c" + " LEFT OUTER JOIN product_categories pc"
+            + " ON c.id = pc.category_id WHERE c.parent_id IS NULL" + " AND c.category_name LIKE %:nameKeyword%"
+            + " GROUP BY c.id, c.category_name, c.parent_id";
 
-    String FETCH_CHILDRENS_BY_PARENT_ID_QUERY = "SELECT c.id, c.category_name AS categoryName, c.parent_id as parentId" 
-    +   ", COUNT(pc.id) AS productCount FROM categories c"
-    +   " LEFT OUTER JOIN product_categories pc" 
-    +   " ON c.id = pc.category_id WHERE c.parent_id = :parentId "
-    +   " AND c.category_name LIKE %:nameKeyword%"
-    +   " GROUP BY c.id, c.category_name, c.parent_id";
+    String FETCH_CHILDRENS_BY_PARENT_ID_QUERY = "SELECT c.id, c.category_name AS categoryName, c.parent_id as parentId"
+            + ", COUNT(pc.id) AS productCount FROM categories c" + " LEFT OUTER JOIN product_categories pc"
+            + " ON c.id = pc.category_id WHERE c.parent_id = :parentId " + " AND c.category_name LIKE %:nameKeyword%"
+            + " GROUP BY c.id, c.category_name, c.parent_id";
+
+    String FETCH_CATEGORIES_HAS_PRODUCT_SELLABLE = "SELECT c.id, c.category_name AS categoryName, c.parent_id as parentId, COUNT(pc.id) AS productCount" 
+        +   " FROM categories c INNER JOIN product_categories pc"
+        +   " ON c.id = pc.category_id INNER JOIN products p on p.id = pc.product_id"
+        +   " WHERE p.status = 0 AND p.quantity > 0"
+        +   " GROUP BY c.id, c.category_name, c.parent_id"
+        +   " ORDER BY COUNT(pc.id) desc";
 
     String FETCH_ALL_CATEGORIES = "SELECT c FROM Category c WHERE c.categoryName like %:nameKeyword%";
 
@@ -40,7 +44,7 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
 
     String DELETE_ALL_CATEGORY_PARAMETER_TYPES_BYCATEGORY = "DELETE FROM categories_parameter_types WHERE category_id = ?1";
 
-    boolean existsByCategoryName(String categoryName);   
+    boolean existsByCategoryName(String categoryName);
 
     @Override
     @Query("SELECT c FROM Category c ORDER BY c.categoryName ASC")
@@ -55,14 +59,14 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     @Query(value = FETCH_CATEGORIES_NOT_HAS_PARENT, nativeQuery = true)
     List<ICategoryReponse> fetchCategoriesNotHasParent(@Param(value = "nameKeyword") String nameKeyword);
 
+    @Query(nativeQuery = true, value = FETCH_CATEGORIES_HAS_PRODUCT_SELLABLE)
+    Set<ICategoryReponse> fetchCategoriesHasProductSellable();
+
     @Query(value = FETCH_CHILDRENS_BY_PARENT_ID_QUERY, nativeQuery = true)
-    List<ICategoryReponse> fetchChildrensOf(
-        @Param(value = "parentId") long parentId, 
-        @Param(value = "nameKeyword") String nameKeyword);
+    List<ICategoryReponse> fetchChildrensOf(@Param(value = "parentId") long parentId,
+            @Param(value = "nameKeyword") String nameKeyword);
 
-    
-
-    List<Category> findByParentId(long parentId); 
+    List<Category> findByParentId(long parentId);
 
     Optional<Category> findByCategoryName(String categoryName);
 
@@ -72,10 +76,7 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     boolean hasChildrens(long categoryId);
 
     @Modifying
-    @Query(
-        value = DELETE_CATEGORY_PARAMETERS_BY_CATEGORY_ID,
-        nativeQuery = true
-    )
+    @Query(value = DELETE_CATEGORY_PARAMETERS_BY_CATEGORY_ID, nativeQuery = true)
     void deleteCategoryParametersByCategoryId(long categoryId);
 
     @Query(FIND_BY_PRODUCT_ID)
@@ -84,5 +85,5 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     @Query(value = DELETE_ALL_CATEGORY_PARAMETER_TYPES_BYCATEGORY, nativeQuery = true)
     @Modifying
     void deleteAllCategoryParameterTypeBy(long categoryId);
-    
+
 }

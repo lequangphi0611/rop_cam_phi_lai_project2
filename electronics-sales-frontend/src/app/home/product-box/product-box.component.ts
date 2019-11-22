@@ -1,9 +1,9 @@
+import { ProductView } from './../../models/view-model/product.view.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CartDataService } from './../cart-data.service';
 import { map } from 'rxjs/operators';
 import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { ProductView } from 'src/app/models/view-model/product.view.model';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ProductService } from 'src/app/services/product.service';
 import { CartItem } from 'src/app/models/cart-item.model';
@@ -35,9 +35,12 @@ export class ProductBoxComponent implements OnInit, OnDestroy {
     this.router.navigate([`/index/product/${id}`]);
   }
 
-  addToCart(productId: number) {
-    this.cartData.push({productId, quantity: 1});
-    this.snackBar.open('Thêm vào giỏ thành công !', 'Đóng', {duration: 2000});
+  addToCart(product: ProductView) {
+    if (this.cartData.push(product, 1)) {
+      this.snackBar.open('Thêm vào giỏ thành công !', 'Đóng', {duration: 2000});
+      return;
+    }
+    this.snackBar.open('Thêm vào giỏ không thành công !', 'Đóng', {duration: 2000});
   }
 
   ngOnDestroy(): void {

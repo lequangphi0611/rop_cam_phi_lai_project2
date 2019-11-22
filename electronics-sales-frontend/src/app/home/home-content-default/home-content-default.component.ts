@@ -26,7 +26,7 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
   readonly basicOption: FetchProductOption = {
     page: 0,
     size: 4,
-    fetchType: FetchProductType.ALL,
+    fetchType: FetchProductType.SELLING,
     productSortType: ProductSortType.TIME
   };
 
@@ -37,13 +37,11 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
   }
 
   subCriptionProductBanners(): void {
-    this.subcription = this.categoryService.fetchCategories()
+    this.subcription = this.categoryService.fetchCategoriesHasProductSellable()
       .pipe(
         map(categories => {
           const productBanners: ProductBanner[] = [];
           categories
-            .filter(c => c.productCount > 0)
-            .sort((c1, c2) => (c1.productCount - c2.productCount) * -1)
             .forEach(category =>
             productBanners.push({
               id: category.id,

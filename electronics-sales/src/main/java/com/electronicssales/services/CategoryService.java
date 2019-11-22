@@ -3,6 +3,7 @@ package com.electronicssales.services;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.ParameterType;
@@ -25,6 +26,8 @@ public interface CategoryService {
     Collection<BaseCategoryResponse> findAll(Pageable pageable, String nameKeyword);
 
     Collection<BaseCategoryResponse> findAll(String nameKeyword);
+
+    List<CategoryResponse> fetchCategoriesHasProductSellable();
 
     Optional<Category> findById(long id);
 

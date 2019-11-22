@@ -1,3 +1,4 @@
+import { ProductView } from './../models/view-model/product.view.model';
 import { filter } from 'rxjs/operators';
 import { CartItem } from './../models/cart-item.model';
 import { Cart } from './../models/cart.model';
@@ -45,9 +46,12 @@ export class CartDataService {
     this.cart.next(this.cartData);
   }
 
-  push(cartItem: CartItem): void {
-    this.cartData.push(cartItem);
-    this.cart.next(this.cartData);
+  push(product: ProductView, quantity = 1): boolean {
+    if(this.cartData.push(product, quantity)) {
+      this.cart.next(this.cartData);
+      return true;
+    }
+    return false;
   }
 
   get CartData() {
