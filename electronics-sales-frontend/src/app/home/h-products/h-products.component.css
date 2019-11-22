@@ -1,0 +1,86 @@
+.card-left{
+  margin: 10px;
+}
+.card-right{
+  margin: 10px;
+}
+.card-rop{
+  width: 100%;
+  /* text-align: center; */
+  padding-top: 0px;
+  /* padding: 5px; */
+
+
+}
+.col-rop{
+  width:100%;
+}
+
+.list-group-item a{
+  text-decoration: none;
+  color: brown
+}
+.price-deal{
+  padding: 0px 10px;
+  width: 100%;
+}
+.price-deal h6{
+  text-align: center;
+  width: 100%;
+  font-size: 30px;
+color: crimson;
+margin-bottom: 0px
+}
+.price-deal h7{
+  width: 100%;
+  text-align: center;
+  color: darkgrey;
+  padding-top: 3px;
+  margin-bottom: 0px;
+  text-decoration: line-through
+}
+.addtocart-rop{
+  padding-left: 2rem ;
+  padding-top: 1rem ;
+}
+.buy-rop{
+  padding-top: 10px;
+  padding-left: 2rem;
+}
+.btn-buygop-rop{
+  height: 60px;
+  font-size: 20px;
+  width: 100%;
+}
+.btn-addtocart-rop{
+  height: 60px;
+  width: 100%;
+  font-size: 20px
+}
+.img-rop{
+  height: 500px;
+  width: 100%;
+}
+.comment-item{
+  width: 100%;
+}
+.comment-user{
+  margin-left: 1px;
+  padding-bottom: 4px;
+  padding-left: 10px;
+  padding-top: 4px;
+  width: 100%;
+}
+.comment-item-image-user{
+  width: 30px;
+  height: 30px;
+}
+/*----------ProductDetail _ lai-----------*/
+.product-mota{
+  padding: 20px;
+  margin: 10px;
+}
+.product-title{
+  color: darkblue;
+}
+

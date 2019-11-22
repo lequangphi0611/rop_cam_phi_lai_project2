@@ -1,3 +1,4 @@
+import { CartDataService } from './home/cart-data.service';
 import { ManufacturerService } from './services/manufacturer.service';
 import { CurrencyVNPipe } from './pipes/currency-vn.pipe';
 import { CategoryService } from './services/category.service';
@@ -17,6 +18,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductService } from './services/product.service';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 
+import { StorageServiceModule } from 'ngx-webstorage-service';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -26,7 +29,7 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   providers: [
     CookieService,
@@ -44,6 +47,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
     UserAuthenticatedService,
     ProductService,
     ManufacturerService,
+    StorageServiceModule,
+    CartDataService
   ],
   bootstrap: [AppComponent],
 })

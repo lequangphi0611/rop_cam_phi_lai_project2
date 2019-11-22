@@ -80,6 +80,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/api/products/**")
                 .permitAll()   
             .antMatchers(HttpMethod.GET, "/api/comments/**")
+                .permitAll()
+            .antMatchers(HttpMethod.GET, "/api/parameter-types/**")
                 .permitAll() 
             .antMatchers("/actuator/*")
                 .permitAll()

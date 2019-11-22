@@ -19,12 +19,12 @@
             <ng-container
               *ngIf="!category.childrens || category.childrens.length === 0"
             >
-              <button mat-menu-item>
+              <button (click)="goToProducts(category.id)" mat-menu-item>
                 {{ category.categoryName }} ({{ category.productCount }})
               </button>
             </ng-container>
             <ng-container *ngIf="category.childrens?.length > 0">
-              <button mat-menu-item [matMenuTriggerFor]="childMenu">
+              <button mat-menu-item (click)="goToProducts(category.id)" [matMenuTriggerFor]="childMenu">
                 {{ category.categoryName }} ({{ category.productCount }})
               </button>
               <mat-menu #childMenu="matMenu">
@@ -34,7 +34,7 @@
                     trackBy: trackByCategory
                   "
                 >
-                  <button mat-menu-item>
+                  <button (click)="goToProducts(children.id)" mat-menu-item>
                     {{ children.categoryName }} ({{ children.productCount }})
                   </button>
                 </ng-container>
@@ -44,12 +44,14 @@
         </mat-menu>
       </li>
     </ul>
-    <form class="form-inline col-lg-12 m-3 my-2 my-lg-0s">
+    <form [formGroup]="seachForm" class="form-inline col-lg-12 m-3 my-2 my-lg-0s" (submit)="onSubmit()">
       <input
         class="form-control mr-sm-2 col-8"
         type="search"
         placeholder="Nhập nội dung tìm kiếm..."
         aria-label="Search"
+        formControlName="search"
+
       />
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
         Tìm kiếm
@@ -71,6 +73,15 @@
 
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <ul class="navbar-nav">
+        <li class="nav-item mr-3">
+            <a
+              class="nav-link"
+              [routerLink]="'cart'"
+              routerLinkActive="active"
+            >
+              <mat-icon [matBadge]="cartItemsCount | async" matBadgeColor="warn">shopping_cart</mat-icon>
+            </a>
+          </li>
       <li *ngFor="let navItem of navItemRight$ | async" class="nav-item">
         <a
           class="nav-link"

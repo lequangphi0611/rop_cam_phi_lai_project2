@@ -4,13 +4,9 @@
 
 .mat-column-edit,
 .mat-column-delete {
-  max-width: 5rem !important  ;
+  max-width: 20px !important  ;
   padding: 1.5rem;
 }
-
-/* .mat-column-parameterType {
-  min-width: 30rem;
-} */
 
 .mat-cell {
   position: relative;
@@ -25,11 +21,6 @@
 
 .mat-cell.mat-column-manufacturer,
 .mat-cell.mat-column-parameterType {
-  min-width: 18rem;
+  min-width: 250px;
 }
-
-/* .btn-action {
-  position: absolute;
-  right: 2.5rem;
-} */
 

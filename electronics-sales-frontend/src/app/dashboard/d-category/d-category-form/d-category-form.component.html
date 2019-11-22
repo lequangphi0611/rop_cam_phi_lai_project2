@@ -17,6 +17,9 @@
                 placeholder="Nhập tên loại sản phẩm"
                 formControlName="categoryName"
               />
+              <mat-error *ngIf="categoryNameControl.hasError('required')" >
+                Vui lòng không để trống loại sản phẩm
+              </mat-error>
             </mat-form-field>
           </div>
         </div>
@@ -54,6 +57,12 @@
                 >
               </mat-select>
             </mat-form-field>
+
+          </div>
+          <div class="col-1 pt-1 " [matTooltip]="'Thêm Hãng Sản Xuất Mới'">
+            <button type="button" mat-icon-button color="primary" (click)="openFormManufacturer()">
+              <mat-icon>add_circle</mat-icon>
+            </button>
           </div>
         </div>
 
@@ -74,8 +83,8 @@
             </mat-form-field>
           </div>
           <div class="col-1 pt-1 " [matTooltip]="'Thêm Thông Số Mới'">
-            <button mat-icon-button color="primary">
-              <mat-icon>add_box</mat-icon>
+            <button type="button" (click)="openFormParameter()" mat-icon-button color="primary">
+              <mat-icon>add_circle</mat-icon>
             </button>
           </div>
           </div>
@@ -84,12 +93,13 @@
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions>
-      <button mat-raised-button class="col-4 m-2">HỦY</button>
+      <button mat-raised-button (click)="cancle()" class="col-4 m-2">HỦY</button>
       <button
         mat-raised-button
         (click)="onSubmit()"
         color="primary"
         class="col-4 m-2"
+        [disabled]="categoryForm.invalid"
       >
         LƯU
       </button>

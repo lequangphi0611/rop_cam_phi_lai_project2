@@ -1,4 +1,4 @@
-import { map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil, filter } from 'rxjs/operators';
 import { Component, OnInit, ElementRef, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
@@ -18,9 +18,9 @@ import { UserDto } from './../../models/dtos/user.dto';
 import { UserAuthenticatedService } from './../../services/user-authenticated.service';
 import { Subject, Observable, of } from 'rxjs';
 
-import { hasUpperCase } from '../../validators/password.validator';
-
 const PASSWORD_MIN_LENGTH = 6;
+
+const PHONE_NUMBER_PATTERN = /^(0[0-9])+([0-9]{8,9})\b/i;
 
 const confirmPaswordValidator: ValidatorFn = (
   control: FormGroup
@@ -34,41 +34,24 @@ const confirmPaswordValidator: ValidatorFn = (
       };
 };
 
-const passwordValidator = {
-  hasUpperCaseValidator: (control: AbstractControl) => {
-    const value = control.value;
-
-    if (!value || hasUpperCase(value)) {
-      return null;
-    }
-    return { nonStartWithUpperCase: true };
-  },
-
-  passwordLengthValidator: (control: AbstractControl) => {
-    const value = control.value;
-
-    if (!value || value.length > PASSWORD_MIN_LENGTH) {
-      return null;
-    }
-    return { notEnoughPasswordLength: true };
-  },
-};
-
-const passwordValidators = [
-  passwordValidator.passwordLengthValidator,
-  passwordValidator.hasUpperCaseValidator,
-];
 
 const registerLogin = {
   firstname: [null, [Validators.required]],
   lastname: [null, [Validators.required]],
   gender: 'true',
   username: [null, [Validators.required]],
-  password: [null, [Validators.required, ...passwordValidators]],
+  password: [null, [Validators.required, Validators.minLength(6)]],
   confirmPassword: [null, [Validators.required]],
   birthday: '1990-01-01',
-  email: [null, [Validators.required]],
-  phoneNumber: [null, [Validators.required]],
+  email: [null, [Validators.required, Validators.email]],
+  phoneNumber: [
+    null,
+    [
+      Validators.required,
+      Validators.pattern(PHONE_NUMBER_PATTERN),
+      Validators.maxLength(11),
+    ],
+  ],
   address: [null, [Validators.required]],
 };
 
@@ -88,12 +71,12 @@ const GENDER = [
   {
     name: 'Nam',
     value: true,
-    checked: true
+    checked: true,
   },
   {
     name: 'Nữ',
-    value: false
-  }
+    value: false,
+  },
 ];
 
 @Component({
@@ -108,7 +91,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   destroy$ = new Subject<void>();
 
-  gender$: Observable<{name: string, value: boolean, checked?: boolean}[]>;
+  gender$: Observable<{ name: string; value: boolean; checked?: boolean }[]>;
 
   usernameElement;
 
@@ -125,7 +108,25 @@ export class RegisterComponent implements OnInit, OnDestroy {
       validators: [confirmPaswordValidator],
     });
     this.gender$ = of(GENDER);
-    this.usernameElement = this.element.nativeElement.querySelectorAll('#username')[0];
+    this.usernameElement = this.element.nativeElement.querySelectorAll(
+      '#username'
+    )[0];
+  }
+
+  get usernameControl() {
+    return this.registerForm.get('username');
+  }
+
+  onUsernameInputChange() {
+    const username = this.usernameControl.value;
+    if(username) {
+      this.userService.existsByUsername(username)
+        .pipe(takeUntil(this.destroy$)
+        , filter(v => v))
+        .subscribe(() => this.usernameControl.setErrors({
+          existUsername: true,
+        }));
+    }
   }
 
   getUserFromRegisterForm(): UserDto {
@@ -143,13 +144,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     };
   }
 
-  async onSubmit() {
-    const existUsername = await this.validateUsername();
-    if (existUsername) {
-      this.onExistsUsernameError();
-      return;
-    }
-
+  onSubmit() {
     const user = this.getUserFromRegisterForm();
     this.userService
       .register(user)
@@ -158,19 +153,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
         this.userAuthenticatedService.load();
         this.route.navigate(['/index']);
       });
-  }
-
-  validateUsername(): Promise<boolean> {
-    return this.userService
-      .existsByUsername(this.registerForm.value.username)
-      .toPromise();
-  }
-
-  onExistsUsernameError(): void {
-    this.registerForm.controls.username.setErrors({
-      existUsername: true,
-    });
-    this.usernameElement.focus();
   }
 
   ngOnDestroy(): void {

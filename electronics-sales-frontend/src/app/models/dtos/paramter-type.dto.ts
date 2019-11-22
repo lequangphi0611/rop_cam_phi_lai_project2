@@ -1,7 +1,7 @@
 
 export interface ParameterTypeDto {
 
-  id: number;
+  id?: number;
 
   parameterTypeValue?: string;
 

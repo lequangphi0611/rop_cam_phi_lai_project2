@@ -1,0 +1,117 @@
+<div class="mt-4 container col-12 px-5 ml-2.5">
+  <div class="row">
+    <div class="card col-2 p-0">
+      <div class="card-left">
+        <div class="card-header">
+          <h3>Bộ lọc</h3>
+        </div>
+
+        <div class="accordion" id="accordionExample" *ngIf="(manufacturer$ | async) && (manufacturer$ | async)?.length > 0" >
+          <div class="card card-rop">
+            <div class="card-header" id="headingOne">
+              <h2 class="">
+                <button
+                  class="btn btn-light"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapseOne"
+                  aria-expanded="true"
+                  aria-controls="collapseOne"
+                >
+                  Hãng sản xuất <i class="fas fa-caret-down"></i>
+                </button>
+              </h2>
+            </div>
+
+            <div
+              id="collapseOne"
+              class="collapse"
+              aria-labelledby="headingOne"
+              data-parent="#accordionExample"
+            >
+              <div class="card-body card-rop">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item border-top" *ngFor="let manufacturer of manufacturer$ | async; trackBy:manufacturer?.id; let i = index">
+                      <mat-checkbox (change)="manufacturerSelectChange($event.checked, manufacturer.id)">{{manufacturer.manufacturerName}}</mat-checkbox>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion" id="accordionExample">
+          <div class="card card-rop">
+            <div class="card-header" id="heading2">
+              <h2 class="">
+                <button
+                  class="btn btn-light"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapse2"
+                  aria-expanded="true"
+                  aria-controls="collapse2"
+                >
+                  Mức giá <i class="fas fa-caret-down"></i>
+                </button>
+              </h2>
+            </div>
+
+            <div
+              id="collapse2"
+              class="collapse"
+              aria-labelledby="heading2"
+              data-parent="#accordionExample"
+            >
+              <div class="card-body card-rop">
+                <span>Từ</span>
+                <input type="number" min="0" value="0" class="form-control" />
+                <span>đến</span>
+                <input type="number" min="0" value="0" class="form-control" />
+                <span style="color:darkgrey">Triệu VNĐ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+        <button type="button" class="btn btn-info col-12">Lọc</button>
+      </div>
+    </div>
+
+    <div class="card col-10 p-0">
+      <div class="card-right">
+        <div class="card-header">
+          <div class="row">
+            <h3 *ngIf="(category$ | async)" >{{(category$ | async)?.categoryName}}</h3>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01"
+                  >Sắp xếp theo :</label
+                >
+              </div>
+              <select class="custom-select" id="inputGroupSelect01">
+                <option selected>Mới nhất</option>
+                <option value="1">Giá từ cao đến thấp</option>
+                <option value="2">Giá từ thấp đến cao</option>
+                <option value="3">Ưu đãi</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="container col-12 p-0 m-0">
+          <div class="col-12 p-0">
+            <app-display-products [products]="products"></app-display-products>
+          </div>
+          <div class="col-12 clearfix px-0">
+            <div class="col-2 float-left px-0">
+              <button *ngIf="hasPrev()"  class="btn btn-primary" (click)="prev()">Trang trước</button>
+            </div>
+            <div class="col-2 float-right px-0">
+              <button *ngIf="hasNext()" class="btn btn-primary float-right" (click)="next()">Trang kế</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

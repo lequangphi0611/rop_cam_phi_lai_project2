@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Thông Số Kỹ Thuật</h2>
+
+<mat-dialog-content>
+  <ng-container [formGroup]="parameterTypeForm">
+    <mat-form-field class="w-100">
+      <input
+        matInput
+        [formControl]="parameterTypeNameControl"
+        type="text"
+        placeholder="Nhập tên thông số"
+        [matAutocomplete]="auto"
+      />
+    </mat-form-field>
+
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      (optionSelected)="onOptionSelect($event.option.value)"
+    >
+      <mat-option
+        *ngFor="let param of parametersAvailable$ | async"
+        [value]="param"
+        >{{ param.parameterTypeName }}</mat-option
+      >
+    </mat-autocomplete>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="w-100 clearfix">
+    <div class="float-right">
+      <button class="mat-raised-button mx-2" (click)="close()">Đóng</button>
+      <button class="mat-raised-button mx-2 mat-warn" (click)="submit()">
+        Lưu
+      </button>
+    </div>
+  </div>
+</mat-dialog-actions>

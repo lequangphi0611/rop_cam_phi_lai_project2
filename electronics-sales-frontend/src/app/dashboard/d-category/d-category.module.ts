@@ -1,3 +1,4 @@
+import { ManufacturerModule } from './../manufacturer/manufacturer.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { MaterialModule } from './../../material/material.module';
@@ -10,6 +11,7 @@ import { CategoryDataTableComponent } from './category-data-table/category-data-
 import { ParamterTypeTransformPipe } from './category-data-table/paramter-type-transform.pipe';
 import { ManufacturersTransformPipe } from './category-data-table/manufacturers-transform.pipe';
 import { DCategoryFormComponent } from './d-category-form/d-category-form.component';
+import { ParameterFormDialogComponent } from './parameter-form-dialog/parameter-form-dialog.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,7 @@ import { DCategoryFormComponent } from './d-category-form/d-category-form.compon
     ParamterTypeTransformPipe,
     ManufacturersTransformPipe,
     DCategoryFormComponent,
+    ParameterFormDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -26,6 +29,8 @@ import { DCategoryFormComponent } from './d-category-form/d-category-form.compon
     PipesModule,
     FormsModule,
     ReactiveFormsModule,
+    ManufacturerModule
   ],
+  entryComponents: [ParameterFormDialogComponent]
 })
 export class DCategoryModule {}

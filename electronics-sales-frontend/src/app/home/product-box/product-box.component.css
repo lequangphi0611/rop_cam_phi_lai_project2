@@ -7,6 +7,7 @@
   box-shadow: 0px 0px 0px 0px #E4E7ED, 0px 0px 0px 1px #E4E7ED;
   -webkit-transition: 0.2s all;
   transition: 0.2s all;
+  min-height: 400px;
 }
 
 .product:hover {
@@ -16,10 +17,11 @@
 .product .product-img {
   position: relative;
   padding: 10px;
+  min-height: 300px;
 }
 
 .product .product-img img {
-  height: 90%;
+  height: 100%;
   width: auto;
 }
 
@@ -52,7 +54,7 @@
 }
 .product .product-body {
   position: relative;
-  padding: 15px;
+  padding: 2px;
   background-color: #FFF;
   text-align: center;
   z-index: 20;

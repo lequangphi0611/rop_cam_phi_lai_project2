@@ -6,7 +6,9 @@
   <ng-container matColumnDef="categoryName">
     <th mat-header-cell *matHeaderCellDef>Loại Sản Phẩm</th>
     <td mat-cell *matCellDef="let element" class="mx-2">
-      <p class="text-left">{{ element.categoryName }}</p>
+      <p class="text-left">
+        {{(element.parent$ | async)?.categoryName ? ((element.parent$ | async)?.categoryName) + ' - ' : ""}} {{ element.categoryName }}
+      </p>
     </td>
   </ng-container>
 
@@ -47,7 +49,7 @@
 
   <ng-container matColumnDef="edit">
     <th mat-header-cell *matHeaderCellDef></th>
-    <td mat-cell class="text-right" *matCellDef="let element" class="mx-2">
+    <td mat-cell class="text-right" *matCellDef="let element" class="mx-2 pt-4 pl-5">
       <button (click)="edit(element)" class="btn-action" mat-raised-button color="primary">
         Sửa
       </button>
@@ -56,7 +58,7 @@
 
   <ng-container matColumnDef="delete">
     <th mat-header-cell *matHeaderCellDef></th>
-    <td mat-cell *matCellDef="let element" class="mx-2 ">
+    <td mat-cell *matCellDef="let element" class="mx-2 pt-4 pl-5">
       <button (click)="delete(element.id)" class="btn-action" mat-raised-button color="warn">
         Xóa
       </button>

@@ -1,6 +1,7 @@
 import { AppComponent } from './app.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { DashboarGuardGuard } from './dashboar-guard.guard';
 
 const routes: Routes = [
   {
@@ -9,6 +10,7 @@ const routes: Routes = [
   },
   {
     path: 'dashboard',
+    canActivate: [DashboarGuardGuard],
     loadChildren: () =>
       import('./dashboard/dashboard.module').then(m => m.DashboardModule),
   },

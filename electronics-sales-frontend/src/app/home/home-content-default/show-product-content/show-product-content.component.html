@@ -4,7 +4,7 @@
       <h6 class="float-left text-uppercase font-weight-bold">
         {{ productBanner.title }}
       </h6>
-      <a class="btn btn-link" class="float-right"
+      <a [routerLink]="['products']" [queryParams]="{ categoryId: productBanner.id}" routerLinkActive="active"  class="btn btn-link" class="float-right"
         >Xem tất cả
       </a>
     </div>

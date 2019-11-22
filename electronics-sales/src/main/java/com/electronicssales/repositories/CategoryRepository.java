@@ -38,6 +38,8 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
 
     String FIND_BY_PRODUCT_ID = "SELECT c FROM Category c JOIN c.productCategories pc WHERE pc.product.id = ?1";
 
+    String DELETE_ALL_CATEGORY_PARAMETER_TYPES_BYCATEGORY = "DELETE FROM categories_parameter_types WHERE category_id = ?1";
+
     boolean existsByCategoryName(String categoryName);   
 
     @Override
@@ -78,5 +80,9 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
 
     @Query(FIND_BY_PRODUCT_ID)
     List<Category> findByProductId(long productId);
+
+    @Query(value = DELETE_ALL_CATEGORY_PARAMETER_TYPES_BYCATEGORY, nativeQuery = true)
+    @Modifying
+    void deleteAllCategoryParameterTypeBy(long categoryId);
     
 }

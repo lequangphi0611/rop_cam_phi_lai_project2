@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.models.dtos.CategoryDto;
+import com.electronicssales.models.responses.BaseCategoryResponse;
 import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.models.types.CategoryFetchType;
 import com.electronicssales.services.CategoryService;
@@ -46,7 +47,7 @@ public class CategoryResource {
 
     @Lazy
     @Autowired
-    private Mapper<CategoryResponse, Category> categoryResponseMapper;
+    Mapper<BaseCategoryResponse, Category> baseCategoryResponseMapper;
 
     @PostMapping
     public Callable<ResponseEntity<?>> createCategory(@RequestBody @Valid CategoryDto categoryDto) {
@@ -98,6 +99,14 @@ public class CategoryResource {
     @GetMapping("/{categoryId}/manufacturers")
     public Callable<ResponseEntity<?>> fetchManufacturers(@PathVariable long categoryId) {
         return () -> ResponseEntity.ok(manufacturerService.findByCategoryId(categoryId));
+    }
+
+    @GetMapping("/{id}")
+    public Callable<ResponseEntity<?>> find(@PathVariable(name = "id") long categoryId) {
+        return () -> ResponseEntity.ok(categoryService
+            .findById(categoryId)
+            .map(baseCategoryResponseMapper::mapping)
+            .get());
     }
 
     @PutMapping("/{id}")

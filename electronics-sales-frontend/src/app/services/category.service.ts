@@ -37,6 +37,10 @@ export class CategoryService {
     return this.http.delete(`${CategoryService.BASE_REQUEST}/${id}`);
   }
 
+  findById(id: number): Observable<CategoryView> {
+    return this.http.get<CategoryView>(`${CategoryService.BASE_REQUEST}/${id}`);
+  }
+
   fetchCategoriesBy(
     page = 0,
     size?: number,

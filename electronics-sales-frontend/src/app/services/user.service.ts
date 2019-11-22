@@ -39,7 +39,8 @@ export class UserService {
     this.cookieService.set(
       UserService.USER_COOKIE_KEY,
       JSON.stringify(auth),
-      UserService.EXPRIED_TIME
+      UserService.EXPRIED_TIME,
+      '/'
     );
   }
 

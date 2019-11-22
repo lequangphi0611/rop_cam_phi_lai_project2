@@ -1,12 +1,14 @@
 import { CategoryService } from './../../services/category.service';
 import { FetchProductOption } from './../../models/fetch-product-option.model';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FetchProductType } from 'src/app/models/types/fetch-product-type.type';
 import { ProductSortType } from 'src/app/models/types/product-sort-type.type';
 
 export interface ProductBanner {
+  id: number;
+
   title: string;
 
   option: FetchProductOption;
@@ -39,8 +41,12 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
       .pipe(
         map(categories => {
           const productBanners: ProductBanner[] = [];
-          categories.forEach(category =>
+          categories
+            .filter(c => c.productCount > 0)
+            .sort((c1, c2) => (c1.productCount - c2.productCount) * -1)
+            .forEach(category =>
             productBanners.push({
+              id: category.id,
               title: category.categoryName,
               option: { ...this.basicOption, categoriesId: [category.id] },
             })

@@ -1,22 +1,41 @@
-import { map } from 'rxjs/operators';
-import { CategoryDataView } from './../category-data-table/category-data-table.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  EventEmitter,
+} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable, Subject, of } from 'rxjs';
+import { map, takeUntil, switchMap, tap } from 'rxjs/operators';
+import { CategoryDto } from 'src/app/models/dtos/category.dto';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
+import { CategoryService } from 'src/app/services/category.service';
+import { ParameterTypeService } from 'src/app/services/parameter-type.service';
 import { ParameterTypeDto } from './../../../models/dtos/paramter-type.dto';
 import { ManufacturerView } from './../../../models/view-model/manufacturer.view.model';
-import { Observable } from 'rxjs';
 import { ManufacturerService } from './../../../services/manufacturer.service';
-import { FormGroup, FormBuilder } from '@angular/forms';
-import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
-import { ParameterTypeService } from 'src/app/services/parameter-type.service';
-import { CategoryService } from 'src/app/services/category.service';
-import { CategoryDto } from 'src/app/models/dtos/category.dto';
+import { CategoryDataView } from './../category-data-table/category-data-table.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ManufacturerFormDialogComponent } from '../../manufacturer/manufacturer-form-dialog/manufacturer-form-dialog.component';
+import { ParameterFormDialogComponent } from '../parameter-form-dialog/parameter-form-dialog.component';
 
 @Component({
   selector: 'app-d-category-form',
   templateUrl: './d-category-form.component.html',
   styleUrls: ['./d-category-form.component.css'],
 })
-export class DCategoryFormComponent implements OnInit, AfterViewInit {
+export class DCategoryFormComponent
+  implements OnInit, AfterViewInit, OnDestroy {
+
+  static readonly DEFAULT_DIALOG_CONFIG: MatDialogConfig = {
+    autoFocus: true,
+    disableClose: false
+  };
+
   categoryForm: FormGroup;
 
   manufacturers$: Observable<ManufacturerView[]>;
@@ -27,30 +46,49 @@ export class DCategoryFormComponent implements OnInit, AfterViewInit {
 
   @Input() currenCategory: CategoryDataView;
 
+  @Output() cancled: EventEmitter<void>;
+
+  unscriptions$ = new Subject();
+
+  editMode = false;
+
   constructor(
     private formBuilder: FormBuilder,
     private manufacturerService: ManufacturerService,
     private parameterTypeService: ParameterTypeService,
     private categoryService: CategoryService,
-  ) {}
+    private snackbar: MatSnackBar,
+    private dialog: MatDialog
+  ) {
+    this.cancled = new EventEmitter(true);
+  }
 
   ngOnInit() {
     this.categoryForm = this.formBuilder.group({
-      categoryName: ['', []],
+      categoryName: ['', [Validators.required]],
       parentId: [0, []],
       manufacturerIds: [[], []],
-      parameterTypes: [[], []]
+      parameterTypes: [[], []],
     });
 
     if (this.currenCategory) {
       this.setFormValueBy(this.currenCategory);
+      this.editMode = true;
     }
   }
 
   ngAfterViewInit() {
-    this.manufacturers$ = this.manufacturerService.fetchAll();
-    this.parameterTypes$ = this.parameterTypeService.fetchAll();
+    this.fetchManufacturers();
+    this.fetchParameterTypes();
     this.parent$ = this.categoryService.fetchCategories();
+  }
+
+  fetchManufacturers() {
+    this.manufacturers$ = this.manufacturerService.fetchAll();
+  }
+
+  fetchParameterTypes() {
+    this.parameterTypes$ = this.parameterTypeService.fetchAll();
   }
 
   get manufacturerIdsControl() {
@@ -71,25 +109,46 @@ export class DCategoryFormComponent implements OnInit, AfterViewInit {
 
   get parentId() {
     const parentId = this.parentIdControl.value as number;
-    return  parentId === 0 ? null : parentId;
+    return parentId === 0 ? null : parentId;
+  }
+
+  pushManufacturerId(manufacturerId: number) {
+    const manufacturerValue = this.manufacturerIdsControl.value as number[];
+    manufacturerValue.push(manufacturerId);
+    this.manufacturerIdsControl.setValue(manufacturerValue);
+  }
+
+  pushParameterType(parameterType: ParameterTypeDto) {
+    const parameterTypesValue = this.parameterTypes.value as ParameterTypeDto[];
+    parameterTypesValue.push(parameterType);
+    this.parameterTypes.setValue(parameterTypesValue);
   }
 
   setFormValueBy(category: CategoryDataView) {
-    const {categoryName, parentId} = category;
+    const { categoryName, parentId } = category;
     this.categoryNameControl.setValue(categoryName);
     this.parentIdControl.setValue(parentId ? parentId : 0);
     category.manufacturers$
-      .pipe(map(manufacturers => manufacturers.map(manufacturer => manufacturer.id)))
+      .pipe(
+        takeUntil(this.unscriptions$),
+        map(manufacturers => manufacturers.map(manufacturer => manufacturer.id))
+      )
       .subscribe(manufacturerIds => {
-        console.log({manufacturerIds});
         this.manufacturerIdsControl.setValue(manufacturerIds);
       });
 
     category.parmaterTypes$
-    .subscribe(parameterTypes => {
-      console.log({parameterTypes});
-      this.parameterTypes.setValue(parameterTypes);
-    });
+      .pipe(takeUntil(this.unscriptions$))
+      .subscribe(parameterTypes => {
+        this.parameterTypes.setValue(parameterTypes);
+      });
+  }
+
+  resetForm() {
+    this.categoryNameControl.setValue(null);
+    this.parentIdControl.setValue(null);
+    this.manufacturerIdsControl.setValue([]);
+    this.parameterTypes.setValue([]);
   }
 
   getCategory(): CategoryDto {
@@ -107,7 +166,69 @@ export class DCategoryFormComponent implements OnInit, AfterViewInit {
 
   onSubmit() {
     const category = this.getCategory();
-    this.categoryService.create(category)
-      .subscribe(console.log);
+    of(this.editMode)
+      .pipe(
+        takeUntil(this.unscriptions$),
+        switchMap(edit => {
+          if (!edit) {
+            return this.categoryService.create(category);
+          }
+          category.id = this.currenCategory.id;
+          return this.categoryService.update(category);
+        })
+      )
+      .subscribe(
+        () => this.onSuccess(),
+        err => this.onError(err)
+      );
+  }
+  onError(err: any): void {
+    this.snackbar.open(`Lưu không thành công !`, 'Đóng', { duration: 2000 });
+  }
+  onSuccess(): void {
+    this.snackbar.open(`Lưu thành công !`, 'Đóng', { duration: 2000 });
+    this.cancle();
+  }
+
+  cancle() {
+    this.resetForm();
+    this.currenCategory = null;
+    this.cancled.emit();
+  }
+
+  openFormManufacturer() {
+    const dialogConfig = {...DCategoryFormComponent.DEFAULT_DIALOG_CONFIG};
+
+    dialogConfig.data = {edit: false};
+
+    const manufacturerDialog = this.dialog.open(ManufacturerFormDialogComponent, dialogConfig);
+
+    manufacturerDialog.componentInstance.saveSuccess.pipe(
+      takeUntil(this.unscriptions$),
+      map((v: ManufacturerView) => v.id),
+      tap(id => {
+        this.pushManufacturerId(id);
+        this.fetchManufacturers();
+      })
+    ).subscribe();
+  }
+
+  openFormParameter() {
+    const dialogConfig = {...DCategoryFormComponent.DEFAULT_DIALOG_CONFIG};
+
+    dialogConfig.minWidth = '400px';
+    const parameterDialog = this.dialog.open(ParameterFormDialogComponent, dialogConfig);
+
+    parameterDialog.componentInstance.saveSuccess
+      .pipe(takeUntil(this.unscriptions$))
+      .subscribe(parameterType => {
+        this.pushParameterType(parameterType);
+        this.fetchParameterTypes();
+      });
+  }
+
+  ngOnDestroy() {
+    this.unscriptions$.next();
+    this.unscriptions$.complete();
   }
 }

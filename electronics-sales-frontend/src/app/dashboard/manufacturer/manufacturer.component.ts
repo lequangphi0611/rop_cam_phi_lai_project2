@@ -32,7 +32,7 @@ export class ManufacturerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
-  countManufacturer$: Observable<number>;
+  countManufacturer: number;
 
   defaultPage = 0;
 
@@ -52,13 +52,18 @@ export class ManufacturerComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.dataSource = new ManufacturerDataSource(this.manufacturerService);
     this.dataSource.loadManufacturer(this.defaultPage, this.defaultSize);
-    this.countManufacturer$ = this.manufacturerService
-      .fetchAll()
-      .pipe(map(v => v.length));
+    this.fetchManufacturerCount();
 
     this.valueChanged$
       .pipe(filter(v => v ))
       .subscribe(() => this.loadManufacturers());
+  }
+
+  fetchManufacturerCount() {
+    this.manufacturerService
+    .fetchAll()
+    .pipe(map(v => v.length))
+    .subscribe(v => this.countManufacturer = v);
   }
 
   ngAfterViewInit(): void {
@@ -89,6 +94,7 @@ export class ManufacturerComponent implements OnInit, AfterViewInit, OnDestroy {
     .pipe(
       filter(v => v),
       tap(() => {
+        this.countManufacturer++;
         this.paginator.pageIndex = this.defaultPage;
         this.valueChanged$.next(true);
       })
@@ -118,6 +124,7 @@ export class ManufacturerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.manufacturerService
       .delete(manufacturerId)
       .subscribe(() => {
+        this.countManufacturer--;
         this.valueChanged$.next(true);
         this.snackbar.open('Xóa thành công !', 'đóng', {
           duration: 2000

@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, switchMap } from 'rxjs/operators';
 import { AuthInterceptorService } from './../auth/auth-interceptor.service';
 import { CookieService } from 'ngx-cookie-service';
 import { User } from './../models/view-model/user.view.model';
@@ -35,20 +35,19 @@ export class UserAuthenticatedService {
   }
 
   isAuthenticated(): Observable<boolean> {
-    return of(this.authenticatedService.isAuthenticated()).pipe(isAuthen => {
-      if (isAuthen) {
-        return this.checkAuthenticateInServer();
-      }
-      return isAuthen;
-    });
+    return of(this.authenticatedService.isAuthenticated()).pipe(
+      switchMap(isAuthen => {
+        if (isAuthen) {
+          return this.checkAuthenticateInServer();
+        }
+        return of(false);
+      })
+    );
   }
 
   load(): void {
     this.userService.getCurrentUser().subscribe(
-      user => this.setUser(user),
-      (err: HttpErrorResponse) => {
-        this.router.navigate(['index', 'login']);
-      }
+      user => this.setUser(user)
     );
   }
 

@@ -9,6 +9,8 @@ import {
   Inject,
   ViewChild,
   AfterViewInit,
+  EventEmitter,
+  Output,
 } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ManufacturerDto } from 'src/app/models/dtos/manufacturer.dto';
@@ -24,6 +26,8 @@ export class ManufacturerFormDialogComponent implements OnInit {
   manufacturerForm: FormGroup;
 
   file: File;
+
+  @Output() saveSuccess = new EventEmitter(true);
 
   @ViewChild(ChooseImagesComponent, { static: true })
   chooseImages: ChooseImagesComponent;
@@ -104,20 +108,23 @@ export class ManufacturerFormDialogComponent implements OnInit {
           return this.manufacturerService.update(manufacturer, this.file);
         }),
         tap(
-          () => this.onSuccess(),
+          (result) => this.onSuccess(result),
           err => this.onError(err)
         )
       )
       .subscribe();
   }
   onError(err): void {
-    console.log(err);
+    this.snackBar.open('Không Thành công !', 'Đóng', {
+      duration: 2000,
+    });
   }
 
-  onSuccess(): void {
+  onSuccess(result: any): void {
     this.snackBar.open('Thành công !', 'Đóng', {
       duration: 2000,
     });
     this.dialogRef.close(true);
+    this.saveSuccess.emit(result);
   }
 }

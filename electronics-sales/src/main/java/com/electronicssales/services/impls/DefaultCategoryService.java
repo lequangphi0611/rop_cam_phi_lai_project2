@@ -129,6 +129,7 @@ public class DefaultCategoryService implements CategoryService {
     @Transactional
     @Override
     public void deleteCategoryById(long id) {
+        categoryRepository.deleteAllCategoryParameterTypeBy(id);
         categoryRepository.deleteById(id);
     }
 

@@ -6,7 +6,7 @@ import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { ParameterTypeDto } from './../../../models/dtos/paramter-type.dto';
 import { CategoryService } from 'src/app/services/category.service';
 import { CollectionViewer } from '@angular/cdk/collections';
-import { Observable, BehaviorSubject, Subject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject, of } from 'rxjs';
 import { DataSource } from '@angular/cdk/table';
 import {
   Component,
@@ -109,6 +109,7 @@ export class CategoryDataTableComponent
   onSuccess(): void {
     this.snackbar.open('Xóa thành công', 'Đóng', { duration: 2000 });
     this.loadCategoriesByPaginator();
+    this.maxPageSize--;
   }
 
   edit(category: CategoryDataView) {
@@ -163,6 +164,8 @@ export class CategoryDataView {
 
   manufacturers$: Observable<ManufacturerView[]>;
 
+  parent$: Observable<CategoryView>;
+
   constructor(
     public id: number,
     public categoryName: string,
@@ -172,6 +175,9 @@ export class CategoryDataView {
   ) {
     this.parmaterTypes$ = this.categoryService.getParameterTypesBy(this.id);
     this.manufacturers$ = this.categoryService.getManufacturersBy(this.id);
+    if (parentId) {
+      this.parent$ = this.categoryService.findById(parentId);
+    }
   }
 
   static of(

@@ -21,7 +21,7 @@
               </mat-error>
             </mat-form-field>
             <mat-form-field class="col">
-              <input matInput  placeholder="Tên" formControlName="firstname" />
+              <input matInput placeholder="Tên" formControlName="firstname" />
               <mat-error
                 *ngIf="registerForm.controls['firstname'].hasError('required')"
               >
@@ -38,7 +38,13 @@
               formControlName="gender"
               color="warn"
             >
-              <mat-radio-button *ngFor="let gender of gender$ | async" class="col" [checked]="gender.checked" [value]="gender.value">{{gender.name}}</mat-radio-button>
+              <mat-radio-button
+                *ngFor="let gender of gender$ | async"
+                class="col"
+                [checked]="gender.checked"
+                [value]="gender.value"
+                >{{ gender.name }}</mat-radio-button
+              >
             </mat-radio-group>
           </div>
           <mat-form-field class="col p-0 my-2">
@@ -47,6 +53,7 @@
               placeholder="Tên đăng nhập"
               formControlName="username"
               id="username"
+              (change)="onUsernameInputChange()"
             />
             <mat-error
               *ngIf="registerForm.controls['username'].hasError('required')"
@@ -54,7 +61,9 @@
               Không được để trống tên đăng nhập
             </mat-error>
             <mat-error
-              *ngIf="registerForm.controls['username'].hasError('existUsername')"
+              *ngIf="
+                registerForm.controls['username'].hasError('existUsername')
+              "
             >
               Tên đăng nhập đã tồn tại
             </mat-error>
@@ -72,16 +81,14 @@
               Không được để trống mật khẩu
             </mat-error>
             <mat-error
-              *ngIf="registerForm.controls['password'].hasError('notEnoughPasswordLength')"
+              *ngIf="
+                registerForm.controls['password'].hasError(
+                  'minlength'
+                )
+              "
             >
               Mật khẩu phải có ít nhât 6 ký tự
             </mat-error>
-            <mat-error
-              *ngIf="registerForm.controls['password'].hasError('nonStartWithUpperCase')"
-            >
-              Mật khẩu phải có ít nhất 1 ký tự in hoa
-            </mat-error>
-
           </mat-form-field>
           <mat-form-field class="col p-0 my-2">
             <input
@@ -121,6 +128,9 @@
             >
               Không được để trống email
             </mat-error>
+            <mat-error *ngIf="registerForm.controls['email'].hasError('email')">
+              email không khớp (vd : abc@gmail.com)
+            </mat-error>
           </mat-form-field>
           <mat-form-field class="col p-0 my-2">
             <input
@@ -128,6 +138,26 @@
               placeholder="Số điện thoại"
               formControlName="phoneNumber"
             />
+            <mat-error
+              *ngIf="registerForm.controls['phoneNumber'].hasError('required')"
+            >
+              Không được để trống số điện thoại
+            </mat-error>
+            <mat-error
+              *ngIf="
+                registerForm.controls['phoneNumber'].hasError('pattern')
+              "
+            >
+              Số điện thoại không đúng (vd : 0773927601)
+            </mat-error>
+
+            <mat-error
+              *ngIf="
+                registerForm.controls['phoneNumber'].hasError('maxlength')
+              "
+            >
+              Số điện thoại quá dài (tối đa 11 ký tự)
+            </mat-error>
           </mat-form-field>
           <mat-form-field class="col p-0 my-2">
             <textarea

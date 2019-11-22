@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CartDataService } from './cart-data.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CartItem } from '../models/cart-item.model';
 
 @Component({
   selector: 'app-home',
@@ -8,12 +9,11 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() {
-    console.log('Home con');
+  constructor(private cartData: CartDataService) {
    }
 
   ngOnInit() {
-    console.log('Home init');
+    this.cartData.load();
   }
 
 }

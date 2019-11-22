@@ -24,6 +24,11 @@ export class DCategoryComponent implements OnInit {
 
   openEditFor(category: CategoryDataView) {
     this.changeSelectedIndex(DCategoryComponent.CATEGORY_FORM_INDEX);
+    console.log(category);
     this.currentCategory = category;
+  }
+
+  onCategoryFormCancled() {
+    this.currentCategory = null;
   }
 }

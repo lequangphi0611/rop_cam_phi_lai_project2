@@ -131,6 +131,7 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.snackbar.open('Xóa thành công', 'Đóng', {
           duration: 2000,
         });
+        this.maxSize--;
         this.dataSource.loadProducts(this.currentOption);
         this.onDeleted.emit();
       });

@@ -21,6 +21,7 @@ import { ManufacturerFormDialogComponent } from './manufacturer-form-dialog/manu
     FormsModule,
     ReactiveFormsModule
   ],
-  entryComponents: [ManufacturerFormDialogComponent]
+  entryComponents: [ManufacturerFormDialogComponent],
+  exports: [ManufacturerFormDialogComponent]
 })
 export class ManufacturerModule { }

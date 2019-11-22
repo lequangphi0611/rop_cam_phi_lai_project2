@@ -1,3 +1,5 @@
+import { CartDataService } from './cart-data.service';
+import { StorageServiceModule } from 'ngx-webstorage-service';
 import { MaterialModule } from './../material/material.module';
 import { HomeHeaderComponent } from './home-header/home-header.component';
 import { NgModule } from '@angular/core';
@@ -9,8 +11,7 @@ import { HomeFooterComponent } from './home-footer/home-footer.component';
 import { HomeContentDefaultModule } from './home-content-default/home-content-default.module';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { SubNavigationComponent } from './home-header/sub-navigation/sub-navigation.component';
-import { CategoryService } from '../services/category.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -24,9 +25,12 @@ import { FormsModule } from '@angular/forms';
     HomeRoutingModule,
     HomeContentDefaultModule,
     LazyLoadImageModule,
-    MaterialModule
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [
+
   ],
 })
 export class HomeModule {}

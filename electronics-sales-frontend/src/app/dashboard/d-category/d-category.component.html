@@ -7,14 +7,19 @@
   <mat-tab label="Danh Sách">
     <ng-template matTabContent>
       <div class="col-12 m-0 p-5 d-flex justify-content-center">
-        <app-category-data-table (editClicked)="openEditFor($event)"></app-category-data-table>
+        <app-category-data-table
+          (editClicked)="openEditFor($event)"
+        ></app-category-data-table>
       </div>
     </ng-template>
   </mat-tab>
   <mat-tab label="Cập Nhật">
     <ng-template matTabContent>
       <div class="col-12 m-0 p-5 d-flex justify-content-center">
-        <app-d-category-form [currenCategory]="currentCategory"></app-d-category-form>
+        <app-d-category-form
+          (cancled)="onCategoryFormCancled()"
+          [currenCategory]="currentCategory"
+        ></app-d-category-form>
       </div>
     </ng-template>
   </mat-tab>
