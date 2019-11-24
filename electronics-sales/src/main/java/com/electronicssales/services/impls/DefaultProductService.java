@@ -93,21 +93,32 @@ public class DefaultProductService implements ProductService {
     @Transactional
     @Override
     public ProductResponse createProduct(ProductDto productDto) {
-        return Optional.of(productDto).map(productMapper::mapping).map(productRepository::save)
+        return Optional.of(productDto)
+                .map(productMapper::mapping)
+                .map(productRepository::save)
                 .map(productResponseMapper::mapping).get();
     }
 
     @Transactional
     @Override
     public List<ProductResponse> fetchProductsBy(FetchProductOption option) {
-        return productRepository.fetchProductsBy(option).stream().map(productResponseMapper::mapping)
+        return productRepository.fetchProductsBy(option).stream()
+                .map(productResponseMapper::mapping)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     @Override
     public ProductResponse updateProduct(ProductDto productDto) {
-        return Optional.of(productDto).map(productMapper::mapping).map(productRepository::merge)
+        return Optional.of(productDto)
+                .map(productMapper::mapping)
+                .map(productmapped -> {
+                    if(productDto.getQuantity() != null) {
+                        productmapped.setQuantity(productDto.getQuantity());
+                    }
+                    return productmapped;
+                })
+                .map(productRepository::merge)
                 .map(productResponseMapper::mapping).get();
     }
 

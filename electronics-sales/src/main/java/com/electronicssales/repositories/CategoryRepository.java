@@ -19,9 +19,9 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     String DELETE_CATEGORY_PARAMETERS_BY_CATEGORY_ID = "DELETE FROM categories_parameter_types"
             + " WHERE category_id = ?1";
 
-    String FETCH_CATEGORIES_NOT_HAS_PARENT = "SELECT c.id, c.category_name AS categoryName, 0 AS parentId"
+    String FETCH_CATEGORIES = "SELECT c.id, c.category_name AS categoryName, c.parent_id as parentId"
             + ", COUNT(pc.id) AS productCount FROM categories c" + " LEFT OUTER JOIN product_categories pc"
-            + " ON c.id = pc.category_id WHERE c.parent_id IS NULL" + " AND c.category_name LIKE %:nameKeyword%"
+            + " ON c.id = pc.category_id WHERE c.category_name LIKE %:nameKeyword%"
             + " GROUP BY c.id, c.category_name, c.parent_id";
 
     String FETCH_CHILDRENS_BY_PARENT_ID_QUERY = "SELECT c.id, c.category_name AS categoryName, c.parent_id as parentId"
@@ -56,7 +56,7 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     @Query(FETCH_ALL_CATEGORIES)
     List<Category> findAll(Pageable pageable, @Param("nameKeyword") String nameKeyword);
 
-    @Query(value = FETCH_CATEGORIES_NOT_HAS_PARENT, nativeQuery = true)
+    @Query(value = FETCH_CATEGORIES, nativeQuery = true)
     List<ICategoryReponse> fetchCategoriesNotHasParent(@Param(value = "nameKeyword") String nameKeyword);
 
     @Query(nativeQuery = true, value = FETCH_CATEGORIES_HAS_PRODUCT_SELLABLE)

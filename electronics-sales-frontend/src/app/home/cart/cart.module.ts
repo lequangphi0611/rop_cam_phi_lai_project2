@@ -1,3 +1,5 @@
+import { MaterialModule } from './../../material/material.module';
+import { PipesModule } from './../../pipes/pipes.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +13,9 @@ import {LazyLoadImageModule} from 'ng-lazyload-image';
   imports: [
     CommonModule,
     CartRoutingModule,
-    LazyLoadImageModule
+    LazyLoadImageModule,
+    PipesModule,
+    MaterialModule
   ]
 })
 export class CartModule { }

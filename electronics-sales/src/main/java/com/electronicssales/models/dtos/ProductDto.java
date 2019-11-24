@@ -33,6 +33,6 @@ public class ProductDto {
 
     MultipartFile[] images;
 
-    Long quantity;
+    Integer quantity;
     
 }

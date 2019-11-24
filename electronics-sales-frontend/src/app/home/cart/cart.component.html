@@ -10,27 +10,38 @@
         <table id="cart" class="table table-hover table-condensed">
           <thead>
             <tr>
-              <th style="width:40%">Tên sản phẩm</th>
-              <th style="width:10%">Giá</th>
-              <th style="width:13%">Số lượng</th>
-              <th style="width:22%" class="text-center">Thành tiền</th>
-              <th style="width:15%"></th>
+              <th>Tên sản phẩm</th>
+              <th>Giá</th>
+              <th>Sản phẩm hiện có</th>
+              <th>Số lượng</th>
+              <th class="text-center">Thành tiền</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr *ngFor="let item of cartItems; trackBy: item?.productId">
               <td data-th="Product">
                 <div class="row">
-                  <div class="col-sm-2 hidden-xs">
+                  <div class="col-sm-2 hidden-xs mr-2">
                     <img
-                      [lazyLoad]="'/assets/img/product02.png'"
+                      [lazyLoad]="
+                        item?.image
+                          ? 'data:image/png;base64,' + item?.image
+                          : ''
+                      "
+                      defaultImage="/assets/default.jpg"
                       alt="Sản phẩm 1"
                       class="img-responsive"
                       width="100"
                     />
                   </div>
-                  <div class="col-sm-10">
-                    <h4 class="nomargin">Tai nghe</h4>
+                  <div class="col-sm-8">
+                    <h4
+                      class="nomargin"
+                      [matTooltip]="item.product?.productName"
+                    >
+                      {{ item.product?.productName | cutString: 25 }}
+                    </h4>
                     <p>
                       Mô tả của sản phẩm 1 tai nghe rất tốt, nhẹ nhàng, dễ sử
                       dụng
@@ -39,23 +50,28 @@
                 </div>
               </td>
               <td data-th="Price">
-                200.000 <span style="color:darkgrey"> Vnđ</span>
+                {{ item.product?.price | currencyvn }}
+              </td>
+              <td class="text-right pr-4">
+                {{ item.product?.quantity}}
               </td>
               <td data-th="Quantity">
                 <input
                   class="form-control text-center"
-                  value="1"
+                  [value]="item.quantity"
                   type="number"
+                  (change)="onQuantityChange($event, item.product)"
+                  [attr.max]="item.product?.quantity"
                 />
               </td>
               <td data-th="Subtotal" style="text-align: center; color: #EA4335">
-                200.000 <span style="color:darkgrey"> Vnđ</span>
+                {{item.total | currencyvn}}
               </td>
               <td class="actions" data-th="">
-                <button class="btn btn-info" title="Xem chi tiết">
-                  <i class="fa fa-edit"></i>
+                <button class="btn btn-info mx-2" (click)="goToViewProduct(item.productId)" title="Xem chi tiết">
+                  <i class="fas fa-eye"></i>
                 </button>
-                <button class="btn btn-danger" title="Xóa sản phẩm">
+                <button class="btn btn-danger mx-2" title="Xóa sản phẩm" (click)="remove(item.productId)">
                   <i class="fa fa-trash-alt"></i>
                 </button>
               </td>
@@ -70,7 +86,7 @@
               </td>
               <td colspan="2" class="hidden-xs"></td>
               <td class="hidden-xs text-left">
-                <strong>Tổng tiền: 500.000 đ</strong>
+                <strong>Tổng tiền: {{total | currencyvn}}</strong>
               </td>
               <td>
                 <a href="buy.html" class="btn btn-success btn-block"

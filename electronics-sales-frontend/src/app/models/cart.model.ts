@@ -14,13 +14,35 @@ export class Cart {
       .findIndex(productId => productId === cartItem.productId);
   }
 
-  push (product: ProductView, quantity: number): boolean {
-    console.log('add cart', product, quantity);
+  set(product: ProductView, quantity: number): boolean {
     if (product.quantity <= 0) {
       return false;
     }
-
+    if (product.quantity < quantity) {
+      quantity = product.quantity;
+    }
     const cartItemIndex = this.indexOf({productId: product.id, quantity});
+    const cartItem = {productId: product.id, quantity};
+    if (cartItemIndex < 0 && quantity > 0) {
+      this.cartItems.push(cartItem);
+      return true;
+    }
+
+    if (cartItem.quantity <= 0) {
+      this.cartItems.splice(cartItemIndex, 1);
+      return true;
+    }
+
+    this.cartItems[cartItemIndex].quantity = quantity;
+    return true;
+  }
+
+  push (product: ProductView, quantity: number): boolean {
+    if (product.quantity <= 0) {
+      return false;
+    }
+    const cartItemIndex = this.indexOf({productId: product.id, quantity});
+
     const cartItem = {productId: product.id, quantity};
     if (cartItemIndex < 0) {
       this.cartItems.push(cartItem);
@@ -33,7 +55,7 @@ export class Cart {
     }
 
     const oldCartItem = this.cartItems[cartItemIndex];
-    if (oldCartItem.quantity + quantity > product.quantity) {
+    if (+oldCartItem.quantity + quantity > product.quantity) {
       return false;
     }
     this.increaseOf(cartItemIndex, quantity);
@@ -49,6 +71,11 @@ export class Cart {
 
   private increaseOf(index: number, quantityIncreased: number) {
     this.updateCartItemIn(index, quantityIncreased);
+  }
+
+  public remove(cartItem: CartItem) {
+    const index = this.indexOf(cartItem);
+    this.cartItems.splice(index, 1);
   }
 
   private updateCartItemIn(index: number, quantity: number) {

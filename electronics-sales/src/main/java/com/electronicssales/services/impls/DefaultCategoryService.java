@@ -77,72 +77,58 @@ public class DefaultCategoryService implements CategoryService {
     @Transactional
     @Override
     public Collection<CategoryResponse> findAllAndFetchChildrens(String nameKeyword) {
-        return categoryRepository.fetchCategoriesNotHasParent(nameKeyword).stream().map(categoryResponseMapper::mapping)
-                .collect(Collectors.toList());
+        List<CategoryResponse> categoryResponses = categoryRepository.fetchCategoriesNotHasParent(nameKeyword).stream()
+                .map(categoryResponseMapper::mapping).collect(Collectors.toList());
+
+        return groupingCategoryResponse(categoryResponses);
     }
 
     @Override
     public Collection<BaseCategoryResponse> findAll(Pageable pageable, String nameKeyword) {
         String keyword = Optional.ofNullable(nameKeyword).orElse("");
-        return categoryRepository.findAll(pageable, keyword)
-            .stream()
-            .map(baseCategoryResponseMapper::mapping)
-            .collect(Collectors.toList());
+        return categoryRepository.findAll(pageable, keyword).stream().map(baseCategoryResponseMapper::mapping)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Collection<BaseCategoryResponse> findAll(String nameKeyword) {
         String keyword = Optional.ofNullable(nameKeyword).orElse("");
-        return categoryRepository.findAll(keyword)
-            .stream()
-            .map(baseCategoryResponseMapper::mapping)
-            .collect(Collectors.toList());
-    }
-
-    private CategoryResponse mappingNotFetchChilds(ICategoryReponse iCategory) {
-        CategoryResponse categoryResponse = new CategoryResponse();
-        categoryResponse.setId(iCategory.getId());
-        categoryResponse.setCategoryName(iCategory.getCategoryName());
-        categoryResponse.setProductCount(iCategory.getProductCount());
-        categoryResponse.setParentId(iCategory.getParentId());
-        return categoryResponse;
+        return categoryRepository.findAll(keyword).stream().map(baseCategoryResponseMapper::mapping)
+                .collect(Collectors.toList());
     }
 
     public List<CategoryResponse> groupingCategoryResponse(Collection<CategoryResponse> categoryResponses) {
-        Comparator<CategoryResponse> compare = (ob1, ob2) -> ob2.getProductCount() - ob1.getProductCount();
-        List<CategoryResponse> parents = categoryResponses
-            .parallelStream()
-            .sorted(compare)
-            .filter(v -> v.getParentId() == null)
-            .collect(Collectors.toList());
-        categoryResponses
-            .parallelStream()
-            .filter(v -> v.getParentId() != null && v.getParentId() > 0)
-            .sorted(compare)
-            .forEach(child -> {
-                Optional<CategoryResponse> categoryOptional = parents
+        List<CategoryResponse> parents = new ArrayList<>();
+        List<CategoryResponse> childs = new ArrayList<>();
+        categoryResponses.parallelStream().forEach(categoryResponse -> {
+            if (categoryResponse.getParentId() == null) {
+                parents.add(categoryResponse);
+            } else {
+                childs.add(categoryResponse);
+            }
+        });
+        childs.stream().forEach(child -> {
+            Optional<CategoryResponse> categoryOptional = parents
                     .stream()
                     .filter(v -> v.getId() == child.getParentId())
                     .findFirst();
-                if(!categoryOptional.isPresent()) {
-                    return;
-                }
+            if (!categoryOptional.isPresent()) {
+                return;
+            }
 
-                CategoryResponse category = categoryOptional.get();
-                if(category.getChildrens() == null) {
-                    category.setChildrens(new ArrayList<>());
-                }
-                category.getChildrens().add(child);
-            });
+            CategoryResponse category = categoryOptional.get();
+            if (category.getChildrens() == null) {
+                category.setChildrens(new ArrayList<>());
+            }
+            category.getChildrens().add(child);
+        });
         return parents;
     }
 
     @Override
     public List<CategoryResponse> fetchCategoriesHasProductSellable() {
-        List<CategoryResponse> categoryResponses = categoryRepository.fetchCategoriesHasProductSellable()
-            .stream()
-            .map(this::mappingNotFetchChilds)
-            .collect(Collectors.toList());
+        List<CategoryResponse> categoryResponses = categoryRepository.fetchCategoriesHasProductSellable().stream()
+                .map(categoryResponseMapper::mapping).collect(Collectors.toList());
         return groupingCategoryResponse(categoryResponses);
     }
 
@@ -244,10 +230,6 @@ public class DefaultCategoryService implements CategoryService {
     @Component
     class CategoryResponseMapper implements Mapper<CategoryResponse, ICategoryReponse> {
 
-        @Lazy
-        @Autowired
-        private CategoryRepository categoryRepository;
-
         @Override
         public CategoryResponse mapping(ICategoryReponse iCategory) {
             CategoryResponse categoryResponse = new CategoryResponse();
@@ -255,11 +237,6 @@ public class DefaultCategoryService implements CategoryService {
             categoryResponse.setCategoryName(iCategory.getCategoryName());
             categoryResponse.setProductCount(iCategory.getProductCount());
             categoryResponse.setParentId(iCategory.getParentId());
-            List<CategoryResponse> childrens = !categoryRepository.hasChildrens(iCategory.getId()) ? null
-                    : categoryRepository.fetchChildrensOf(iCategory.getId(), "").stream().map(this::mapping)
-                            .collect(Collectors.toList());
-
-            categoryResponse.setChildrens(childrens);
 
             return categoryResponse;
         }

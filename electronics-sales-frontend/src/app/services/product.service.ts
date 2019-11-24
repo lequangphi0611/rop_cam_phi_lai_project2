@@ -88,6 +88,7 @@ export class ProductService {
   }
 
   getProduct(id: number): Observable<ProductView> {
+    console.log('send request');
     return this.http
       .get<ProductView>(`${ProductService.BASE_REQUEST}/${id}`)
       .pipe(map(product => ProductView.of(product, this)));

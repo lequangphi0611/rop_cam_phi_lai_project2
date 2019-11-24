@@ -1,7 +1,7 @@
 import { CategoryService } from './../../services/category.service';
 import { FetchProductOption } from './../../models/fetch-product-option.model';
-import { map, filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { map, filter, tap, finalize } from 'rxjs/operators';
+import { Subscription, Subject } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FetchProductType } from 'src/app/models/types/fetch-product-type.type';
 import { ProductSortType } from 'src/app/models/types/product-sort-type.type';
@@ -23,6 +23,8 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
 
   subcription: Subscription;
 
+  loading = false;
+
   readonly basicOption: FetchProductOption = {
     page: 0,
     size: 4,
@@ -37,11 +39,13 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
   }
 
   subCriptionProductBanners(): void {
+    this.loading = true;
     this.subcription = this.categoryService.fetchCategoriesHasProductSellable()
       .pipe(
         map(categories => {
           const productBanners: ProductBanner[] = [];
           categories
+            .sort((a1, b1) => b1.productCount - a1.productCount)
             .forEach(category =>
             productBanners.push({
               id: category.id,
@@ -50,7 +54,8 @@ export class HomeContentDefaultComponent implements OnInit, OnDestroy {
             })
           );
           return productBanners;
-        })
+        }),
+        finalize(() => this.loading = false)
       )
       .subscribe(productBanners => (this.productBanners = [...productBanners]));
   }

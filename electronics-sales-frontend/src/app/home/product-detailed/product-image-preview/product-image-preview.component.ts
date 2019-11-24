@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ProductImagePreviewComponent implements OnInit {
 
-  @Input() images: string[];
+  @Input() images: string[] = [];
 
   displayImage: string;
 
@@ -18,5 +18,12 @@ export class ProductImagePreviewComponent implements OnInit {
 
   onSelected(image: string) {
     this.displayImage = image;
+  }
+
+  get firstImage() {
+    if (!this.images || this.images.length === 0 || !this.images[0]) {
+      return '';
+    }
+    return this.images[0];
   }
 }

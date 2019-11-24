@@ -37,7 +37,10 @@ export class ProductBoxComponent implements OnInit, OnDestroy {
 
   addToCart(product: ProductView) {
     if (this.cartData.push(product, 1)) {
-      this.snackBar.open('Thêm vào giỏ thành công !', 'Đóng', {duration: 2000});
+      const snackbar = this.snackBar.open('Thêm vào giỏ thành công !', 'Xem giỏ hàng', {duration: 2000});
+      snackbar.onAction().subscribe(() => {
+        this.router.navigate(['index', 'cart']);
+      });
       return;
     }
     this.snackBar.open('Thêm vào giỏ không thành công !', 'Đóng', {duration: 2000});

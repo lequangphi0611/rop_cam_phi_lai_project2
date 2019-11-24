@@ -87,7 +87,7 @@ public class ProductResource {
         if (!productFinded.getProductName().equalsIgnoreCase(productCheckable.getProductName())
                 && productService.existsByProductName(productCheckable.getProductName()))
             throw new EntityExistsException("Product name is aleady exists !");
-
+        productCheckable.setQuantity(productFinded.getQuantity());
         return true;
     }
 

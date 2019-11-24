@@ -47,11 +47,25 @@ export class CartDataService {
   }
 
   push(product: ProductView, quantity = 1): boolean {
-    if(this.cartData.push(product, quantity)) {
+    if (this.cartData.push(product, quantity)) {
       this.cart.next(this.cartData);
       return true;
     }
     return false;
+  }
+
+  set(product: ProductView, quantity = 1) {
+    if (this.cartData.set(product, quantity)) {
+      this.cart.next(this.cartData);
+      return true;
+    }
+
+    return false;
+  }
+
+  remove(productId: number) {
+    this.cartData.remove({productId, quantity : 1});
+    this.cart.next(this.cartData);
   }
 
   get CartData() {

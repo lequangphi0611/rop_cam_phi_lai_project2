@@ -160,11 +160,11 @@ export class CategoryDataSource extends DataSource<CategoryDataView> {
 }
 
 export class CategoryDataView {
-  parmaterTypes$: Observable<ParameterTypeDto[]>;
+  parmaterTypes: ParameterTypeDto[];
 
-  manufacturers$: Observable<ManufacturerView[]>;
+  manufacturers: ManufacturerView[];
 
-  parent$: Observable<CategoryView>;
+  parentName: string;
 
   constructor(
     public id: number,
@@ -173,10 +173,14 @@ export class CategoryDataView {
     public productCount: number = 0,
     public parentId?: number
   ) {
-    this.parmaterTypes$ = this.categoryService.getParameterTypesBy(this.id);
-    this.manufacturers$ = this.categoryService.getManufacturersBy(this.id);
+    this.categoryService.getParameterTypesBy(this.id)
+    .subscribe(v => this.parmaterTypes = v);
+    this.categoryService.getManufacturersBy(this.id)
+    .subscribe(v => this.manufacturers = v);
     if (parentId) {
-      this.parent$ = this.categoryService.findById(parentId);
+      this.categoryService.findById(parentId)
+      .pipe(map(v => v.categoryName))
+      .subscribe(v => this.parentName = v);
     }
   }
 

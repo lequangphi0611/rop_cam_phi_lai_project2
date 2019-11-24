@@ -82,6 +82,9 @@ export class HomeHeaderComponent implements OnInit {
   }
 
   trackByCategory(index: number, item: CategoryView) {
+    if(!item) {
+      return index;
+    }
     return item.id;
   }
 

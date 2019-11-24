@@ -128,20 +128,10 @@ export class DCategoryFormComponent
     const { categoryName, parentId } = category;
     this.categoryNameControl.setValue(categoryName);
     this.parentIdControl.setValue(parentId ? parentId : 0);
-    category.manufacturers$
-      .pipe(
-        takeUntil(this.unscriptions$),
-        map(manufacturers => manufacturers.map(manufacturer => manufacturer.id))
-      )
-      .subscribe(manufacturerIds => {
-        this.manufacturerIdsControl.setValue(manufacturerIds);
-      });
+    const manufacturerIds = category.manufacturers.map(v => v.id);
+    this.manufacturerIdsControl.setValue(manufacturerIds);
 
-    category.parmaterTypes$
-      .pipe(takeUntil(this.unscriptions$))
-      .subscribe(parameterTypes => {
-        this.parameterTypes.setValue(parameterTypes);
-      });
+    this.parameterTypes.setValue(category.parmaterTypes);
   }
 
   resetForm() {

@@ -8,6 +8,10 @@ const DEFAULT_LENGTH = 50;
 export class CutStringPipe implements PipeTransform {
 
   transform(value: string, length = DEFAULT_LENGTH): any {
+    if (!value) {
+      return '';
+    }
+
     if (value.length <= length) {
       return value;
     }

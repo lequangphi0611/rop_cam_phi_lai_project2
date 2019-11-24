@@ -7,7 +7,7 @@
     <th mat-header-cell *matHeaderCellDef>Loại Sản Phẩm</th>
     <td mat-cell *matCellDef="let element" class="mx-2">
       <p class="text-left">
-        {{(element.parent$ | async)?.categoryName ? ((element.parent$ | async)?.categoryName) + ' - ' : ""}} {{ element.categoryName }}
+        {{element.parentName ? element.parentName + ' - ' : ""}} {{ element.categoryName }}
       </p>
     </td>
   </ng-container>
@@ -26,9 +26,9 @@
       <td mat-cell *matCellDef="let element" class="mx-2">
         <p class="text-left">
           {{
-            (!(element.manufacturers$ | async) || (element.manufacturers$ | async)?.length === 0)
+            (!(element.manufacturers) || (element.manufacturers?.length === 0))
               ? 'Không có'
-              : (element.manufacturers$ | async) | manufacturersTransform | join: ", "
+              : element.manufacturers | manufacturersTransform | join: ", "
           }}
         </p>
       </td>
@@ -39,9 +39,9 @@
     <td mat-cell *matCellDef="let element" class="mx-2">
       <p class="text-left">
         {{
-          (!(element.parmaterTypes$ | async) || (element.parmaterTypes$ | async)?.length === 0)
+          (!(element.parmaterTypes) || element.parmaterTypes?.length === 0)
             ? 'Không có'
-            : (element.parmaterTypes$ | async) | paramterTypeTransform | join: ", "
+            : element.parmaterTypes | paramterTypeTransform | join: ", "
         }}
       </p>
     </td>
