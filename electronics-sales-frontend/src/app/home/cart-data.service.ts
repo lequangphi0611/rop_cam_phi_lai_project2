@@ -42,11 +42,16 @@ export class CartDataService {
     if (!cartInStorage) {
       return;
     }
-    this.cartData = new Cart(cartInStorage.cartItems);
+    this.cartData = new Cart(cartInStorage.cartItems.map(cartItem => {
+      cartItem.quantity = parseInt(`${cartItem.quantity}`);
+      return cartItem;
+    }));
+    console.log('đây nè',  this.cartData)
     this.cart.next(this.cartData);
   }
 
   push(product: ProductView, quantity = 1): boolean {
+    console.log(quantity);
     if (this.cartData.push(product, quantity)) {
       this.cart.next(this.cartData);
       return true;

@@ -7,20 +7,20 @@
         <h3>Giỏ hàng của bạn</h3>
       </div>
       <div class="container col-12 p-0 m-0">
-        <table id="cart" class="table table-hover table-condensed">
+        <table id="cart" class="table table-hover table-condensed" *ngIf="cartItems.length > 0; else noProducts" >
           <thead>
             <tr>
-              <th>Tên sản phẩm</th>
-              <th>Giá</th>
+              <th class="text-center" style="max-width: 100px;">Sản phẩm</th>
+              <th style="min-width: 80px;">Giá</th>
               <th>Sản phẩm hiện có</th>
-              <th>Số lượng</th>
+              <th style="max-width: 50px;">Số lượng</th>
               <th class="text-center">Thành tiền</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of cartItems; trackBy: item?.productId">
-              <td data-th="Product">
+              <td data-th="Product" style="max-width: 500px;">
                 <div class="row">
                   <div class="col-sm-2 hidden-xs mr-2">
                     <img
@@ -42,9 +42,8 @@
                     >
                       {{ item.product?.productName | cutString: 25 }}
                     </h4>
-                    <p>
-                      Mô tả của sản phẩm 1 tai nghe rất tốt, nhẹ nhàng, dễ sử
-                      dụng
+                    <p *ngIf="item.product?.descriptions as descriptions"  [matTooltip]="descriptions[0]?.title">
+                      {{(descriptions?.length > 0 ? descriptions[0].title : 'không có mô tả') | cutString: 100}}
                     </p>
                   </div>
                 </div>
@@ -55,14 +54,16 @@
               <td class="text-right pr-4">
                 {{ item.product?.quantity}}
               </td>
-              <td data-th="Quantity">
-                <input
-                  class="form-control text-center"
-                  [value]="item.quantity"
-                  type="number"
-                  (change)="onQuantityChange($event, item.product)"
-                  [attr.max]="item.product?.quantity"
-                />
+              <td data-th="Quantity" style="max-width: 50px;">
+                  <div class="col-12">
+                      <input
+                      class="form-control text-center col-12"
+                      [value]="item.quantity"
+                      type="number"
+                      (change)="onQuantityChange($event, item.product)"
+                      [attr.max]="item.product?.quantity"
+                    />
+                  </div>
               </td>
               <td data-th="Subtotal" style="text-align: center; color: #EA4335">
                 {{item.total | currencyvn}}
@@ -80,7 +81,7 @@
           <tfoot>
             <tr>
               <td>
-                <a class="btn btn-warning"
+                <a class="btn btn-warning" [routerLink]="['/index']"
                   ><i class="fa fa-angle-left"></i> Tiếp tục mua hàng</a
                 >
               </td>
@@ -88,7 +89,7 @@
               <td class="hidden-xs text-left">
                 <strong>Tổng tiền: {{total | currencyvn}}</strong>
               </td>
-              <td>
+              <td colspan="2">
                 <a href="buy.html" class="btn btn-success btn-block"
                   >Thanh toán <i class="fa fa-angle-right"></i
                 ></a>
@@ -98,6 +99,12 @@
             </tr>
           </tfoot>
         </table>
+        <ng-template #noProducts>
+          <div class="alert alert-default" role="alert">
+            <span>Chưa thêm sản phẩm nào !</span>
+            <a [routerLink]="['/index']" > Mua hàng ngay</a>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

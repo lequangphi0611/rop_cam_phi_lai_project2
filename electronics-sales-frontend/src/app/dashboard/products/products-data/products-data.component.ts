@@ -8,7 +8,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -30,7 +30,7 @@ import { ImportProductsComponent } from './../import-products/import-products.co
 @Component({
   selector: 'app-products-data',
   templateUrl: './products-data.component.html',
-  styleUrls: ['./products-data.component.css'],
+  styleUrls: ['./products-data.component.css']
 })
 export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
   dataSource: ProductsDataSource;
@@ -47,7 +47,7 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
     page: this.pageNumber,
     size: this.elementSize,
     productSortType: ProductSortType.TIME,
-    sortType: SortType.DESC,
+    sortType: SortType.DESC
   };
 
   fetchOption = new BehaviorSubject<FetchProductOption>(
@@ -75,7 +75,7 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
     'categories',
     'importQuantity',
     'edit',
-    'delete',
+    'delete'
   ];
 
   constructor(
@@ -109,8 +109,13 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   fetchCategories() {
-    this.categories$ = this.categoryService.fetchCategories()
-      .pipe(map(categories => categories.filter(category => category.productCount > 0)));
+    this.categories$ = this.categoryService
+      .fetchCategories()
+      .pipe(
+        map(categories =>
+          categories.filter(category => category.productCount > 0)
+        )
+      );
   }
 
   fetchMaxSize(option: FetchProductOption) {
@@ -130,7 +135,7 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.unSubscription$))
       .subscribe(() => {
         this.snackbar.open('Xóa thành công', 'Đóng', {
-          duration: 2000,
+          duration: 2000
         });
         this.maxSize--;
         this.dataSource.loadProducts(this.currentOption);
@@ -145,12 +150,13 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
     dialogConfig.autoFocus = true;
 
     dialogConfig.data = {
-      product,
+      product
     };
 
     const dialogRef = this.dialog.open(ImportProductsComponent, dialogConfig);
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(filter(v => v))
       .subscribe(() => this.dataSource.loadProducts(this.currentOption));
   }
@@ -229,11 +235,11 @@ export class ProductsDataSource implements DataSource<ProductDataView> {
 }
 
 export class ProductDataView extends ProductView {
-  public manufacturer$: Observable<ManufacturerView>;
+  public manufacturer: ManufacturerView;
 
-  public categories$: Observable<CategoryView[]>;
+  public categories: CategoryView[];
 
-  imageData$: Observable<string>;
+  imageData: string;
 
   private constructor(
     public id: number,
@@ -244,8 +250,7 @@ export class ProductDataView extends ProductView {
     public productService: ProductService,
     public createdTime?: Date,
     public updatedTime?: Date,
-    public manufacturerId?: number,
-    public discount?: DiscountView
+    public manufacturerId?: number
   ) {
     super(
       id,
@@ -255,14 +260,21 @@ export class ProductDataView extends ProductView {
       productService,
       createdTime,
       updatedTime,
-      manufacturerId,
-      discount
+      manufacturerId
     );
-    this.manufacturer$ = this.manufacturerService.getManufacturerBy(
-      this.manufacturerId
-    );
-    this.categories$ = this.productService.getCategories(this.id);
-    this.imageData$ = this.images$.pipe(map(images => images[0].data));
+    if (manufacturerId != null) {
+      this.manufacturerService
+      .getManufacturerBy(this.manufacturerId)
+      .subscribe(v => (this.manufacturer = v));
+    }
+    this.productService
+      .getCategories(this.id)
+      .subscribe(v => (this.categories = v));
+    this.images$
+      .pipe(
+        filter(v => v.length > 0),
+        map(images => images[0].data))
+      .subscribe(v => (this.imageData = v));
   }
 
   static build(
@@ -279,8 +291,7 @@ export class ProductDataView extends ProductView {
       productService,
       product.createdTime,
       product.updatedTime,
-      product.manufacturerId,
-      product.discount
+      product.manufacturerId
     );
   }
 }

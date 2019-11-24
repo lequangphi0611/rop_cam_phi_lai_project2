@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { ProductView } from 'src/app/models/view-model/product.view.model';
 import { ProductService } from './../../services/product.service';
 import { CartDataView } from './../../models/cart-item-data.view.model';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil, tap } from 'rxjs/operators';
 import { CartDataService } from './../cart-data.service';
 import { Observable, of, Subject } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -24,13 +24,14 @@ export class CartComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.cartData.cart$.pipe(
-      takeUntil(this.unscriptions$),
-      map(cart =>
-        cart.cartItems.map(v => CartDataView.of(v, this.productService))
+    this.cartData.cart$
+      .pipe(
+        takeUntil(this.unscriptions$),
+        map(cart =>
+          cart.cartItems.map(v => CartDataView.of(v, this.productService))
+        )
       )
-    ).subscribe(v => this.cartItems = v);
-
+      .subscribe(v => (this.cartItems = v));
   }
 
   onQuantityChange(event, product: ProductView) {
@@ -54,5 +55,4 @@ export class CartComponent implements OnInit, OnDestroy {
     this.unscriptions$.next();
     this.unscriptions$.complete();
   }
-
 }

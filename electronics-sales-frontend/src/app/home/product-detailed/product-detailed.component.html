@@ -34,8 +34,8 @@
               [parameters$]="parameters$"
             ></app-product-detailed-parameter-list>
             <br />
-            <div class="row px-0">
-              <button type="button" class="btn btn-danger col m-2">
+            <div class="row px-0" *ngIf="(product$ | async) as product">
+              <button type="button" (click)="addToCart(product)" class="btn btn-danger col m-2" [matTooltip]="'Đã có ' + cartRemaining + ' trong giỏ hàng'">
                 Thêm vào giỏ hàng
               </button>
               <button type="button" class="btn btn-warning text-white col m-2">

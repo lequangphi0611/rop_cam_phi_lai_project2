@@ -1,7 +1,7 @@
 import { ProductView } from './../../models/view-model/product.view.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CartDataService } from './../cart-data.service';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
@@ -28,7 +28,10 @@ export class ProductBoxComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.image$ = this.product.images$.pipe(map(images => images[0].data));
+    this.image$ = this.product.images$.pipe(
+      filter(v => v.length > 0),
+      map(images => images[0].data)
+    );
   }
 
   goToDetail(id: number): void {

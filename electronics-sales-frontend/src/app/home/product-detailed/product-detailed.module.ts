@@ -1,3 +1,4 @@
+import { MaterialModule } from './../../material/material.module';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { CurrencyVNPipe } from './../../pipes/currency-vn.pipe';
 import { MyLazyLoadImageModule } from './../../my-lazy-load-image/my-lazy-load-image.module';
@@ -18,7 +19,8 @@ import { ProductDetailedParameterListComponent } from './product-detailed-parame
     ProductDetailedRoutingModule,
     MyLazyLoadImageModule,
     PipesModule,
-    LazyLoadImageModule
+    LazyLoadImageModule,
+    MaterialModule
   ]
 })
 export class ProductDetailedModule { }

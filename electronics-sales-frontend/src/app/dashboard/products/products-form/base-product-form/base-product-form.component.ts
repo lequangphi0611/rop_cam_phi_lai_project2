@@ -59,7 +59,7 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
 
   async setFormValues(product: ProductDataView) {
     this.productNameControl.setValue(product.productName);
-    (await product.categories$.toPromise())
+    product.categories
       .filter((value, i) => i <= 1)
       .map((category) => {
         this.categoryService.getChildrens(category.id)

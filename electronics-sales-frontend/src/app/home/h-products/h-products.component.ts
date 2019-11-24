@@ -10,6 +10,7 @@ import { BehaviorSubject, Subject, Observable, of } from 'rxjs';
 import { ProductService } from './../../services/product.service';
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CategoryService } from 'src/app/services/category.service';
+import { FetchProductType } from 'src/app/models/types/fetch-product-type.type';
 
 @Component({
   selector: 'app-h-products',
@@ -17,14 +18,15 @@ import { CategoryService } from 'src/app/services/category.service';
   styleUrls: ['../home.component.css', './h-products.component.css'],
 })
 export class HProductsComponent implements OnInit, AfterViewInit, OnDestroy {
-  static readonly DEFAULT_PAGE_SIZE = 8;
+  static readonly DEFAULT_PAGE_SIZE = 9;
 
   static readonly MIN_PAGE_INDEX = 0;
 
-  readonly defaultOption = {
+  readonly defaultOption: FetchProductOption = {
     manufacturersId: [],
     size: HProductsComponent.DEFAULT_PAGE_SIZE,
     page: HProductsComponent.MIN_PAGE_INDEX,
+    fetchType: FetchProductType.SELLING
   };
 
   fetchProductChange$ = new BehaviorSubject<boolean>(false);

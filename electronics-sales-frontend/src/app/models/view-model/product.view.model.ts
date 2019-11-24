@@ -1,34 +1,28 @@
-import { ImageView } from './image-data.view';
-import { Observable } from 'rxjs';
-import { ProductService } from './../../services/product.service';
-import { DiscountView } from './discount.view';
+import { BehaviorSubject } from 'rxjs';
 import { DiscountType } from '../types/discount.type';
+import { ProductService } from './../../services/product.service';
+import { ParagraphDto } from './../dtos/paragraph.dto';
+import { DiscountView } from './discount.view';
+import { ImageView } from './image-data.view';
 
 export interface IProduct {
+  id: number;
 
-    id: number;
+  productName: string;
 
-    productName: string;
+  price: number;
 
-    price: number;
+  quantity: number;
 
-    quantity: number;
+  createdTime?: Date;
 
-    createdTime?: Date;
+  updatedTime?: Date;
 
-    updatedTime?: Date;
+  manufacturerId?: number;
 
-    manufacturerId?: number;
-
-    discount?: DiscountView;
-
+  discount?: DiscountView;
 }
 export class ProductView {
-
-  images$: Observable<ImageView[]>;
-
-  discount$: Observable<DiscountView>;
-
   constructor(
     public id: number,
     public productName: string,
@@ -37,12 +31,20 @@ export class ProductView {
     public productService: ProductService,
     public createdTime?: Date,
     public updatedTime?: Date,
-    public manufacturerId?: number,
-    public discount?: DiscountView,
+    public manufacturerId?: number
   ) {
-    this.images$ = this.productService.getImages(this.id);
-    this.discount$ = this.productService.getDiscount(this.id);
+    this.fetchImages();
+    this.fetchProductDescriptions();
   }
+
+  get discount() {
+    return null;
+  }
+  images$ = new BehaviorSubject<ImageView[]>([]);
+
+  private Descriptions: ParagraphDto[];
+
+  Discount: DiscountView;
 
   static of(iProduct: IProduct, productService: ProductService): ProductView {
     return new ProductView(
@@ -53,9 +55,25 @@ export class ProductView {
       productService,
       iProduct.createdTime,
       iProduct.updatedTime,
-      iProduct.manufacturerId,
-      iProduct.discount
+      iProduct.manufacturerId
     );
+  }
+
+  fetchProductDescriptions() {
+    this.productService.getDescriptions(this.id).subscribe(descriptions => {
+      this.Descriptions = descriptions;
+    });
+  }
+
+  get descriptions() {
+    return this.Descriptions;
+  }
+
+  fetchImages() {
+    this.productService.getImages(this.id).subscribe({
+      next: v => this.images$.next(v),
+      complete: () => this.images$.complete()
+    });
   }
 
   getCurrentPrice(): number {

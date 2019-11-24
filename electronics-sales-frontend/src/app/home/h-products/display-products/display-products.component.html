@@ -1,5 +1,5 @@
 <div class="row col-12" *ngIf="products && products.length > 0" >
-  <div class="col-3" *ngFor="let product of products; trackBy:product?.id">
+  <div class="col-4" *ngFor="let product of products; trackBy:product?.id">
     <app-product-box [product]="product"></app-product-box>
   </div>
 </div>

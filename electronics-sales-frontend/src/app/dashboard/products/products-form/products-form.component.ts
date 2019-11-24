@@ -1,3 +1,4 @@
+import { ImageView } from './../../../models/view-model/image-data.view';
 import { ProductView } from './../../../models/view-model/product.view.model';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -66,11 +67,9 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.unscription$),
         filter(product => product != null),
-        switchMap(product => product.images$),
+        map(product => product.images$.value as ImageView[]),
         map(images => images.map(image => image.data)),
-        map(datas => {
-          return datas.map(data => `data:image/png;base64,${data}`);
-        })
+        map(datas => datas.map(data => `data:image/png;base64,${data}`))
       )
       .subscribe(datas => this.imagesUrls.next(datas));
 
@@ -103,7 +102,7 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
 
     this.descriptions$ = this.currentProduct$.pipe(
       filter(value => value != null),
-      switchMap(product => this.productService.getDescriptions(product.id))
+      map(product => product.descriptions)
     );
   }
 

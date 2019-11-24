@@ -1,35 +1,35 @@
 <div class="container col-12 p-0 d-flex flex-column justify-content-center">
-    <div class="col-12 m-2 clearfix">
-        <div class="col-5 float-left ">
-            <div class="d-flex flex-row align-items-center">
-                <label >Loại sản phẩm : </label>
-                <mat-form-field class="ml-3">
-                    <mat-select [value]="0" (selectionChange)="onChangeCategory($event.value)">
-                      <mat-option [value]="0">Tất cả</mat-option>
-                      <mat-option *ngFor="let category of categories$ | async" [value]="category.id">
-                        {{category.categoryName}}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                 </div>
-            </div>
+  <div class="col-12 m-2 clearfix">
+    <div class="col-5 float-left ">
+      <div class="d-flex flex-row align-items-center">
+        <label>Loại sản phẩm : </label>
+        <mat-form-field class="ml-3">
+          <mat-select [value]="0" (selectionChange)="onChangeCategory($event.value)">
+            <mat-option [value]="0">Tất cả</mat-option>
+            <mat-option *ngFor="let category of categories$ | async" [value]="category.id">
+              {{ category.categoryName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
+  </div>
   <div class="col-12 p-0 mt-2">
-
     <mat-table [dataSource]="dataSource" class="col-12 p-0" [trackBy]="trackById">
       <ng-container matColumnDef="image">
         <th mat-header-cell *matHeaderCellDef>Hình ảnh</th>
         <td mat-cell *matCellDef="let element" class="p-3 mx-2 ">
-          <div class="product-img">
-            <img
-              class="img-fluid"
-              [defaultImage]="'/assets/default.jpg'"
-              [lazyLoad]="
-                'data:image/jpeg;base64,' + (element.imageData$ | async)
-              "
-            />
-          </div></td
-      ></ng-container>
+          <div class="product-img" *ngIf="element.imageData as image; else loading">
+            <img class="img-fluid"  [lazyLoad]="'data:image/jpeg;base64,' + image" />
+          </div>
+
+          <ng-template #loading>
+              <div class="product-img">
+                  <img class="img-fluid"  src="/assets/default.jpg" />
+                </div>
+          </ng-template>
+        </td>
+      </ng-container>
 
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Tên Sản Phẩm</th>
@@ -55,35 +55,32 @@
       <ng-container matColumnDef="manufacturer">
         <th mat-header-cell *matHeaderCellDef>Hãng sản xuất</th>
         <td mat-cell class="text-right" *matCellDef="let element" class="mx-2">
-          {{
-            (element.manufacturer$ | async)?.manufacturerName
-              ? (element.manufacturer$ | async)?.manufacturerName
-              : "Không"
-          }}
+          <ng-container *ngIf="element.manufacturer?.manufacturerName as manufacturerName; else notHaveManufacturer" >
+            {{manufacturerName}}
+          </ng-container>
+          <ng-template #notHaveManufacturer>
+            Không
+          </ng-template>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="categories">
         <th mat-header-cell *matHeaderCellDef>Loại Sản Phẩm</th>
         <td mat-cell class="text-right" *matCellDef="let element" class="mx-2">
-          <mat-spinner
-            *ngIf="
-              !(element.categories$ | async) ||
-              (element.categories$ | async)?.length < 0
-            "
-          ></mat-spinner>
-          {{ element.categories$ | async | categoriesData }}
+          <ng-container *ngIf="element.categories as categories; else loading">
+            {{ categories | categoriesData }}
+          </ng-container>
+
+          <ng-template #loading>
+            <mat-spinner></mat-spinner>
+          </ng-template>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="importQuantity">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell class="text-right" *matCellDef="let element" class="mx-2">
-          <button
-            mat-raised-button
-            color="accent"
-            (click)="openDialog(element)"
-          >
+          <button mat-raised-button color="accent" (click)="openDialog(element)">
             Nhập số lượng
           </button>
         </td>
@@ -110,14 +107,11 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </mat-table>
+
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
-        <mat-spinner></mat-spinner>
-      </div>
-    <mat-paginator
-      [length]="maxSize"
-      [pageSize]="5"
-      [pageSizeOptions]="[5, 10, 15]"
-    >
+      <mat-spinner></mat-spinner>
+    </div>
+    <mat-paginator [length]="maxSize" [pageSize]="5" [pageSizeOptions]="[5, 10, 15]">
     </mat-paginator>
   </div>
 </div>
