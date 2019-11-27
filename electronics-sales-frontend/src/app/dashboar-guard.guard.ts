@@ -33,6 +33,7 @@ export class DashboarGuardGuard implements CanActivate {
             this.route.navigate(['index']);
             return false;
           }
+          console.log('dashboard nè');
           return true;
         })
       );
@@ -40,11 +41,9 @@ export class DashboarGuardGuard implements CanActivate {
 
   checkRoleDashboard(): Observable<boolean> {
     return this.userService
-      .getCurrentUser()
+      .getCurrentRole()
       .pipe(
-        map(user => {
-          return DashboarGuardGuard.DASHBOARD_ROLE.includes(user.role);
-        }),
+        map(role => DashboarGuardGuard.DASHBOARD_ROLE.includes(role)),
         catchError(() => of(false))
       ) as Observable<boolean>;
   }

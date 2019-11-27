@@ -1,0 +1,130 @@
+<div class="col-12 py-4">
+  <div class="col-12 row">
+    <div class="form-group col-5 mr-2 ml-0">
+      <label for="fromDate" class="col-3">Từ ngày : </label>
+      <mat-form-field class="col-8 p-0">
+        <input
+          matInput
+          id="fromDate"
+          [max]="toDateControl.value"
+          class="col-12 p-0"
+          [matDatepicker]="fromDatePicker"
+          [formControl]="fromDateControl"
+        />
+        <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker touchUi #fromDatePicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="form-group col-5 mr-2 ml-0">
+      <label for="toDate" class="col-3">Đến ngày : </label>
+      <mat-form-field class="col-8 p-0">
+        <input
+          matInput
+          id="toDate"
+          class="col-12 p-0"
+          [min]="fromDateControl.value"
+          [max]="maxDate"
+          [matDatepicker]="toDatePicker"
+          [formControl]="toDateControl"
+        />
+        <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker touchUi #toDatePicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="col-12 m-0 d-flex justify-content-center flex-column">
+    <mat-table
+      [dataSource]="datasource"
+      class="col-12 w-100 p-0"
+      [trackBy]="trackById"
+      matSort
+      matSortStart="desc"
+      (matSortChange)="onSortChange($event)"
+    >
+      <ng-container matColumnDef="createdTime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ngày tạo</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+          <p class="text-left p-2">
+            {{ element.createdTime | date: "HH:mm  dd-MM-yyyy" }}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fullname">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Tên khách hàng
+        </th>
+        <td mat-cell *matCellDef="let element" class="mx-2 pr-2">
+          <p class="text-left p-2">
+            {{ element.fullname }}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>email</th>
+        <td mat-cell *matCellDef="let element" class="mx-2">
+          <p class="text-left p-2">
+            {{ element.email }}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="phoneNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Số điện thoại</th>
+        <td mat-cell *matCellDef="let element" class="mx-2">
+          <p class="text-left p-2">
+            {{ element.phoneNumber }}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Địa chỉ</th>
+        <td mat-cell *matCellDef="let element" class="mx-2">
+          <p class="text-left p-2">
+            {{ element.address }}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="subTotal">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tổng tiền</th>
+        <td mat-cell *matCellDef="let element" class="mx-2">
+          <p class="text-right p-2">
+            {{ element.subTotal | currencyvn }}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="discountTotal">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Số tiền giảm</th>
+        <td mat-cell *matCellDef="let element" class="mx-2">
+          <p class="text-right p-2">
+            {{ element.discountTotal | currencyvn }}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="sumTotal">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Thành Tiền</th>
+        <td mat-cell *matCellDef="let element" class="mx-2">
+          <p class="text-right p-2">
+            {{ element.sumTotal | currencyvn }}
+          </p>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </mat-table>
+
+    <mat-paginator
+      [length]="datasource?.totalElement"
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 15]"
+    >
+    </mat-paginator>
+  </div>
+</div>

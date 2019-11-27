@@ -34,6 +34,11 @@ const SIDE_BAR_ITEMS: SideBarItem[] = [
     fontAwesomeClass: 'fas fa-shopping-cart',
     links: [`product`],
   },
+  {
+    name: 'Đơn hàng',
+    fontAwesomeClass: 'fas fa-clipboard-list',
+    links: [`transactions`],
+  },
 ];
 
 @Component({

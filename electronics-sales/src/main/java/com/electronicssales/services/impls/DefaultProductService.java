@@ -17,10 +17,8 @@ import com.electronicssales.entities.Product;
 import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.dtos.ProductDto;
 import com.electronicssales.models.responses.BaseCategoryResponse;
-import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.models.responses.DiscountResponse;
 import com.electronicssales.models.responses.FetchProductOption;
-import com.electronicssales.models.responses.ICategoryReponse;
 import com.electronicssales.models.responses.IParagraphResponse;
 import com.electronicssales.models.responses.ImageDataResponse;
 import com.electronicssales.models.responses.ParagraphResponse;
@@ -38,7 +36,6 @@ import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -78,4 +78,5 @@ public interface ProductRepository
 
     @Query(FIND_IMAGE_BY_PRODUCT_ID)
     ProductImageOnly findImageByProductId(long productId);
+
 }

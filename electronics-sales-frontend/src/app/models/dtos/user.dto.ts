@@ -12,7 +12,7 @@ export interface UserDto {
 
   address: string;
 
-  gender: boolean;
+  gender?: boolean;
 
   birthday?: Date;
 

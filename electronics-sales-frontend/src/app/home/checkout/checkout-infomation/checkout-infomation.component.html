@@ -1,0 +1,65 @@
+<mat-card>
+  <mat-card-title class="mb-2 text-center">
+    Thông tin của bạn
+  </mat-card-title>
+
+  <mat-card-content class="mt-2">
+    <form [formGroup]="checkoutForm" (submit)="onSubmit()">
+      <div class="form-group row pr-0">
+        <mat-form-field class="col" floatPlaceholder="auto" dividerColor="warn">
+          <mat-label>Họ</mat-label>
+          <input matInput formControlName="lastname" type="text" required />
+        </mat-form-field>
+
+        <mat-form-field class="col" floatPlaceholder="auto" dividerColor="warn">
+          <mat-label>Tên</mat-label>
+          <input matInput formControlName="firstname" type="text" required placeholder="Họ" />
+        </mat-form-field>
+      </div>
+
+      <div class="form-group row pr-0">
+        <mat-form-field
+          class="col-12"
+          floatPlaceholder="auto"
+          dividerColor="warn"
+
+        >
+          <mat-label>Số Điện Thoại</mat-label>
+          <input matInput formControlName="phoneNumber" type="text" required />
+        </mat-form-field>
+      </div>
+
+      <div class="form-group row pr-0">
+        <mat-form-field
+          class="col-12"
+          floatPlaceholder="auto"
+          dividerColor="warn"
+
+        >
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="text" required />
+        </mat-form-field>
+      </div>
+
+      <div class="form-group row pr-0">
+        <mat-form-field
+          class="col-12"
+          floatPlaceholder="auto"
+          dividerColor="warn"
+        >
+          <mat-label>Địa Chỉ</mat-label>
+          <textarea matInput formControlName="address" type="text" required ></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-card-content>
+
+  <mat-card-content>
+    <div class="col-12 d-flex justify-content-center flex-column">
+      <button (click)="onSubmit()" color="warn" class="col-12 m-2 btn btn-danger btn-round">
+        Thanh Toán
+      </button>
+      <a [hidden]="logined" [routerLink]="['/index', 'register']"  class="col-12 btn btn-link m-2">Đăng ký tài khoản</a>
+    </div>
+  </mat-card-content>
+</mat-card>

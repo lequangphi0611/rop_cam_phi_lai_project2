@@ -1,0 +1,16 @@
+.alert-text {
+  font-size: 30px;
+}
+
+.order-success-content {
+  min-height: 500px;
+}
+
+.transaction-img {
+  width: auto;
+  max-height: 100px;
+}
+
+tr {
+  padding: 5rem;
+}

@@ -12,46 +12,57 @@ const routes: Routes = [
         loadChildren: () =>
           import('./home-content-default/home-content-default.module').then(
             m => m.HomeContentDefaultModule
-          ),
+          )
       },
       {
         path: 'login',
         loadChildren: () =>
-          import('./login/login.module').then(m => m.LoginModule),
+          import('./login/login.module').then(m => m.LoginModule)
       },
       {
         path: 'register',
         loadChildren: () =>
-          import('./register/register.module').then(m => m.RegisterModule),
+          import('./register/register.module').then(m => m.RegisterModule)
       },
       {
         path: 'about',
         loadChildren: () =>
-          import('./about/about.module').then(m => m.AboutModule),
+          import('./about/about.module').then(m => m.AboutModule)
       },
       {
         path: 'cart',
-        loadChildren: () =>
-          import('./cart/cart.module').then(m => m.CartModule),
+        loadChildren: () => import('./cart/cart.module').then(m => m.CartModule)
       },
       {
         path: 'product/:id',
         loadChildren: () =>
           import('./product-detailed/product-detailed.module').then(
             m => m.ProductDetailedModule
-          ),
+          )
       },
       {
         path: 'products',
         loadChildren: () =>
-          import('./h-products/h-products.module').then(m => m.HProductsModule),
+          import('./h-products/h-products.module').then(m => m.HProductsModule)
       },
-    ],
-  },
+      {
+        path: 'checkout',
+        loadChildren: () =>
+          import('./checkout/checkout.module').then(m => m.CheckoutModule)
+      },
+      {
+        path: 'order-success/:transactionId',
+        loadChildren: () =>
+          import('./order-success/order-success.module').then(
+            m => m.OrderSuccessModule
+          )
+      }
+    ]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class HomeRoutingModule {}

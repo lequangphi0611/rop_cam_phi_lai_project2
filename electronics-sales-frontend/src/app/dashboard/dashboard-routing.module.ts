@@ -10,36 +10,43 @@ const routes: Routes = [
       {
         path: 'overview',
         loadChildren: () =>
-          import('./overviews/overviews.module').then(m => m.OverviewsModule),
+          import('./overviews/overviews.module').then(m => m.OverviewsModule)
       },
       {
         path: 'product',
         loadChildren: () =>
-          import('./products/products.module').then(m => m.ProductsModule),
+          import('./products/products.module').then(m => m.ProductsModule)
       },
       {
         path: 'manufacturer',
         loadChildren: () =>
           import('./manufacturer/manufacturer.module').then(
             m => m.ManufacturerModule
-          ),
+          )
       },
       {
         path: 'category',
         loadChildren: () =>
-          import('./d-category/d-category.module').then(m => m.DCategoryModule),
+          import('./d-category/d-category.module').then(m => m.DCategoryModule)
       },
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'overview',
+        redirectTo: 'overview'
       },
-    ],
-  },
+      {
+        path: 'transactions',
+        loadChildren: () =>
+          import('./transaction/transaction.module').then(
+            m => m.TransactionModule
+          )
+      }
+    ]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class DashboardRoutingModule {}

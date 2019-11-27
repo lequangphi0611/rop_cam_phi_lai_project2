@@ -1,0 +1,93 @@
+<div
+  class="col-12 p-3 mb-5 d-flex justify-content-start align-items-center flex-column order-success-content"
+>
+  <div
+    class="alert alert-default text-center text-danger font-weight-bold alert-text h1"
+  >
+    Thanh Toán Thành Công
+  </div>
+
+  <div class="mt-3 col-10 ">
+    <div class="card">
+      <div class="card-header h3">
+        Đơn hàng của bạn
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table w-100">
+            <thead>
+              <tr>
+                <th>Hình Ảnh</th>
+                <th>Sản Phẩm</th>
+                <th>
+                  <div class="d-flex justify-content-end align-items-center">
+                    Đơn Giá
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex justify-content-end align-items-center">
+                    Số Lượng
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex justify-content-end align-items-center">
+                    Thành Tiền
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let transactionDetailed of transactionDetailed"
+              >
+                <td scope="row">
+                  <div class="d-flex justify-content-center align-items-center">
+                    <img
+                      class="img-fluid transaction-img"
+                      [src]="
+                        'data:image/png;base64,' + transactionDetailed.image
+                      "
+                      alt=""
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex justify-content-start py-5">
+                    {{ transactionDetailed.productName }}
+                  </div>
+                </td>
+                <td>
+                  <div
+                    class="d-flex justify-content-end align-items-center py-5"
+                  >
+                    {{ transactionDetailed.price | currencyvn }}
+                  </div>
+                </td>
+                <td>
+                  <div
+                    class="d-flex justify-content-end align-items-center py-5"
+                  >
+                    {{ transactionDetailed.quantity }}
+                  </div>
+                </td>
+                <td>
+                  <div
+                    class="d-flex justify-content-end align-items-center py-5"
+                  >
+                    {{ transactionDetailed.total | currencyvn }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer clearfix px-3">
+          <strong class="float-left mx-3">Tổng Cộng :</strong>
+          <div class="float-right">{{sumTotal | currencyvn}}</div>
+        </div>
+    </div>
+
+    <!-- <div class="h3 col-12 text-center mb-5">Đơn hàng của bạn</div> -->
+  </div>
+</div>

@@ -89,7 +89,13 @@ export class HomeHeaderComponent implements OnInit {
   }
 
   get cartItemsCount() {
-    return this.cartData.cart$.pipe(map(c => c.cartItems.length));
+    return this.cartData.cart$.pipe(map(c => {
+      if(!c) {
+        return 0;
+      }
+
+      return c.cartItems.length;
+    }));
   }
 
   async logOut(): Promise<void> {

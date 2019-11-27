@@ -10,6 +10,9 @@ import com.electronicssales.entities.Transaction;
 import com.electronicssales.entities.TransactionDetailed;
 import com.electronicssales.entities.UserInfo;
 import com.electronicssales.errors.ExceedTheNumberOfProductsException;
+import com.electronicssales.models.TransactionDetailedProjections;
+import com.electronicssales.models.TransactionFetchOption;
+import com.electronicssales.models.TransactionProjections;
 import com.electronicssales.models.dtos.TransactionDetailedDto;
 import com.electronicssales.models.dtos.TransactionDto;
 import com.electronicssales.repositories.TransactionDetailedRepository;
@@ -20,9 +23,10 @@ import com.electronicssales.utils.TwoDimensionalMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Lazy
 @Service
@@ -42,13 +46,12 @@ public class DefaultTransactionService implements TransactionService {
     @Autowired
     private TwoDimensionalMapper<TransactionDetailedDto, TransactionDetailed> transactionDetailedMapper;
 
-    @Transactional
     @Override
     public TransactionDto create(TransactionDto transactionDto) {
         Transaction transactionPersisted = transactionRepository.save(transactionMapper.secondMapping(transactionDto));
         List<TransactionDetailed> transactionDetaileds = transactionDto.getTransactionDetaileds().stream()
-                .peek(transactionDetailed -> transactionDetailed.setTransactionId(transactionPersisted.getId()))
                 .map(transactionDetailedMapper::secondMapping)
+                .peek(element -> element.setTransaction(transactionPersisted))
                 .map(this::saveTransactionDetailed)
                 .collect(Collectors.toList());
         transactionPersisted.setTransactionDetaileds(transactionDetaileds);
@@ -69,6 +72,15 @@ public class DefaultTransactionService implements TransactionService {
         return null;
     }
 
+    @Override
+    public List<TransactionDetailedProjections> findTransactionDetailedByTransactionId(long transactionId) {
+        return this.transactionDetailedRepository.findByTransactionId(transactionId);
+    }
+
+    @Override
+    public Page<TransactionProjections> fetchAll(TransactionFetchOption option, Pageable pageable) {
+        return this.transactionRepository.fetchAll(option, pageable);
+    }
     @Lazy
     @Component
     private class TransactionMapper implements TwoDimensionalMapper<TransactionDto, Transaction> {
@@ -99,6 +111,7 @@ public class DefaultTransactionService implements TransactionService {
             Transaction transaction = new Transaction();
             UserInfo customerInfo = new UserInfo();
             customerInfo.setId(transactionDto.getCustomerInfoId());
+            System.out.println(transactionDto.getCustomerInfoId());
             transaction.setCustomerInfo(customerInfo);
             return transaction;
         }
@@ -112,7 +125,6 @@ public class DefaultTransactionService implements TransactionService {
         @Override
         public TransactionDetailedDto mapping(TransactionDetailed transactionDetailed) {
             TransactionDetailedDto transactionDetailedDto = new TransactionDetailedDto();
-            transactionDetailedDto.setTransactionId(transactionDetailed.getTransaction().getId());
             transactionDetailedDto.setProductId(transactionDetailed.getProduct().getId());
             transactionDetailedDto.setDiscountType(transactionDetailed.getDiscountType());
             transactionDetailedDto.setPrice(transactionDetailed.getPrice());
@@ -129,9 +141,6 @@ public class DefaultTransactionService implements TransactionService {
             transactionDetailed.setDiscountValue(transactionDetailedDto.getDiscountValue());
             transactionDetailed.setPrice(transactionDetailedDto.getPrice());
             transactionDetailed.setQuantity(transactionDetailedDto.getQuantity());
-            Transaction transaction = new Transaction();
-            transaction.setId(transactionDetailedDto.getTransactionId());
-            transactionDetailed.setTransaction(transaction);
             return transactionDetailed;
         }
     

@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -12,15 +14,34 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.electronicssales.models.UserInfoProjections;
 
 import lombok.Data;
 
 @Entity
 @Table(name = "user_infos")
 @Data
+@SqlResultSetMapping(
+    name = "UserInfoProjectionsMapping",
+    classes = @ConstructorResult(
+        targetClass = UserInfoProjections.class,
+        columns = {
+            @ColumnResult(name = "id", type = Long.class),
+            @ColumnResult(name = "lastname"),
+            @ColumnResult(name = "firstname"),
+            @ColumnResult(name = "phone_number"),
+            @ColumnResult(name = "email"),
+            @ColumnResult(name = "address"),
+            @ColumnResult(name = "gender", type = Boolean.class),
+            @ColumnResult(name = "birthday", type = Date.class)
+        }
+    )
+)
 public class UserInfo {
 
     @Id
@@ -48,7 +69,11 @@ public class UserInfo {
     @Temporal(TemporalType.DATE)
     private Date birthday;
 
-    @OneToOne(mappedBy = "userInfo", fetch = FetchType.LAZY)
+    @OneToOne(
+        mappedBy = "userInfo", 
+        fetch = FetchType.LAZY,
+        optional = false
+    )
     private User user;
 
     @OneToMany(

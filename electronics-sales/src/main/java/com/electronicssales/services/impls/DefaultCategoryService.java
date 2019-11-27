@@ -2,10 +2,8 @@ package com.electronicssales.services.impls;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.electronicssales.entities.Category;
@@ -20,7 +18,6 @@ import com.electronicssales.models.responses.ICategoryReponse;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParameterTypeRepository;
 import com.electronicssales.repositories.ProductCategoryRepository;
-import com.electronicssales.repositories.ProductRepository;
 import com.electronicssales.services.CategoryService;
 import com.electronicssales.utils.Mapper;
 
@@ -30,7 +27,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Lazy
 @Service

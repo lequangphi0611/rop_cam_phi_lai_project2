@@ -2,6 +2,8 @@ import { Role } from './../types/role.type';
 export interface User {
   id: number;
 
+  userInfoId: number;
+
   username: string;
 
   firstname?: string;

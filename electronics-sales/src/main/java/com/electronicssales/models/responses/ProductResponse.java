@@ -1,7 +1,6 @@
 package com.electronicssales.models.responses;
 
 import java.util.Date;
-import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.Data;

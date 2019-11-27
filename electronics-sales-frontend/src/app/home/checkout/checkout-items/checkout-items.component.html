@@ -1,0 +1,41 @@
+<mat-card>
+  <mat-card-title class="mb-2 text-center">
+    Giỏ Hàng Của Bạn
+  </mat-card-title>
+
+  <mat-card-content>
+    <div class="order-summary px-5">
+      <div class="order-col">
+        <div><strong class="text-uppercase">Sản phẩm</strong></div>
+        <div><strong class="text-uppercase"></strong></div>
+        <div><strong class="text-uppercase">Thành tiền</strong></div>
+      </div>
+
+      <div class="order-products">
+        <div class="order-col order-items" *ngFor="let item of checkoutItems; trackBy: item?.productId">
+          <div *ngIf="item.product as product" [matTooltip]="product.productName" >{{ product.productName | cutString: 20 }}</div>
+          <div class="ml-3">x{{ item.quantity }}</div>
+          <div>{{ item.total | currencyvn }}</div>
+        </div>
+      </div>
+      <div class="col-12 p-4">
+          <mat-divider></mat-divider>
+      </div>
+      <div class="order-col">
+        <div><strong class="text-uppercase">Tổng cộng</strong></div>
+        <div><strong class="text-uppercase">{{sumTotal | currencyvn}}</strong></div>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <div class="col-12 d-flex justify-content-center p-3">
+      <a
+        [routerLink]="['/index', 'cart']"
+        class="btn btn-danger btn-round col-12 text-capitalize"
+      >
+        Trở về giỏ hàng
+      </a>
+    </div>
+  </mat-card-actions>
+</mat-card>

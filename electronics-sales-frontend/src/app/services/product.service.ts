@@ -1,3 +1,4 @@
+import { IProduct } from './../models/view-model/product.view.model';
 import { ParagraphDto } from './../models/dtos/paragraph.dto';
 import { DiscountView } from './../models/view-model/discount.view';
 import { ImageView } from './../models/view-model/image-data.view';
@@ -88,10 +89,13 @@ export class ProductService {
   }
 
   getProduct(id: number): Observable<ProductView> {
-    console.log('send request');
     return this.http
       .get<ProductView>(`${ProductService.BASE_REQUEST}/${id}`)
       .pipe(map(product => ProductView.of(product, this)));
+  }
+
+  getProductNative(id: number): Observable<IProduct> {
+    return this.http.get<IProduct>(`${ProductService.BASE_REQUEST}/${id}`);
   }
 
   getImages(id: number): Observable<ImageView[]> {

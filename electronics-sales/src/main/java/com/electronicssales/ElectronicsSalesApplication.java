@@ -34,5 +34,4 @@ public class ElectronicsSalesApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ElectronicsSalesApplication.class, args);
 	}
-
 }

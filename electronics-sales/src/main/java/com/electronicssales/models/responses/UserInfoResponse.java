@@ -1,7 +1,5 @@
 package com.electronicssales.models.responses;
 
-import java.util.Date;
-
 import javax.validation.constraints.NotBlank;
 
 import com.electronicssales.models.types.Role;
@@ -15,10 +13,10 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class UserInfoResponse extends RequiredUserInfoDto {
 
+    private Long id;
+
     @NotBlank
     private String username;
-
-    private Date birthday;
 
     private Long avartarId;
 

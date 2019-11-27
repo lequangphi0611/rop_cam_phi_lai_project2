@@ -16,7 +16,7 @@ export class CartDataService {
 
   private cartData = new Cart([]);
 
-  private cart = new BehaviorSubject<Cart>(this.cartData);
+  private cart = new BehaviorSubject<Cart>(null);
 
   cart$ = this.cart.asObservable();
 
@@ -24,8 +24,12 @@ export class CartDataService {
     @Inject(LOCAL_STORAGE) private localStorageService: StorageService
   ) {
     this.cart$
-      .pipe(filter(c => c.cartItems.length > 0))
+      .pipe(filter(cart => cart != null))
       .subscribe(() => this.saveCartToStorage());
+  }
+
+  initCart() {
+    this.cartData = new Cart([]);
   }
 
   getCartFromStorage() {
@@ -33,7 +37,6 @@ export class CartDataService {
   }
 
   saveCartToStorage(): void {
-    console.log('save cart', this.cartData);
     this.localStorageService.set(CartDataService.STORAGE_KEY, this.cartData);
   }
 
@@ -43,15 +46,14 @@ export class CartDataService {
       return;
     }
     this.cartData = new Cart(cartInStorage.cartItems.map(cartItem => {
+      // tslint:disable-next-line: radix
       cartItem.quantity = parseInt(`${cartItem.quantity}`);
       return cartItem;
     }));
-    console.log('đây nè',  this.cartData)
     this.cart.next(this.cartData);
   }
 
   push(product: ProductView, quantity = 1): boolean {
-    console.log(quantity);
     if (this.cartData.push(product, quantity)) {
       this.cart.next(this.cartData);
       return true;
@@ -71,6 +73,12 @@ export class CartDataService {
   remove(productId: number) {
     this.cartData.remove({productId, quantity : 1});
     this.cart.next(this.cartData);
+  }
+
+  clear() {
+    this.initCart();
+    this.cart.next(this.cartData);
+    this.localStorageService.remove(CartDataService.STORAGE_KEY);
   }
 
   get CartData() {

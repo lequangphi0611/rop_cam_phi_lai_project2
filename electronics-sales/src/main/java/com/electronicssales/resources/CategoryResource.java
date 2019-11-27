@@ -9,7 +9,6 @@ import javax.validation.Valid;
 import com.electronicssales.entities.Category;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.responses.BaseCategoryResponse;
-import com.electronicssales.models.responses.CategoryResponse;
 import com.electronicssales.models.types.CategoryFetchType;
 import com.electronicssales.services.CategoryService;
 import com.electronicssales.services.ManufacturerService;

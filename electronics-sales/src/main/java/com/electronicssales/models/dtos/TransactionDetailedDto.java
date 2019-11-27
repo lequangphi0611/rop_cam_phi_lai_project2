@@ -10,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransactionDetailedDto {
 
-    long transactionId;
-
     long productId;
 
     int quantity;

@@ -1,3 +1,4 @@
+import { Role } from './../models/types/role.type';
 import { UserDto } from './../models/dtos/user.dto';
 import { User } from './../models/view-model/user.view.model';
 import { AccountDto } from './../models/dtos/account.dto';
@@ -10,7 +11,7 @@ import { map, catchError } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class UserService {
   private static readonly LOGIN_REQUEST: string = '/api/login';
@@ -22,6 +23,11 @@ export class UserService {
   public static readonly USER_COOKIE_KEY = 'user';
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
+
+  mapUser(user: User): User {
+    user.birthday = new Date(user.birthday);
+    return user;
+  }
 
   login(loginRequest: AccountDto): Observable<AuthenticatedResponse> {
     return this.http
@@ -55,19 +61,22 @@ export class UserService {
       );
   }
 
-  getCurrentRole(): Observable<{ role: string }> {
-    return this.http.get<{ role: string }>('/api/accounts/roles');
+  getCurrentRole(): Observable<Role> {
+    return this.http.get<{ role: string }>('/api/accounts/roles').pipe(
+      map(result => result.role.toUpperCase()),
+      map(roleStr => Role[roleStr])
+    );
   }
 
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>('/api/accounts/current');
+    return this.http.get<User>('/api/accounts/current')
+    .pipe(map(this.mapUser));
   }
 
   existsByUsername(username: string): Observable<boolean> {
-    return this.http.head<any>(`/api/accounts/username/${username}`)
-      .pipe(
-        map(() => true),
-        catchError(() => of(false))
-      );
+    return this.http.head<any>(`/api/accounts/username/${username}`).pipe(
+      map(() => true),
+      catchError(() => of(false))
+    );
   }
 }

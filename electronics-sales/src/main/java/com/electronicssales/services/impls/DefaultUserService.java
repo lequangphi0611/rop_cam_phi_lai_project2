@@ -159,10 +159,10 @@ public class DefaultUserService implements UserService {
         @Override
         public UserInfoResponse mapping(User user) {
             UserInfoResponse userInfoResponse = new UserInfoResponse();
-
             UserInfo userInfo = user.getUserInfo();
 
             userInfoResponse.setId(user.getId());
+            userInfoResponse.setUserInfoId(user.getUserInfo().getId());
             userInfoResponse.setUsername(user.getUsername());
             userInfoResponse.setFirstname(userInfo.getFirstname());
             userInfoResponse.setLastname(userInfo.getLastname());

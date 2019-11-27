@@ -1,3 +1,5 @@
+import { TransactionService } from './services/transaction.service';
+import { UserInfoService } from './services/user-info.service';
 import { CartDataService } from './home/cart-data.service';
 import { ManufacturerService } from './services/manufacturer.service';
 import { CurrencyVNPipe } from './pipes/currency-vn.pipe';
@@ -48,7 +50,9 @@ import { StorageServiceModule } from 'ngx-webstorage-service';
     ProductService,
     ManufacturerService,
     StorageServiceModule,
-    CartDataService
+    CartDataService,
+    UserInfoService,
+    TransactionService
   ],
   bootstrap: [AppComponent],
 })
