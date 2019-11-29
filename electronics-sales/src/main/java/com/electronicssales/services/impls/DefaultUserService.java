@@ -8,6 +8,7 @@ import com.electronicssales.entities.Image;
 import com.electronicssales.entities.User;
 import com.electronicssales.entities.UserInfo;
 import com.electronicssales.models.UserPrincipal;
+import com.electronicssales.models.UserProjections;
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.responses.UserInfoResponse;
 import com.electronicssales.models.types.Role;
@@ -17,6 +18,8 @@ import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -105,6 +108,17 @@ public class DefaultUserService implements UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Override
+    public Page<UserProjections> fetchEmployees(String search, Pageable pageable) {
+        return this.userRepository.fetchAllEmployees(search, pageable);
+    }
+
+    @Transactional
+    @Override
+    public void updateActived(long userId, boolean actived) {
+        userRepository.updateActived(userId, actived);
+    }
+
     @Lazy
     @Component
     public class UserInfoMapper implements Mapper<UserInfo, UserDto> {
@@ -140,7 +154,10 @@ public class DefaultUserService implements UserService {
         @Override
         public User mapping(UserDto dto) {
             User user = new User();
-            user.setId(dto.getId());
+            System.out.println(dto);
+            if(dto.getId() != null) {
+                user.setId(dto.getId());
+            }
             user.setActived(true);
             user.setUsername(dto.getUsername());
             user.setPassword(passwordEncoder.encode(dto.getPassword()));

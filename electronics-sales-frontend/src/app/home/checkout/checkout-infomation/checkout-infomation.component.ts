@@ -15,12 +15,18 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subject, Observable, of } from 'rxjs';
 import { TransactionDetailedDto } from 'src/app/models/dtos/transaction-detailed.dto';
 
+import * as Regex from '../../../models/RegexPattern';
+
+const PHONE_REGEX_PATTERN = Regex.pattern.phone;
+
+const EMAIL_PATTERN = Regex.pattern.email;
+
 const CHECK_COUNT_FORM_BUILD_CONFIG = {
   firstname: ['', [Validators.required]],
   lastname: ['', [Validators.required]],
-  phoneNumber: ['', Validators.required],
-  email: ['', Validators.required],
-  address: ['', Validators.required]
+  phoneNumber: ['', [Validators.required, Validators.pattern(PHONE_REGEX_PATTERN)]],
+  email: ['', [Validators.required, Validators.pattern(EMAIL_PATTERN)]],
+  address: ['', [Validators.required]]
 };
 
 @Component({

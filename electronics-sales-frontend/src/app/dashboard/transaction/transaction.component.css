@@ -1,4 +1,8 @@
 .mat-column-address {
-  min-width: 300px;
+  min-width: 250px;
+}
+
+.mat-column-createdTime {
+  min-width: 150px;
 }
 

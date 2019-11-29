@@ -56,6 +56,11 @@ const routes: Routes = [
           import('./order-success/order-success.module').then(
             m => m.OrderSuccessModule
           )
+      },
+      {
+        path: 'my-account',
+        loadChildren: () =>
+          import('./my-account/my-account.module').then(m => m.MyAccountModule)
       }
     ]
   }

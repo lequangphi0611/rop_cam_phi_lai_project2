@@ -23,6 +23,7 @@ import javax.persistence.TemporalType;
 import com.electronicssales.models.types.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -69,6 +70,9 @@ public class Product {
     @Temporal(TemporalType.TIMESTAMP)   
     @UpdateTimestamp
     Date updatedTime;
+
+    @ColumnDefault("1")
+    boolean active;
 
     @OneToMany(
         mappedBy = "product",

@@ -1,0 +1,150 @@
+<h1 mat-dialog-title class="text-center text-dark h1 text-uppercase">
+  Nhân Viên
+</h1>
+
+<mat-dialog-content>
+  <div class="container w-100">
+    <div class="form-group d-flex justify-content-start">
+      <app-choose-images class="col-6 p-0"></app-choose-images>
+    </div>
+    <form class="w-100 p-0" [formGroup]="employeeForm">
+      <div class="form-group row">
+        <div class="from-group col-6 pl-0">
+          <mat-form-field class="col-12 p-0">
+            <mat-label>Họ</mat-label>
+            <input formControlName="lastname" matInput required />
+            <mat-error *ngIf="lasnameControl.hasError('required')">
+              Không để trống họ
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="from-group col-6 pr-0 ">
+          <mat-form-field class="col-12 p-0">
+            <mat-label>Tên</mat-label>
+            <input formControlName="firstname" matInput required />
+            <mat-error *ngIf="firstnameControl.hasError('required')">
+              Không để trống tên
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <mat-label class="mr-3">Giới tính : </mat-label>
+        <mat-radio-group
+          aria-label="Select an option"
+          color="warn"
+          formControlName="gender"
+        >
+          <mat-radio-button
+            *ngFor="let gender of genders"
+            class="mr-5"
+            [value]="gender"
+            >{{ isMale(gender) ? "Nam" : "Nữ" }}</mat-radio-button
+          >
+        </mat-radio-group>
+      </div>
+
+      <div class="form-group row">
+        <div class="form-group col-6 pl-0">
+          <mat-form-field class="col-12 p-0">
+            <mat-label>Tên đăng nhập</mat-label>
+            <input formControlName="username" matInput required />
+            <mat-error *ngIf="usernameControl.hasError('required')">
+              Không để trống tên đăng nhập
+            </mat-error>
+
+            <mat-error *ngIf="usernameControl.hasError('existsUsername')">
+              Tên đăng nhập đã tồn tại
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-group col-6 pr-0 ">
+          <mat-form-field class="col-12 p-0">
+            <mat-label>Mật khẩu</mat-label>
+            <input
+              formControlName="password"
+              type="password"
+              matInput
+              required
+              #passwordInput
+            />
+            <mat-error *ngIf="passwordControl.hasError('required')">
+              Không để trống mật khẩu
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-group p-0 row">
+        <mat-form-field class="col-12 p-0">
+          <mat-label>Ngày Sinh</mat-label>
+          <input
+            formControlName="birthday"
+            matInput
+            [matDatepicker]="birthdayPicker"
+            required
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="birthdayPicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #birthdayPicker></mat-datepicker>
+
+          <mat-error *ngIf="birthdayControl.hasError('required')">
+            Không để trống ngày sinh
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group p-0 row">
+        <mat-form-field class="col-12 p-0">
+          <mat-label>Số điện thoại</mat-label>
+          <input formControlName="phoneNumber" matInput required />
+
+          <mat-error *ngIf="phoneNumberControl.hasError('required')">
+            Không để trống số điện thoại
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group p-0 row">
+        <mat-form-field class="col-12 p-0">
+          <mat-label>email</mat-label>
+          <input formControlName="email" matInput required />
+
+          <mat-error *ngIf="emailControl.hasError('required')">
+            Không để trống email
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-group p-0 row">
+        <mat-form-field class="col-12 p-0">
+          <mat-label>Địa chỉ</mat-label>
+          <textarea formControlName="address" matInput required></textarea>
+
+          <mat-error *ngIf="addressControl.hasError('required')">
+            Không để trống địa chỉ
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="col-12 d-flex justify-content-end">
+    <button mat-raised-button (click)="cancle()">Đóng</button>
+    <button
+      [disabled]="employeeForm.invalid"
+      mat-raised-button
+      color="warn"
+      (click)="onSubmit()"
+    >
+      Lưu
+    </button>
+  </div>
+</mat-dialog-actions>

@@ -128,7 +128,7 @@
             >
               Không được để trống email
             </mat-error>
-            <mat-error *ngIf="registerForm.controls['email'].hasError('email')">
+            <mat-error *ngIf="registerForm.controls['email'].hasError('pattern')">
               email không khớp (vd : abc@gmail.com)
             </mat-error>
           </mat-form-field>

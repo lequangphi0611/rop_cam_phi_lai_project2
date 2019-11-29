@@ -33,7 +33,6 @@ export class DashboarGuardGuard implements CanActivate {
             this.route.navigate(['index']);
             return false;
           }
-          console.log('dashboard nè');
           return true;
         })
       );

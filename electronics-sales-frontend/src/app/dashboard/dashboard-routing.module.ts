@@ -1,3 +1,4 @@
+import { ManagerGuard } from './../manager.guard';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
@@ -40,6 +41,12 @@ const routes: Routes = [
           import('./transaction/transaction.module').then(
             m => m.TransactionModule
           )
+      },
+      {
+        path: 'employees',
+        canActivate: [ManagerGuard],
+        loadChildren: () =>
+          import('./employees/employees.module').then(m => m.EmployeesModule)
       }
     ]
   }

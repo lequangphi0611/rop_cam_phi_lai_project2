@@ -51,64 +51,34 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-            .cors()
-                .and()
-            .csrf()
-                .disable()
-            .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .and()
-            .authorizeRequests()
-            .antMatchers(
-                "/api/login", 
-                "/api/register"
-            )
-                .permitAll()
-            .antMatchers("/api/images/**")
-                .permitAll()
-            .antMatchers(HttpMethod.GET,"/api/categories/**")
-                .permitAll()
-            .antMatchers(HttpMethod.GET, "/api/manufacturers/**")
-                .permitAll()
-            .antMatchers(HttpMethod.GET, "/api/discounts/**")
-                .permitAll()  
-            .antMatchers(HttpMethod.POST, "/api/accounts")
-                .hasRole(MANAGER_ROLE)
-            .antMatchers(HttpMethod.HEAD, "/api/accounts/**")
-                .permitAll()
-            .antMatchers(HttpMethod.GET, "/api/products/**")
-                .permitAll()   
-            .antMatchers(HttpMethod.GET, "/api/comments/**")
-                .permitAll()
-            .antMatchers(HttpMethod.GET, "/api/parameter-types/**")
-                .permitAll()
-            .antMatchers("/api/user-infos/**")
-                .permitAll()
-            .antMatchers("/api/transactions/**")
-                .permitAll()
-            .antMatchers("/actuator/*")
-                .permitAll()
-            .anyRequest()
-                .authenticated()
-                .and()
-            .addFilterBefore(new CustomFilter(), ChannelProcessingFilter.class)
-            .addFilterBefore(jwtAuthentication, UsernamePasswordAuthenticationFilter.class);
+        http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and().authorizeRequests().antMatchers("/api/login", "/api/register").permitAll()
+                .antMatchers("/api/images/**").permitAll().antMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/manufacturers/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/discounts/**").permitAll()
+                .antMatchers(HttpMethod.HEAD, "/api/accounts/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/parameter-types/**").permitAll().antMatchers("/api/user-infos/**")
+                .permitAll().antMatchers("/api/transactions/**").permitAll().antMatchers("/actuator/*").permitAll()
+
+                .antMatchers(HttpMethod.POST, "/api/accounts/**").authenticated().anyRequest().authenticated().and()
+                .addFilterBefore(new CustomFilter(), ChannelProcessingFilter.class)
+                .addFilterBefore(jwtAuthentication, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .userDetailsService(userService)
-            .passwordEncoder(passwordEncoder);
-    }    
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+        configuration.setAllowedHeaders(
+                Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -131,6 +101,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new CorsFilter(source);
     }
 
-    
-    
 }

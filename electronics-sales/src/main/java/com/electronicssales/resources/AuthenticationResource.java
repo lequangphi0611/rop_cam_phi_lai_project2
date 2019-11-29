@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class AuthenticationResource {
 
-    private static final String TOKEN_PREFIX = "Bearer";
-
     private static final long JWT_EXPIRATION_TIME = 604800000L;
 
     @Lazy
@@ -71,14 +69,9 @@ public class AuthenticationResource {
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
-        String accessToken = new StringBuilder(TOKEN_PREFIX)
-            .append(" ")
-            .append(
-                jwtTokenService
+        String accessToken = jwtTokenService
                     .setJwtExpirationTime(JWT_EXPIRATION_TIME)
-                    .generate(userPrincipal.getUsername())
-            )
-            .toString();
+                    .generate(userPrincipal.getUsername());
         return ResponseEntity
             .ok(new UserAuthenticationResponse(
                 accessToken, 

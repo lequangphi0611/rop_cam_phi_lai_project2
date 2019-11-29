@@ -2,10 +2,10 @@
   <div class="nano">
     <div class="nano-content">
       <div class="logo">
-        <a href="Index.html">
+        <span href="Index.html">
           <!-- <img src="assets/images/logo.png" alt="" /> --><span
             >Infinity Shop</span
-          ></a
+          ></span
         >
       </div>
       <app-side-bar-item [sideBarItems]="sideBarItems"></app-side-bar-item>
@@ -27,41 +27,32 @@
         <div class="float-right">
           <ul>
             <li class="header-icon dib">
-              <i
-                class="fas fa-street-view"
-                title="Xem với tư cách khách hàng"
-              ></i>
-            </li>
-            <li class="header-icon dib">
-              <i class="fas fa-bell" title="Thông báo mới"></i>
-            </li>
-            <li class="header-icon dib">
-              <span class="user-avatar"
-                >Admin <i class="fas fa-sort-down"></i
-              ></span>
-              <div class="drop-down dropdown-profile">
-                <div class="dropdown-content-body">
-                  <ul>
-                    <li>
-                      <a href="#"
-                        ><i class="fas fa-user"></i>
-                        <span>Tài khoản của tôi</span></a
-                      >
-                    </li>
-                    <li>
-                      <a href="#"
-                        ><i class="fas fa-cogs"></i> <span>Cài đặt</span></a
-                      >
-                    </li>
-                    <li>
-                      <a href="#"
-                        ><i class="fas fa-sign-out-alt"></i>
-                        <span>Đăng xuất</span></a
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              <span
+                class="user-avatar"
+                (click)="menuButton._elementRef.nativeElement.click()"
+              >
+                <img
+                  class="header-avartar"
+                  onerror="this.src='/assets/img/avatar_user.png'"
+                  [src]="'/api/images/' + (userData.user$ | async)?.avartarId"
+                  alt=""
+                />
+                {{ (userData.user$ | async)?.firstname }}
+              </span>
+              <button #menuButton mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item>
+                  <mat-icon>info</mat-icon>
+                  <span>Tài khoản của tôi</span>
+                </button>
+                <button mat-menu-item (click)="openLogoutConfirm()">
+                  <mat-icon>exit_to_app</mat-icon>
+                  <span>Đăng xuất</span>
+                </button>
+              </mat-menu>
             </li>
           </ul>
         </div>

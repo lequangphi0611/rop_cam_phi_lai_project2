@@ -9,11 +9,19 @@
         <mat-form-field class="col" floatPlaceholder="auto" dividerColor="warn">
           <mat-label>Họ</mat-label>
           <input matInput formControlName="lastname" type="text" required />
+
+          <mat-error *ngIf="lastnameControl.hasError('required')">
+            Không được để trống họ
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field class="col" floatPlaceholder="auto" dividerColor="warn">
           <mat-label>Tên</mat-label>
-          <input matInput formControlName="firstname" type="text" required placeholder="Họ" />
+          <input matInput formControlName="firstname" type="text" required />
+
+          <mat-error *ngIf="firstnameControl.hasError('required')">
+            Không được để trống tên
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -26,6 +34,15 @@
         >
           <mat-label>Số Điện Thoại</mat-label>
           <input matInput formControlName="phoneNumber" type="text" required />
+
+          <mat-error *ngIf="phoneNumberControl.hasError('required')">
+            Không được để trống số điện thoại
+          </mat-error>
+
+          <mat-error *ngIf="phoneNumberControl.hasError('pattern')">
+            Số điện thoại không đúng (vd: 0773927601)
+          </mat-error>
+
         </mat-form-field>
       </div>
 
@@ -38,6 +55,14 @@
         >
           <mat-label>Email</mat-label>
           <input matInput formControlName="email" type="text" required />
+
+          <mat-error *ngIf="emailControl.hasError('required')">
+            Không được để trống email
+          </mat-error>
+
+          <mat-error *ngIf="emailControl.hasError('pattern')">
+            email không đúng định dạng (vd: abc@gmail.com)
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -49,6 +74,10 @@
         >
           <mat-label>Địa Chỉ</mat-label>
           <textarea matInput formControlName="address" type="text" required ></textarea>
+
+          <mat-error *ngIf="addressControl.hasError('required')">
+            Không được để trống địa chỉ
+          </mat-error>
         </mat-form-field>
       </div>
     </form>
@@ -56,7 +85,7 @@
 
   <mat-card-content>
     <div class="col-12 d-flex justify-content-center flex-column">
-      <button (click)="onSubmit()" color="warn" class="col-12 m-2 btn btn-danger btn-round">
+      <button [disabled]="checkoutForm.invalid" (click)="onSubmit()" color="warn" class="col-12 m-2 btn btn-danger btn-round">
         Thanh Toán
       </button>
       <a [hidden]="logined" [routerLink]="['/index', 'register']"  class="col-12 btn btn-link m-2">Đăng ký tài khoản</a>

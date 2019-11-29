@@ -1,0 +1,11 @@
+<div class="col-12 py-5">
+  <div class="col m-4">
+    <button mat-raised-button color="primary" (click)="openAddEmployeesDialog()">
+      <mat-icon class="mat-18">person_add</mat-icon> Thêm Nhân Viên
+  </button>
+  </div>
+
+  <div class="col-12 mt-2">
+    <app-employees-data [datasource]="datasource"></app-employees-data>
+  </div>
+</div>

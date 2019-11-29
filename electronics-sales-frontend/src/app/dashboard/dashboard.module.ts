@@ -1,3 +1,5 @@
+import { ConfirmModule } from './../confirm/confirm.module';
+import { MaterialModule } from './../material/material.module';
 import { OverviewsModule } from './overviews/overviews.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -11,7 +13,9 @@ import { SideBarItemComponent } from './side-bar-item/side-bar-item.component';
   declarations: [DashboardComponent, SideBarItemComponent],
   imports: [
     CommonModule,
-    DashboardRoutingModule
+    DashboardRoutingModule,
+    MaterialModule,
+    ConfirmModule
   ]
 })
 export class DashboardModule { }

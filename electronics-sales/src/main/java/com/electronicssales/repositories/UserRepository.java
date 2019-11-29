@@ -5,17 +5,20 @@ import java.util.Optional;
 import com.electronicssales.entities.User;
 import com.electronicssales.models.UserInfoIDOnly;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends MyCustomizeRepository<User, Long> {
+public interface UserRepository extends MyCustomizeRepository<User, Long>, CustomizeUserRepository {
 
     String FIND_BY_USERNAME_AND_FETCH_USERINFO_QUERY = "SELECT u FROM User u JOIN FETCH u.userInfo WHERE u.username = ?1";
 
     String FIND_BY_ID_AND_FETCH_USERINFO_QUERY = "SELECT u FROM User u JOIN FETCH u.userInfo WHERE u.id = ?1";
 
     String FIND_BY_ID = "SELECT u FROM User u WHERE u.id = ?1";
+
+    String UPDATE_ATIVED = "UPDATE users SET actived = ?2 WHERE id = ?1";
     
     Optional<User> findByUsername(String username);
 
@@ -29,5 +32,9 @@ public interface UserRepository extends MyCustomizeRepository<User, Long> {
 
     @Query(FIND_BY_ID)
     UserInfoIDOnly findUserInfoById(long userId);
+
+    @Modifying
+    @Query(value = UPDATE_ATIVED, nativeQuery = true)
+    void updateActived(long userId, boolean actived);
 
 }

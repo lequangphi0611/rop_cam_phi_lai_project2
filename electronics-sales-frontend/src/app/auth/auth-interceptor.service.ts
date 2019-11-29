@@ -4,6 +4,9 @@ import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 
+
+const TOKEN_PREFIX = 'Bearer';
+
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
 
@@ -21,7 +24,7 @@ export class AuthInterceptorService implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     request = request.clone({
       setHeaders: {
-        Authorization: `${this.getToken()}`
+        Authorization: `${TOKEN_PREFIX} ${this.getToken()}`
       }
     });
 

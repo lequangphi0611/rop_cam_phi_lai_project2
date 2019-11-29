@@ -40,6 +40,8 @@ const DISPLAY_COLUMN = [
 
 const FIVE_DAYS_MILISECOND = 1000 * 60 * 60 * 24 * 5;
 
+const DATE_TIME_FORMAT_PATTERN = 'HH:mm dd-MM-yyyy';
+
 @Component({
   selector: 'app-transaction',
   templateUrl: './transaction.component.html',
@@ -61,6 +63,8 @@ export class TransactionComponent implements OnInit, OnDestroy, AfterViewInit {
   fromDateControl = new FormControl();
 
   toDateControl = new FormControl();
+
+  dateFormat = DATE_TIME_FORMAT_PATTERN;
 
   constructor(private transactionService: TransactionService) {}
 

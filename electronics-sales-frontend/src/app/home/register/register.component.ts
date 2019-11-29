@@ -18,9 +18,13 @@ import { UserDto } from './../../models/dtos/user.dto';
 import { UserAuthenticatedService } from './../../services/user-authenticated.service';
 import { Subject, Observable, of } from 'rxjs';
 
+import * as Regex from './../../models/RegexPattern';
+
 const PASSWORD_MIN_LENGTH = 6;
 
-const PHONE_NUMBER_PATTERN = /^(0[0-9])+([0-9]{8,9})\b/i;
+const PHONE_NUMBER_PATTERN = Regex.pattern.phone;
+
+const EMAIL_PATTERN = Regex.pattern.email;
 
 const confirmPaswordValidator: ValidatorFn = (
   control: FormGroup
@@ -43,7 +47,7 @@ const registerLogin = {
   password: [null, [Validators.required, Validators.minLength(6)]],
   confirmPassword: [null, [Validators.required]],
   birthday: '1990-01-01',
-  email: [null, [Validators.required, Validators.email]],
+  email: [null, [Validators.required, Validators.pattern(EMAIL_PATTERN)]],
   phoneNumber: [
     null,
     [
@@ -119,7 +123,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   onUsernameInputChange() {
     const username = this.usernameControl.value;
-    if(username) {
+    if (username) {
       this.userService.existsByUsername(username)
         .pipe(takeUntil(this.destroy$)
         , filter(v => v))

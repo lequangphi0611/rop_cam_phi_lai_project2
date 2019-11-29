@@ -1,7 +1,10 @@
 <ul>
-  <li *ngFor="let item of sideBarItems" routerLinkActive="active">
+  <ng-container *ngFor="let item of sideBarItems">
+    <li routerLinkActive="active" *ngIf="accessRole(item?.roles)">
       <a [routerLink]="item.links"
-        ><i class="item-icon" [ngClass]="item.fontAwesomeClass"></i> {{ item.name }}
+        ><i class="item-icon" [ngClass]="item.fontAwesomeClass"></i>
+        {{ item.name }}
       </a>
-  </li>
+    </li>
+  </ng-container>
 </ul>
