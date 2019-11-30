@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.electronicssales.entities.Category;
+import com.electronicssales.models.CategoryIdAndNameOnly;
 import com.electronicssales.models.responses.ICategoryReponse;
 
 import org.springframework.data.domain.Pageable;
@@ -43,6 +44,8 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     String FIND_BY_PRODUCT_ID = "SELECT c FROM Category c JOIN c.productCategories pc WHERE pc.product.id = ?1";
 
     String DELETE_ALL_CATEGORY_PARAMETER_TYPES_BYCATEGORY = "DELETE FROM categories_parameter_types WHERE category_id = ?1";
+
+    String FIND_PARENT_ONLY = "SELECT c.id as id, c.categoryName as name FROM Category c WHERE c.parent.id IS NULL";
 
     boolean existsByCategoryName(String categoryName);
 
@@ -85,5 +88,8 @@ public interface CategoryRepository extends MyCustomizeRepository<Category, Long
     @Query(value = DELETE_ALL_CATEGORY_PARAMETER_TYPES_BYCATEGORY, nativeQuery = true)
     @Modifying
     void deleteAllCategoryParameterTypeBy(long categoryId);
+
+    @Query(FIND_PARENT_ONLY)
+    List<CategoryIdAndNameOnly> findParentOnly(); 
 
 }

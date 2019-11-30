@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 
 import com.electronicssales.entities.Discount;
 import com.electronicssales.entities.Product;
+import com.electronicssales.models.DiscountFetchOption;
+import com.electronicssales.models.DiscountProjections;
 import com.electronicssales.models.dtos.DiscountDto;
 import com.electronicssales.models.responses.DiscountFullResponse;
 import com.electronicssales.models.responses.DiscountResponse;
@@ -20,6 +22,8 @@ import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +108,11 @@ public class DefaultDiscountService implements DiscountService {
     }
 
     @Override
+    public Page<DiscountProjections> fetchAll(DiscountFetchOption option, Pageable pageable) {
+        return discountRepository.fetchDiscounts(option, pageable);
+    }
+
+    @Override
     public Optional<Discount> findById(long id) {
         return discountRepository
             .findById(id)
@@ -122,7 +131,6 @@ public class DefaultDiscountService implements DiscountService {
                 .orElse(DiscountType.PERCENT);
             // Optiona
             discount.setDiscountType(discountType);
-            discount.setStartedTime(discountDto.getStatedTime());
             discount.setDiscountValue(discountDto.getDiscountValue());
             return discount;
         }
@@ -156,10 +164,6 @@ public class DefaultDiscountService implements DiscountService {
 
         @Autowired
         private ProductRepository productRepository;
-
-        public DiscountFullResponseMapper() {
-            System.out.println("CReated Mapper reponse !");
-        }
 
         @Override
         public DiscountFullResponse mapping(Discount discount) {

@@ -1,7 +1,6 @@
 package com.electronicssales.models.dtos;
 
 import java.util.Collection;
-import java.util.Date;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -16,8 +15,6 @@ public class DiscountDto {
     private long discountValue;
 
     private String discountType;
-
-    private Date statedTime;
 
     Collection<Long> productIds;
     

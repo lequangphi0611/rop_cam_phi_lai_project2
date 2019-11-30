@@ -1,8 +1,15 @@
 package com.electronicssales;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import com.electronicssales.models.ProductNameAndIdOnly;
+import com.electronicssales.repositories.ProductRepository;
 import com.electronicssales.repositories.impl.DefaultMyCustomizeRepositoryImpl;
+import com.electronicssales.services.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -34,4 +41,13 @@ public class ElectronicsSalesApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ElectronicsSalesApplication.class, args);
 	}
+
+	@Autowired
+	private CategoryService categoryService;
+
+	@Bean
+    public void test() {
+		categoryService.fetchCategoriesGroupProducts().forEach(System.out::println);
+    }
+
 }

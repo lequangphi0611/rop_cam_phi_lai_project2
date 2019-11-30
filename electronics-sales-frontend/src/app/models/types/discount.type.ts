@@ -5,3 +5,5 @@ export enum DiscountType {
   AMOUNT = 'AMOUNT'
 
 }
+
+export const DISCOUNT_TYPES = [DiscountType.PERCENT, DiscountType.AMOUNT];

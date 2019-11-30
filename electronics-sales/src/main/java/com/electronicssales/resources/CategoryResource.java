@@ -95,6 +95,11 @@ public class CategoryResource {
         };
     }
 
+    @GetMapping("group/products")
+    public  Callable<ResponseEntity<?>> fetchCategoriesAndGroupByproduct() {
+        return () -> ResponseEntity.ok(this.categoryService.fetchCategoriesGroupProducts());
+    }
+
     @GetMapping("/products-sellable")
     public Callable<ResponseEntity<?>> fetchCategoriesHasProductSellable() {
         return () -> ResponseEntity.ok(this.categoryService.fetchCategoriesHasProductSellable());

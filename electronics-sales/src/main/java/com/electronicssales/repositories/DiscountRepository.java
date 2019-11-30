@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DiscountRepository 
-    extends MyCustomizeRepository<Discount, Long> {
+    extends MyCustomizeRepository<Discount, Long>, CustomizeDiscountRepository {
 
     String FIND_ALL_QUERY = "SELECT d FROM Discount d ORDER BY d.startedTime DESC";
     

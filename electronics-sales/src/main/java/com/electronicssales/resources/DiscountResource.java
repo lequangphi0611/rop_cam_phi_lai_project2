@@ -3,6 +3,7 @@ package com.electronicssales.resources;
 import java.util.concurrent.Callable;
 
 import com.electronicssales.entities.Discount;
+import com.electronicssales.models.DiscountFetchOption;
 import com.electronicssales.models.dtos.DiscountDto;
 import com.electronicssales.models.responses.DiscountFullResponse;
 import com.electronicssales.models.responses.DiscountResponse;
@@ -11,6 +12,7 @@ import com.electronicssales.utils.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +39,12 @@ public class DiscountResource {
     @Autowired
     private Mapper<DiscountFullResponse, Discount> discountFullResponseMapper;
 
+    @GetMapping
+    public Callable<ResponseEntity<?>> fetchAll(Pageable pageable) {
+        DiscountFetchOption option = new DiscountFetchOption();
+        return () -> ResponseEntity.ok(discountService.fetchAll(option, pageable));
+    }
+
     @PostMapping
     public Callable<ResponseEntity<?>> createDiscount(@RequestBody DiscountDto discountDto) {
         return () -> ResponseEntity
@@ -54,11 +62,11 @@ public class DiscountResource {
             .ok(discountResponseMapper.mapping(discountService.updateDiscount(discountDto)));
     }
 
-    @GetMapping
-    public Callable<ResponseEntity<?>> fetchDiscounts() {
-        return () -> ResponseEntity
-            .ok(discountService.fetchDiscounts());
-    }
+    // @GetMapping
+    // public Callable<ResponseEntity<?>> fetchDiscounts() {
+    //     return () -> ResponseEntity
+    //         .ok(discountService.fetchDiscounts());
+    // }
 
     @GetMapping("/{id}/products")
     public Callable<ResponseEntity<?>> fetchProducts(@PathVariable("id") long discountId) {

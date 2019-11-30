@@ -39,6 +39,12 @@ const SIDE_BAR_ITEMS: SideBarItem[] = [
     roles: DASHBOARD_ROLE
   },
   {
+    name: 'Giảm Giá',
+    fontAwesomeClass: 'fas fa-tags',
+    links: [`discounts`],
+    roles: DASHBOARD_ROLE
+  },
+  {
     name: 'Sản phẩm',
     fontAwesomeClass: 'fas fa-shopping-cart',
     links: [`product`],

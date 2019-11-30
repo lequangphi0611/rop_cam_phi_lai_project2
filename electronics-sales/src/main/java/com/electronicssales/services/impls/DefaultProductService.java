@@ -252,6 +252,10 @@ public class DefaultProductService implements ProductService {
             if (manufacturerOptional.isPresent()) {
                 productResponse.setManufacturerId(manufacturerOptional.map(manufacturer -> manufacturer.getId()).get());
             }
+            Optional<Discount> discount = Optional.ofNullable(product.getDiscount());
+            if(discount.isPresent()) {
+                discount.map(Discount::getId).ifPresent(productResponse::setDiscountId);
+            }
             productResponse.setCreatedTime(product.getCreatedTime());
             productResponse.setUpdatedTime(product.getUpdatedTime());
             return productResponse;

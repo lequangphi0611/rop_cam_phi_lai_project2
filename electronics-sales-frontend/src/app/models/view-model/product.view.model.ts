@@ -1,3 +1,4 @@
+import { tap } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 import { DiscountType } from '../types/discount.type';
 import { ProductService } from './../../services/product.service';
@@ -20,6 +21,8 @@ export interface IProduct {
 
   manufacturerId?: number;
 
+  discountId?: number;
+
   discount?: DiscountView;
 }
 export class ProductView {
@@ -29,16 +32,18 @@ export class ProductView {
     public price: number,
     public quantity: number,
     public productService: ProductService,
-    public createdTime?: Date,
-    public updatedTime?: Date,
-    public manufacturerId?: number
+    public createdTime: Date,
+    public updatedTime: Date,
+    public manufacturerId: number,
+    public discountId: number
   ) {
     this.fetchImages();
     this.fetchProductDescriptions();
+    this.fetchDiscount();
   }
 
   get discount() {
-    return null;
+    return this.Discount;
   }
   images$ = new BehaviorSubject<ImageView[]>([]);
 
@@ -55,7 +60,8 @@ export class ProductView {
       productService,
       iProduct.createdTime,
       iProduct.updatedTime,
-      iProduct.manufacturerId
+      iProduct.manufacturerId,
+      iProduct.discountId
     );
   }
 
@@ -63,6 +69,14 @@ export class ProductView {
     this.productService.getDescriptions(this.id).subscribe(descriptions => {
       this.Descriptions = descriptions;
     });
+  }
+
+  fetchDiscount() {
+    if (!this.discountId) {
+      return;
+    }
+    this.productService.getDiscount(this.discountId)
+      .subscribe(v => this.Discount = v);
   }
 
   get descriptions() {

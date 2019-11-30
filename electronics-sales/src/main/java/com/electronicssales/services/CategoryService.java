@@ -3,9 +3,11 @@ package com.electronicssales.services;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.ParameterType;
+import com.electronicssales.models.CategoryProjections;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.responses.BaseCategoryResponse;
 import com.electronicssales.models.responses.CategoryResponse;
@@ -39,5 +41,7 @@ public interface CategoryService {
     List<CategoryResponse> fetchChildrensOf(long parentId, String nameQuery);
 
     List<ParameterType> fetchParameterTypeByCategoryId(long categoryId);
+
+    Set<CategoryProjections> fetchCategoriesGroupProducts();
 
 }

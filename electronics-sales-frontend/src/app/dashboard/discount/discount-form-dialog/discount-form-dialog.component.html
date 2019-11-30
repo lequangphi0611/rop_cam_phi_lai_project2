@@ -1,0 +1,110 @@
+<h2 matDialogTitle align="center">Giảm Giá</h2>
+<mat-dialog-content class="p-2 dialogContent">
+  <form [formGroup]="discountForm">
+    <mat-radio-group
+      formControlName="discountType"
+      #discountTypeOption
+      class="d-flex justify-content-center"
+      aria-label="Select an option"
+    >
+      <mat-radio-button
+        *ngFor="let type of discountTypes"
+        class="mx-4"
+        [value]="type"
+        >{{ discountTypeToString(type) }}</mat-radio-button
+      >
+    </mat-radio-group>
+
+    <div class="from-group col-12">
+      <mat-form-field class="col-12 p-0">
+        <mat-label>Giá trị</mat-label>
+        <input
+          type="number"
+          [min]="minDiscountValue"
+          [max]="maxDiscountValue"
+          formControlName="discountValue"
+          matInput
+          required
+        />
+        <strong matSuffix>{{ suffix }}</strong>
+
+        <mat-error *ngIf="discountValueControl.hasError('required')">
+          không để trống giá trị !
+        </mat-error>
+
+        <mat-error *ngIf="discountValueControl.hasError('min')">
+          Giá trị phải lớn hơn {{ minDiscountValue }}
+        </mat-error>
+
+        <mat-error *ngIf="discountValueControl.hasError('max')">
+          Giá trị của giảm giá không vượt quá {{ maxDiscountValue }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="from-group col-12">
+      <mat-form-field class="col-12 p-0">
+        <mat-label>Sản phẩm</mat-label>
+        <mat-select
+          #productsSelect
+          formControlName="products"
+          multiple
+          required
+          [compareWith]="compartProduct"
+        >
+          <mat-select-trigger *ngIf="productsControl.value as productsValue">
+            {{ productsValue ? productsValue[0]?.name : "" }}
+            <span
+              *ngIf="productsValue.length > 1"
+              class="example-additional-selection"
+            >
+              (+{{ productsValue.length - 1 }} sản phẩm khác)
+            </span>
+          </mat-select-trigger>
+          <mat-optgroup
+            *ngFor="let category of categoriesProducts$ | async"
+            [label]="category.name"
+          >
+            <mat-option
+              *ngFor="let product of category.products"
+              [value]="product"
+            >
+              {{ product.name }}
+            </mat-option>
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="form-group col-12 row">
+        <mat-chip-list
+          class="row col-12"
+          #chipList
+          *ngIf="productsControl.value as products"
+        >
+          <mat-chip
+            *ngFor="let product of products"
+            selectable="true"
+            removable="true"
+            (removed)="removedProduct(product)"
+            [matTooltip]="product.name.length > 10 ? product.name : ''"
+          >
+            {{ product.name | cutString: 10 }}
+            <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+          </mat-chip>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="productsSelect.toggle()"
+          >
+            <mat-icon class="mat-18">add_circle</mat-icon>
+          </button>
+        </mat-chip-list>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions [attr.align]="'end'">
+  <button mat-raised-button matDialogClose>Đóng</button>
+  <button mat-raised-button [disabled]="discountForm.invalid" color="warn" (click)="onSubmit()">Lưu</button>
+</mat-dialog-actions>

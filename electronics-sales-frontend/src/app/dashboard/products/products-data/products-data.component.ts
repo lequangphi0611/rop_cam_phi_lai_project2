@@ -248,9 +248,10 @@ export class ProductDataView extends ProductView {
     public quantity: number,
     private manufacturerService: ManufacturerService,
     public productService: ProductService,
-    public createdTime?: Date,
-    public updatedTime?: Date,
-    public manufacturerId?: number
+    public createdTime: Date,
+    public updatedTime: Date,
+    public manufacturerId: number,
+    public discountId: number
   ) {
     super(
       id,
@@ -260,7 +261,8 @@ export class ProductDataView extends ProductView {
       productService,
       createdTime,
       updatedTime,
-      manufacturerId
+      manufacturerId,
+      discountId
     );
     if (manufacturerId != null) {
       this.manufacturerService
@@ -291,7 +293,8 @@ export class ProductDataView extends ProductView {
       productService,
       product.createdTime,
       product.updatedTime,
-      product.manufacturerId
+      product.manufacturerId,
+      product.discountId
     );
   }
 }

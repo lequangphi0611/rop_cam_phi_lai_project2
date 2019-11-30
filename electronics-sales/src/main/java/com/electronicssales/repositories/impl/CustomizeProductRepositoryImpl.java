@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import com.electronicssales.entities.Product;
+import com.electronicssales.models.ProductNameAndIdOnly;
 import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.types.DiscountType;
 import com.electronicssales.models.types.FetchProductType;
@@ -19,10 +20,12 @@ import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.ProductStatus;
 import com.electronicssales.models.types.SortType;
 import com.electronicssales.repositories.CustomizeProductRepository;
+import com.electronicssales.repositories.ProductRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -44,7 +47,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     private EntityManager entityManager;
 
     private static final String[] PRODUCT_COLUMNS_STRING = { "id", "productName", "price", "quantity", "status",
-            "createdTime", "updatedTime", "manufacturer", "discount"};
+            "createdTime", "updatedTime", "manufacturer", "discount" };
 
     private static final String[] DISCOUNT_COLUMNS_STRING = { "id", "discountValue", "startedTime", "discountType" };
 
@@ -76,15 +79,14 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         LOGGER.info("My JPQL Builded : {}", sqlbuilded);
 
         int firstResultIndex = option.getPageable().getPageNumber() * option.getPageable().getPageSize();
-        Query query = entityManager.createQuery(sqlbuilded.toString(), Product.class)
-            .setFirstResult(firstResultIndex)
-            .setMaxResults(option.getPageable().getPageSize());
+        Query query = entityManager.createQuery(sqlbuilded.toString(), Product.class).setFirstResult(firstResultIndex)
+                .setMaxResults(option.getPageable().getPageSize());
 
         parameters.forEach(query::setParameter);
 
         return (List<Product>) query.getResultList();
     }
-
+    
     @Override
     public long countBy(FetchProductOption option) {
         Map<String, Object> parameters = new HashMap<>();
@@ -105,7 +107,8 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         return entityManager.createQuery(builder.toString(), Long.class).getSingleResult();
     }
 
-    private StringBuilder buildFetchProductsQueryBy(StringBuilder initBuilder, FetchProductOption option, Map<String, Object> parameters) {
+    private StringBuilder buildFetchProductsQueryBy(StringBuilder initBuilder, FetchProductOption option,
+            Map<String, Object> parameters) {
         StringBuilder builder = initBuilder;
 
         // JOIN
@@ -126,8 +129,6 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
         builder.append(buildOrderBy(option.getProductSortType(), option.getSortType()));
         return builder;
     }
-
-    
 
     private StringBuilder buildConditionsQuery(StringBuilder builder, FetchProductOption option,
             Map<String, Object> parameters) {
@@ -162,17 +163,15 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
 
     private StringBuilder initQuery() {
         StringBuilder builder = new StringBuilder("SELECT ");
-        
-        builder
-                .append(PRODUCT_PREFIX)
-                .append(" FROM ")
-                .append(Product.class.getSimpleName()).append(" ").append(PRODUCT_PREFIX);
+
+        builder.append(PRODUCT_PREFIX).append(" FROM ").append(Product.class.getSimpleName()).append(" ")
+                .append(PRODUCT_PREFIX);
         return builder;
     }
 
     private StringBuilder countProductQuery() {
         return new StringBuilder("SELECT COUNT(").append(PRODUCT_PREFIX).append(") FROM ")
-        .append(Product.class.getSimpleName()).append(" ").append(PRODUCT_PREFIX);
+                .append(Product.class.getSimpleName()).append(" ").append(PRODUCT_PREFIX);
     }
 
     private StringBuilder buildJoin(StringBuilder builder, FetchProductOption option) {
@@ -221,7 +220,8 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     }
 
     private StringBuilder buildConditionsByFetchTypeEqualsUnselling() {
-        return new StringBuilder(PRODUCT_COLUMNS.get("status")).append(" = ").append(ProductStatus.UNSELLABLE.getValue());
+        return new StringBuilder(PRODUCT_COLUMNS.get("status")).append(" = ")
+                .append(ProductStatus.UNSELLABLE.getValue());
     }
 
     private StringBuilder buildOrderBy(ProductSortType productSortType, SortType sortType) {

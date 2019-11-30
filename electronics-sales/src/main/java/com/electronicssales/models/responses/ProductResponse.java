@@ -24,4 +24,6 @@ public class ProductResponse {
 
     Date updatedTime;
 
+    Long discountId;
+
 }

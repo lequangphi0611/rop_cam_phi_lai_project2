@@ -11,4 +11,6 @@ export interface DiscountView {
 
   startedTime: Date;
 
+  productCount?: number;
+
 }

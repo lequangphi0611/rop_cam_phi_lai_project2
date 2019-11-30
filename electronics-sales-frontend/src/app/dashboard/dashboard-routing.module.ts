@@ -47,9 +47,11 @@ const routes: Routes = [
         canActivate: [ManagerGuard],
         loadChildren: () =>
           import('./employees/employees.module').then(m => m.EmployeesModule)
-      }
+      },
+      { path: 'discounts', loadChildren: () => import('./discount/discount.module').then(m => m.DiscountModule) }
     ]
-  }
+  },
+
 ];
 
 @NgModule({

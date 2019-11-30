@@ -12,6 +12,7 @@ import { ProductDto } from './../models/dtos/product.dto';
 import { FetchProductOption } from './../models/fetch-product-option.model';
 import { Page } from './../models/page.model';
 import { ProductParameterView } from './../models/view-model/product-parameter.view';
+import { DiscountService } from './discount.service';
 
 const AMPERSAND = '&';
 
@@ -23,7 +24,7 @@ const QUESTION_MARK = '?';
 export class ProductService {
   private static readonly BASE_REQUEST = `/api/products`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private discountService: DiscountService) {}
 
   fetchProduct(option: FetchProductOption): Observable<ProductView[]> {
     return this.http.get<ProductView[]>(this.buildRequestUrlFrom(option)).pipe(
@@ -71,8 +72,8 @@ export class ProductService {
     return this.http.delete(`${ProductService.BASE_REQUEST}/${productId}`);
   }
 
-  getDiscount(productId: number): Observable<DiscountView> {
-    return null;
+  getDiscount(discountId: number): Observable<DiscountView> {
+    return this.discountService.getById(discountId);
   }
 
   existsByName(name: string): Observable<boolean> {

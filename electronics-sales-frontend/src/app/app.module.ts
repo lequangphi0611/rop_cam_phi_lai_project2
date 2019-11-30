@@ -21,6 +21,7 @@ import { ProductService } from './services/product.service';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 import { StorageServiceModule } from 'ngx-webstorage-service';
+import { DiscountService } from './services/discount.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -47,6 +48,7 @@ import { StorageServiceModule } from 'ngx-webstorage-service';
     CategoryService,
     AuthInterceptorService,
     UserAuthenticatedService,
+    DiscountService,
     ProductService,
     ManufacturerService,
     StorageServiceModule,

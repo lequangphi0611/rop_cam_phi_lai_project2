@@ -46,13 +46,14 @@ export class EmployeesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.datasource = new EmployeeDataSource(this.userService);
-  }
 
-  ngAfterViewInit(): void {
     this.fetchEmployeeOption$.subscribe(option => {
       this.currentOption = option;
       this.datasource.load(this.currentOption);
     });
+  }
+
+  ngAfterViewInit(): void {
 
     this.employeesDataComponent.pageChange
       .pipe(

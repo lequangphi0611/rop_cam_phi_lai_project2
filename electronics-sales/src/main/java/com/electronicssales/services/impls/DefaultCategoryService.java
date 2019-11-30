@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.CategoryManufacturer;
 import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.entities.ParameterType;
+import com.electronicssales.models.CategoryIdAndNameOnly;
+import com.electronicssales.models.CategoryProjections;
+import com.electronicssales.models.ProductNameAndIdOnly;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.dtos.ManufacturerDto;
 import com.electronicssales.models.responses.BaseCategoryResponse;
@@ -18,6 +23,7 @@ import com.electronicssales.models.responses.ICategoryReponse;
 import com.electronicssales.repositories.CategoryRepository;
 import com.electronicssales.repositories.ParameterTypeRepository;
 import com.electronicssales.repositories.ProductCategoryRepository;
+import com.electronicssales.repositories.ProductRepository;
 import com.electronicssales.services.CategoryService;
 import com.electronicssales.utils.Mapper;
 
@@ -35,6 +41,9 @@ public class DefaultCategoryService implements CategoryService {
     @Lazy
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Lazy
     @Autowired
@@ -126,6 +135,21 @@ public class DefaultCategoryService implements CategoryService {
         List<CategoryResponse> categoryResponses = categoryRepository.fetchCategoriesHasProductSellable().stream()
                 .map(categoryResponseMapper::mapping).collect(Collectors.toList());
         return groupingCategoryResponse(categoryResponses);
+    }
+
+    @Override
+    public Set<CategoryProjections> fetchCategoriesGroupProducts() {
+        return categoryRepository.findParentOnly()
+            .stream()
+            .map(c -> {
+                CategoryProjections category = new CategoryProjections();
+                category.setId(c.getId());
+                category.setName(c.getName());
+                category.setProducts(productRepository.findAllByDiscountNotAvailable(c.getId()));
+                return category;
+            })
+            .filter(c -> !c.getProducts().isEmpty())
+            .collect(Collectors.toSet());
     }
 
     @Override

@@ -1,3 +1,4 @@
+import { CategoryProductReceiver } from './../models/category-and-product-receive.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -5,6 +6,7 @@ import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { CategoryDto } from '../models/dtos/category.dto';
 import { ParameterTypeDto } from './../models/dtos/paramter-type.dto';
 import { ManufacturerView } from './../models/view-model/manufacturer.view.model';
+import { hostViewClassName } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +18,10 @@ export class CategoryService {
 
   fetchCategories(): Observable<CategoryView[]> {
     return this.http.get<CategoryView[]>(`${CategoryService.BASE_REQUEST}`);
+  }
+
+  fetchCategoiesProducts(): Observable<CategoryProductReceiver[]> {
+    return this.http.get<CategoryProductReceiver[]>(`${CategoryService.BASE_REQUEST}/group/products`);
   }
 
   fetchCategoriesHasProductSellable(): Observable<CategoryView[]> {
