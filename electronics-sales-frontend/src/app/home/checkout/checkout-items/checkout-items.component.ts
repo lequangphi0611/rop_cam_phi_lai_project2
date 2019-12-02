@@ -1,4 +1,4 @@
-import { CheckoutItemView } from './../checkout.component';
+import { CartDataView } from './../../../models/cart-item-data.view.model';
 import { Component, Input, OnInit } from '@angular/core';
 import { ProductService } from './../../../services/product.service';
 import { CartDataService } from './../../cart-data.service';
@@ -9,7 +9,7 @@ import { CartDataService } from './../../cart-data.service';
   styleUrls: ['./checkout-items.component.css']
 })
 export class CheckoutItemsComponent implements OnInit {
-  @Input() checkoutItems: CheckoutItemView[] = [];
+  @Input() checkoutItems: CartDataView[] = [];
 
   constructor(
     private cartData: CartDataService,

@@ -7,15 +7,19 @@
     <div class="order-summary px-5">
       <div class="order-col">
         <div><strong class="text-uppercase">Sản phẩm</strong></div>
-        <div><strong class="text-uppercase"></strong></div>
-        <div><strong class="text-uppercase">Thành tiền</strong></div>
+        <div  class="text-right"><strong class="text-uppercase text-right">Số lượng</strong></div>
+        <div  class="text-right"><strong class="text-uppercase text-right">Thành tiền</strong></div>
+        <div  class="text-right"><strong class="text-uppercase text-right">Giảm</strong></div>
+        <div  class="text-right"> <strong class="text-uppercase text-right">Tổng tiền</strong></div>
       </div>
 
       <div class="order-products">
         <div class="order-col order-items" *ngFor="let item of checkoutItems; trackBy: item?.productId">
-          <div *ngIf="item.product as product" [matTooltip]="product.productName" >{{ product.productName | cutString: 20 }}</div>
-          <div class="ml-3">x{{ item.quantity }}</div>
-          <div>{{ item.total | currencyvn }}</div>
+          <div class="productName-info" *ngIf="item.product as product" [matTooltip]="product.productName" >{{ product.productName | cutString: 20 }}</div>
+          <div class="text-right">x{{ item.quantity }}</div>
+          <div class="text-right">{{ item.subTotal | currencyvn }}</div>
+          <div class="text-right">{{ item.sumDiscount | currencyvn }}</div>
+          <div class="text-right">{{ item.total | currencyvn }}</div>
         </div>
       </div>
       <div class="col-12 p-4">

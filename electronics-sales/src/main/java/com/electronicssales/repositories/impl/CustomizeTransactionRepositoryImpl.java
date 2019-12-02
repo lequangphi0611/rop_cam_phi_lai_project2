@@ -29,7 +29,7 @@ public class CustomizeTransactionRepositoryImpl implements CustomizeTransactionR
             + " CONCAT(u.lastname, ' ', u.firstname) as fullname, u.email as email, u.phone_number as phoneNumber,"
             + " u.address as address, SUM(ts.price * quantity) as subTotal, SUM((CASE ts.discount_type"
             + " WHEN 'PERCENT' THEN (ts.price * ts.discount_value / 100) WHEN 'AMOUNT' THEN ts.discount_value"
-            + " ELSE 0 END)) as discountTotal, SUM((ts.price - (CASE ts.discount_type WHEN 'PERCENT'"
+            + " ELSE 0 END) * ts.quantity) as discountTotal, SUM((ts.price - (CASE ts.discount_type WHEN 'PERCENT'"
             + " THEN (ts.price * ts.discount_value / 100) WHEN 'AMOUNT' THEN ts.discount_value ELSE 0"
             + " END)) * ts.quantity) as sumTotal FROM transactions t INNER JOIN user_infos u"
             + " ON t.customer_id = u.id INNER JOIN transaction_detaileds ts ON t.id = ts.transaction_id";

@@ -1,8 +1,8 @@
+import { CartDataView } from './../../../models/cart-item-data.view.model';
 import { Router } from '@angular/router';
 import { CartDataService } from './../../cart-data.service';
 import { UserInfo } from './../../../models/user-info.model';
 import { DiscountType } from './../../../models/types/discount.type';
-import { CheckoutItemView } from './../checkout.component';
 import { TransactionDto } from './../../../models/dtos/transaction.dto';
 import { TransactionService } from './../../../services/transaction.service';
 import { UserInfoService } from './../../../services/user-info.service';
@@ -35,7 +35,7 @@ const CHECK_COUNT_FORM_BUILD_CONFIG = {
   styleUrls: ['./checkout-infomation.component.css']
 })
 export class CheckoutInfomationComponent implements OnInit, OnDestroy {
-  @Input() checkoutItems: CheckoutItemView[] = [];
+  @Input() checkoutItems: CartDataView[] = [];
 
   checkoutForm: FormGroup;
 
@@ -132,14 +132,11 @@ export class CheckoutInfomationComponent implements OnInit, OnDestroy {
   }
 
   mapCheckoutItemToTransactionDetailed(
-    checkoutItem: CheckoutItemView
+    checkoutItem: CartDataView
   ): TransactionDetailedDto {
     const { productId, quantity, product } = checkoutItem;
     const { price, discount } = product;
-    let { discountType, discountValue } = {
-      discountType: null,
-      discountValue: null
-    };
+    let { discountType, discountValue } = discount;
     if (discount) {
       discountType = discount.discountType;
       discountValue = discount.discountValue;

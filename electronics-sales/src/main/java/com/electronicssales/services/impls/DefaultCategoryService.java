@@ -107,7 +107,7 @@ public class DefaultCategoryService implements CategoryService {
     public List<CategoryResponse> groupingCategoryResponse(Collection<CategoryResponse> categoryResponses) {
         List<CategoryResponse> parents = new ArrayList<>();
         List<CategoryResponse> childs = new ArrayList<>();
-        categoryResponses.parallelStream().forEach(categoryResponse -> {
+        categoryResponses.stream().forEach(categoryResponse -> {
             if (categoryResponse.getParentId() == null) {
                 parents.add(categoryResponse);
             } else {

@@ -26,10 +26,24 @@ export class CartDataView {
     return new CartDataView(productId, quantity, productService);
   }
 
-  get total(): number {
+  get sumDiscount() {
+    if (!this.product) {
+      return 0;
+    }
+    return this.product.getDiscountPrice() * this.quantity;
+  }
+
+  get subTotal() {
     if (!this.product) {
       return 0;
     }
     return this.product.price * this.quantity;
+  }
+
+  get total(): number {
+    if (!this.product) {
+      return 0;
+    }
+    return this.subTotal - this.sumDiscount;
   }
 }
