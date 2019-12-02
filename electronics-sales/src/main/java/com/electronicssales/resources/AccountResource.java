@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import javax.validation.Valid;
-
 import com.electronicssales.entities.User;
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.responses.UserInfoResponse;

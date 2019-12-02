@@ -3,7 +3,6 @@ package com.electronicssales.repositories;
 import java.util.List;
 
 import com.electronicssales.entities.Product;
-import com.electronicssales.models.ProductNameAndIdOnly;
 import com.electronicssales.models.responses.FetchProductOption;
 
 public interface CustomizeProductRepository {
@@ -14,6 +13,4 @@ public interface CustomizeProductRepository {
 
     long countAll();
 
-    // List<ProductNameAndIdOnly> findAllByDiscountNotAvailable();
-    
 }

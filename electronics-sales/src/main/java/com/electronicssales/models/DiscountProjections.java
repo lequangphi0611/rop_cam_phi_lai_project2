@@ -9,7 +9,7 @@ public class DiscountProjections {
 
     Long id;
 
-    Date statedTime;
+    Date startedTime;
 
     String discountType;
 

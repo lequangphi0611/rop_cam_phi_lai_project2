@@ -96,7 +96,6 @@ export class EmployeeFormDialogComponent
     private dialogRef: MatDialogRef<EmployeeFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data
   ) {
-    console.log({ data });
   }
 
   static open(
@@ -176,11 +175,14 @@ export class EmployeeFormDialogComponent
   }
 
   checkUsernameExists(username: string): Observable<boolean> {
-    return this.userService.existsByUsername(username);
+    return of(this.editMode ? this.employee.username !== username : true)
+      .pipe(
+        filter(exists => exists),
+        switchMap(exists => this.userService.existsByUsername(username))
+      );
   }
 
   onUsernameControlChange(username: string) {
-    console.log(username);
     this.checkUsernameExists(username)
       .pipe(filter(exists => exists))
       .subscribe(exists => {

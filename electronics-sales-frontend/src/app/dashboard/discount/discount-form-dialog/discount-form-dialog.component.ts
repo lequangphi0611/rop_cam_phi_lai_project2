@@ -1,14 +1,33 @@
+import { DiscountDataView } from './../discount.component';
 import { DiscountView } from './../../../models/view-model/discount.view';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DiscountService } from './../../../services/discount.service';
 import { DiscountDto } from './../../../models/dtos/discount.dto';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, switchMap } from 'rxjs/operators';
 import { CategoryProductReceiver } from './../../../models/category-and-product-receive.model';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DISCOUNT_TYPES, DiscountType } from './../../../models/types/discount.type';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { Component, OnInit, Inject, ViewChild, ElementRef, AfterViewInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import {
+  DISCOUNT_TYPES,
+  DiscountType
+} from './../../../models/types/discount.type';
+import {
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogConfig
+} from '@angular/material/dialog';
+import {
+  Component,
+  OnInit,
+  Inject,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnDestroy,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { CategoryService } from 'src/app/services/category.service';
 
 const MIN_PERCENT_VALUE = 0;
@@ -19,17 +38,34 @@ const MAX_PERCENT_VALUE = 100;
 
 const DEFAULT_DISCOUNT_VALUE_VALIDATORS = [Validators.required];
 
-const DISCOUNT_PERCENT_VALIDATORS = [Validators.min(MIN_PERCENT_VALUE), Validators.max(MAX_PERCENT_VALUE)];
+const DISCOUNT_PERCENT_VALIDATORS = [
+  Validators.min(MIN_PERCENT_VALUE),
+  Validators.max(MAX_PERCENT_VALUE)
+];
 
 const DISCOUNT_AMOUNT_VALIDATORS = [Validators.min(MIN_AMOUNT_VALUE)];
 
 const DISCOUNT_FORM = {
   discountType: [DiscountType.PERCENT, []],
-  discountValue: ['', [...DEFAULT_DISCOUNT_VALUE_VALIDATORS, ...DISCOUNT_PERCENT_VALIDATORS]],
+  discountValue: [
+    '',
+    [...DEFAULT_DISCOUNT_VALUE_VALIDATORS, ...DISCOUNT_PERCENT_VALIDATORS]
+  ],
   products: [[], [Validators.required]]
 };
 
+export interface DiscountFormData {
+  id: number;
 
+  discountType: DiscountType;
+
+  discountValue: number;
+
+  products: {
+    id: number;
+    name: string;
+  }[];
+}
 
 @Component({
   selector: 'app-discount-form-dialog',
@@ -37,7 +73,6 @@ const DISCOUNT_FORM = {
   styleUrls: ['./discount-form-dialog.component.css']
 })
 export class DiscountFormDialogComponent implements OnInit, OnDestroy {
-
   @Output() saveSuccess = new EventEmitter(true);
 
   discountForm: FormGroup;
@@ -51,6 +86,8 @@ export class DiscountFormDialogComponent implements OnInit, OnDestroy {
   minDiscountValue = MIN_PERCENT_VALUE;
 
   maxDiscountValue: number | string = MAX_PERCENT_VALUE;
+
+  editMode = false;
 
   constructor(
     private formBuider: FormBuilder,
@@ -67,12 +104,30 @@ export class DiscountFormDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.discountForm = this.formBuider.group(DISCOUNT_FORM);
-    this.categoriesProducts$ = this.categoryService.fetchCategoiesProducts();
+    this.initForm();
 
     this.discountTypeControl.valueChanges
       .pipe(takeUntil(this.unscription$))
-      .subscribe(discountType => this.onDiscountTypeControlChange(discountType));
+      .subscribe(discountType =>
+        this.onDiscountTypeControlChange(discountType)
+      );
+  }
+
+  initForm() {
+    this.discountForm = this.formBuider.group(DISCOUNT_FORM);
+    let discountId = null;
+    if (this.discountInput) {
+      discountId = this.discountInput.id;
+      this.editMode = true;
+      this.setFormValue(this.discountInput);
+    }
+    this.categoriesProducts$ = this.categoryService.fetchCategoriesProducts(
+      discountId
+    );
+  }
+
+  get discountInput(): DiscountFormData {
+    return this.data ? (this.data as DiscountFormData) : null;
   }
 
   get discountTypeControl() {
@@ -88,27 +143,39 @@ export class DiscountFormDialogComponent implements OnInit, OnDestroy {
   }
 
   get productControlValue() {
-    return this.productsControl.value as {id: number, name: string}[];
+    return this.productsControl.value as { id: number; name: string }[];
   }
 
   get productIds(): number[] {
-    if  (this.productControlValue.length === 0) {
+    if (this.productControlValue.length === 0) {
       return [];
     }
 
     return this.productControlValue.map(p => p.id);
   }
 
+  setFormValue(discount: DiscountFormData) {
+    const { discountType, discountValue, products } = discount;
+    this.discountForm.setValue({
+      discountType,
+      discountValue,
+      products
+    });
+    this.onDiscountTypeControlChange(discountType);
+  }
+
   get discount(): DiscountDto {
+    const { discountType, discountValue } = this.discountForm.value;
     return {
-      discountType: this.discountTypeControl.value,
-      discountValue: this.discountValueControl.value,
-      productIds: this.productIds
+      discountType,
+      discountValue,
+      productIds: this.productIds,
+      id: this.editMode ? this.discountInput.id : null
     };
   }
 
   get suffix() {
-    const {value} = this.discountTypeControl;
+    const { value } = this.discountTypeControl;
     return value === DiscountType.PERCENT ? '%' : 'VNĐ';
   }
 
@@ -131,7 +198,7 @@ export class DiscountFormDialogComponent implements OnInit, OnDestroy {
       this.minDiscountValue = MIN_AMOUNT_VALUE;
       this.maxDiscountValue = '';
     }
-
+    this.discountValueControl.markAsTouched();
     this.discountValueControl.setValidators(validators);
     this.discountValueControl.updateValueAndValidity();
   }
@@ -140,8 +207,8 @@ export class DiscountFormDialogComponent implements OnInit, OnDestroy {
     return ob1 && ob2 && ob1.id === ob2.id;
   }
 
-  removedProduct(product: {id: number, name: string}) {
-    const {id} = product;
+  removedProduct(product: { id: number; name: string }) {
+    const { id } = product;
     const index = this.productControlValue.findIndex(v => v.id === id);
     this.productControlValue.splice(index, 1);
     this.productsControl.setValue(this.productControlValue);
@@ -149,20 +216,29 @@ export class DiscountFormDialogComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     const discount = this.discount;
-    this.discountService
-      .create(discount)
+    of(this.editMode)
+      .pipe(
+        switchMap(edit => {
+          if (!edit) {
+            return this.discountService.create(discount);
+          }
+          return this.discountService.update(discount);
+        })
+      )
       .subscribe(
-        (result) => this.onSuccess(result),
-        (err) => this.onError(err)
+        result => this.onSuccess(result),
+        err => this.onError(err)
       );
   }
+
   onError(err: any): void {
-    this.snackBar.open('Có lỗi xảy ra', 'Đóng', {duration: 2000});
+    this.snackBar.open('Có lỗi xảy ra', 'Đóng', { duration: 2000 });
   }
+
   onSuccess(result: DiscountView): void {
     this.saveSuccess.emit(result);
     this.dialogRef.close();
-    this.snackBar.open(`Lưu thành công !`, `Đóng`, {duration: 2000});
+    this.snackBar.open(`Lưu thành công !`, `Đóng`, { duration: 2000 });
   }
 
   ngOnDestroy(): void {

@@ -42,6 +42,13 @@ public interface ProductRepository extends MyCustomizeRepository<Product, Long>,
             + " p.productName as name, pc.category.id as categoriesId" 
             + " FROM Product p JOIN p.productCategories pc WHERE pc.category.id = ?1 AND p.discount.id IS NULL";
 
+    String FIND_ALL_BY_DISCOUNT_NOT_AVAILABLE_OR_EQUALS_DISCOUNT_ID_QUERY = "SELECT p.id as id,"
+        + " p.productName as name, pc.category.id as categoriesId" 
+        + " FROM Product p JOIN p.productCategories pc WHERE pc.category.id = ?1"
+        + " AND (p.discount.id IS NULL OR p.discount.id = ?2)";
+
+    String UPDATE_DISCOUNT_QUERY = "UPDATE Product p SET p.discount.id = ?1 WHERE p.id = ?2";
+
     Optional<Product> findByProductName(String productName);
 
     boolean existsByProductName(String productName);
@@ -77,5 +84,12 @@ public interface ProductRepository extends MyCustomizeRepository<Product, Long>,
 
     @Query(FIND_ALL_BY_DISCOUNT_NOT_AVAILABLE_QUERY)
     Set<ProductNameAndIdOnly> findAllByDiscountNotAvailable(long categoryId);
+
+    @Query(FIND_ALL_BY_DISCOUNT_NOT_AVAILABLE_OR_EQUALS_DISCOUNT_ID_QUERY)
+    Set<ProductNameAndIdOnly> findAllByDiscountNotAvailableOrEquals(long categoryId, long discountId);
+
+    @Modifying
+    @Query(UPDATE_DISCOUNT_QUERY)
+    void updateDiscount(long discountId, long productId);
 
 }

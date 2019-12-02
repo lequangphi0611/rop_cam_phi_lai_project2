@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import com.electronicssales.entities.Product;
-import com.electronicssales.models.ProductNameAndIdOnly;
 import com.electronicssales.models.responses.FetchProductOption;
 import com.electronicssales.models.types.DiscountType;
 import com.electronicssales.models.types.FetchProductType;
@@ -20,12 +19,10 @@ import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.ProductStatus;
 import com.electronicssales.models.types.SortType;
 import com.electronicssales.repositories.CustomizeProductRepository;
-import com.electronicssales.repositories.ProductRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 

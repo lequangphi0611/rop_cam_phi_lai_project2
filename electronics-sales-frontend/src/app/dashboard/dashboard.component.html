@@ -33,8 +33,11 @@
               >
                 <img
                   class="header-avartar"
-                  onerror="this.src='/assets/img/avatar_user.png'"
-                  [src]="'/api/images/' + (userData.user$ | async)?.avartarId"
+                  [src]="
+                    (userData.user$ | async)?.avartarId
+                      ? '/api/images/' + (userData.user$ | async)?.avartarId
+                      : userImage
+                  "
                   alt=""
                 />
                 {{ (userData.user$ | async)?.firstname }}
@@ -45,7 +48,7 @@
 
               <mat-menu #menu="matMenu">
                 <button mat-menu-item>
-                  <mat-icon>info</mat-icon>
+                  <mat-icon>person</mat-icon>
                   <span>Tài khoản của tôi</span>
                 </button>
                 <button mat-menu-item (click)="openLogoutConfirm()">

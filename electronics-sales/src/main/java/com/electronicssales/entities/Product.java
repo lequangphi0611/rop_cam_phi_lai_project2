@@ -125,7 +125,7 @@ public class Product {
     )
     Collection<Paragraph> descriptions;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "discount_id")
     Discount discount;
 

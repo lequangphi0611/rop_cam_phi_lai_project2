@@ -1,5 +1,6 @@
 package com.electronicssales.resources;
 
+import java.util.Date;
 import java.util.concurrent.Callable;
 
 import com.electronicssales.entities.Discount;
@@ -13,6 +14,7 @@ import com.electronicssales.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +23,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/discounts")
 public class DiscountResource {
+
+    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
 
     @Lazy
     @Autowired
@@ -40,8 +45,17 @@ public class DiscountResource {
     private Mapper<DiscountFullResponse, Discount> discountFullResponseMapper;
 
     @GetMapping
-    public Callable<ResponseEntity<?>> fetchAll(Pageable pageable) {
+    public Callable<ResponseEntity<?>> fetchAll(Pageable pageable,
+        @RequestParam(value = "fromDate", required = false)
+        @DateTimeFormat(pattern = DATE_FORMAT_PATTERN)
+        Date fromDate,
+        @RequestParam(value = "toDate", required = false)
+        @DateTimeFormat(pattern = DATE_FORMAT_PATTERN)
+        Date toDate
+    ) {
         DiscountFetchOption option = new DiscountFetchOption();
+        option.setFromDate(fromDate);
+        option.setToDate(toDate);
         return () -> ResponseEntity.ok(discountService.fetchAll(option, pageable));
     }
 
@@ -61,12 +75,6 @@ public class DiscountResource {
         return () -> ResponseEntity
             .ok(discountResponseMapper.mapping(discountService.updateDiscount(discountDto)));
     }
-
-    // @GetMapping
-    // public Callable<ResponseEntity<?>> fetchDiscounts() {
-    //     return () -> ResponseEntity
-    //         .ok(discountService.fetchDiscounts());
-    // }
 
     @GetMapping("/{id}/products")
     public Callable<ResponseEntity<?>> fetchProducts(@PathVariable("id") long discountId) {

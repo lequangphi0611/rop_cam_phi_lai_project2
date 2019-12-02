@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.electronicssales.entities.Category;
 import com.electronicssales.entities.CategoryManufacturer;
@@ -14,7 +13,6 @@ import com.electronicssales.entities.Manufacturer;
 import com.electronicssales.entities.ParameterType;
 import com.electronicssales.models.CategoryIdAndNameOnly;
 import com.electronicssales.models.CategoryProjections;
-import com.electronicssales.models.ProductNameAndIdOnly;
 import com.electronicssales.models.dtos.CategoryDto;
 import com.electronicssales.models.dtos.ManufacturerDto;
 import com.electronicssales.models.responses.BaseCategoryResponse;
@@ -64,6 +62,10 @@ public class DefaultCategoryService implements CategoryService {
     @Lazy
     @Autowired
     private Mapper<BaseCategoryResponse, Category> baseCategoryResponseMapper;
+
+    @Lazy
+    @Autowired
+    private Mapper<CategoryProjections, CategoryIdAndNameOnly> categoryProjectionsMapper;
 
     @Transactional
     @Override
@@ -141,13 +143,18 @@ public class DefaultCategoryService implements CategoryService {
     public Set<CategoryProjections> fetchCategoriesGroupProducts() {
         return categoryRepository.findParentOnly()
             .stream()
-            .map(c -> {
-                CategoryProjections category = new CategoryProjections();
-                category.setId(c.getId());
-                category.setName(c.getName());
-                category.setProducts(productRepository.findAllByDiscountNotAvailable(c.getId()));
-                return category;
-            })
+            .map(this.categoryProjectionsMapper::mapping)
+            .peek(c -> c.setProducts(this.productRepository.findAllByDiscountNotAvailable(c.getId())))
+            .filter(c -> !c.getProducts().isEmpty())
+            .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<CategoryProjections> fetchCategoriesGroupProductsDiscountNotAvailableOrEquals(long discountId) {
+        return categoryRepository.findParentOnly()
+            .stream()
+            .map(this.categoryProjectionsMapper::mapping)
+            .peek(c -> c.setProducts(this.productRepository.findAllByDiscountNotAvailableOrEquals(c.getId(), discountId)))
             .filter(c -> !c.getProducts().isEmpty())
             .collect(Collectors.toSet());
     }
@@ -261,6 +268,20 @@ public class DefaultCategoryService implements CategoryService {
             return categoryResponse;
         }
 
+    }
+
+    @Lazy
+    @Component
+    public class CategoryProjectionsMapper implements Mapper<CategoryProjections, CategoryIdAndNameOnly> {
+
+        @Override
+        public CategoryProjections mapping(CategoryIdAndNameOnly categoryIdAndNameOnly) {
+            CategoryProjections category = new CategoryProjections();
+            category.setId(categoryIdAndNameOnly.getId());
+            category.setName(categoryIdAndNameOnly.getName());
+            return category;
+        }
+    
     }
 
 }

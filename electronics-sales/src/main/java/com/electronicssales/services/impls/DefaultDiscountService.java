@@ -55,42 +55,26 @@ public class DefaultDiscountService implements DiscountService {
     private Mapper<ProductResponse, Product> productResponseMapper;
 
     private Stream<Product> getProductsFromProductIds(Collection<Long> productIds) {
-        return productIds
-            .stream()
-            .map(productId -> productRepository.findByIdWithoutFetchDiscount(productId).get());
+        return productIds.stream().map(productId -> productRepository.findByIdWithoutFetchDiscount(productId).get());
     }
 
     @Transactional
     @Override
     public Discount saveDiscount(DiscountDto discountDto) {
-        Discount discountTransient = discountMapper.mapping(discountDto);
-        List<Product> products = getProductsFromProductIds(discountDto.getProductIds())
-            .peek(product -> product.setDiscount(discountTransient))
-            .collect(Collectors.toList());
-        discountTransient.setProducts(products);
-        return discountRepository.save(discountTransient);
+        return this.discountRepository.create(discountDto);
     }
 
     @Transactional
     @Override
     public List<DiscountFullResponse> fetchDiscounts() {
-        return discountRepository
-            .findAll()
-            .stream()
-            .map(discountFullResponseMapper::mapping)
-            .collect(Collectors.toList());
+        return discountRepository.findAll().stream().map(discountFullResponseMapper::mapping)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     @Override
     public Discount updateDiscount(DiscountDto discountDto) {
-        Discount discount = discountMapper.mapping(discountDto);
-        productRepository.removeAllDiscount(discount.getId());
-        List<Product> products = getProductsFromProductIds(discountDto.getProductIds())
-            .peek(product -> product.setDiscount(discount))
-            .collect(Collectors.toList());
-        discount.setProducts(products);
-        return discountRepository.save(discount);
+        return discountRepository.update(discountDto);
     }
 
     @Transactional
@@ -101,10 +85,8 @@ public class DefaultDiscountService implements DiscountService {
 
     @Override
     public List<ProductResponse> getProducts(long discountId) {
-        return productRepository.findByDiscountId(discountId)
-            .stream()
-            .map(productResponseMapper::mapping)
-            .collect(Collectors.toList());
+        return productRepository.findByDiscountId(discountId).stream().map(productResponseMapper::mapping)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -114,9 +96,7 @@ public class DefaultDiscountService implements DiscountService {
 
     @Override
     public Optional<Discount> findById(long id) {
-        return discountRepository
-            .findById(id)
-            .filter(discount -> discount != null);
+        return discountRepository.findById(id).filter(discount -> discount != null);
     }
 
     @Lazy
@@ -127,15 +107,13 @@ public class DefaultDiscountService implements DiscountService {
         public Discount mapping(DiscountDto discountDto) {
             Discount discount = new Discount();
             discount.setId(discountDto.getId());
-            DiscountType discountType = DiscountType.of(discountDto.getDiscountType())
-                .orElse(DiscountType.PERCENT);
+            DiscountType discountType = DiscountType.of(discountDto.getDiscountType()).orElse(DiscountType.PERCENT);
             // Optiona
             discount.setDiscountType(discountType);
             discount.setDiscountValue(discountDto.getDiscountValue());
             return discount;
         }
-    
-        
+
     }
 
     @Lazy
@@ -151,7 +129,7 @@ public class DefaultDiscountService implements DiscountService {
             discountResponse.setDiscountValue(discount.getDiscountValue());
             return discountResponse;
         }
-        
+
     }
 
     @Lazy
@@ -167,13 +145,11 @@ public class DefaultDiscountService implements DiscountService {
 
         @Override
         public DiscountFullResponse mapping(Discount discount) {
-            DiscountFullResponse discountFullResponse = 
-                (DiscountFullResponse) discountResponseMapper.mapping(discount);
+            DiscountFullResponse discountFullResponse = (DiscountFullResponse) discountResponseMapper.mapping(discount);
             discountFullResponse.setProductCount(productRepository.countByDiscountId(discount.getId()));
             return discountFullResponse;
         }
-    
-        
+
     }
-    
+
 }

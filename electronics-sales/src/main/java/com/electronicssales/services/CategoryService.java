@@ -44,4 +44,6 @@ public interface CategoryService {
 
     Set<CategoryProjections> fetchCategoriesGroupProducts();
 
+    Set<CategoryProjections> fetchCategoriesGroupProductsDiscountNotAvailableOrEquals(long discountId);
+
 }

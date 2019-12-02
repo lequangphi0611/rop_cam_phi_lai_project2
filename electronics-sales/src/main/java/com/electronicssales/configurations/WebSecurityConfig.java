@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import com.electronicssales.filters.CustomFilter;
 import com.electronicssales.filters.JWTAuthenticationFilter;
-import com.electronicssales.models.types.Role;
 import com.electronicssales.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,6 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    private static final String MANAGER_ROLE = Role.MANAGER.toString();
 
     @Autowired
     private PasswordEncoder passwordEncoder;

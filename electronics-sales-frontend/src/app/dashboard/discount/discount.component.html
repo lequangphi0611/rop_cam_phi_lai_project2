@@ -1,7 +1,8 @@
-<div class="col-12 py-5">
-
-  <button mat-raised-button color="primary" (click)="openAddForm()">
-    <mat-icon class="mat-18">library_add</mat-icon> Thêm Giảm Giá
-  </button>
-
+<div class="col-12 py-5 d-flex justify-content-center">
+  <div class="col-8">
+      <button mat-raised-button class="mb-3" color="primary" (click)="openAddForm()">
+          <mat-icon class="mat-18">library_add</mat-icon> Thêm Giảm Giá
+        </button>
+    <app-discount-data (editSuccess)="onEditSuccess()" [datasource]="datasource"></app-discount-data>
+  </div>
 </div>

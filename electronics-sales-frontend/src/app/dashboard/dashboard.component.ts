@@ -72,6 +72,9 @@ const LOGIN_URL = '/index/login';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+
+  userImage = '/assets/img/avatar_user.png';
+
   sideBarItems: SideBarItem[];
 
   constructor(public userData: UserAuthenticatedService, private dialog: MatDialog, private router: Router) {}

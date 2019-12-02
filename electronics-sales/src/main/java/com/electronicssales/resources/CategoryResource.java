@@ -1,5 +1,6 @@
 package com.electronicssales.resources;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import javax.persistence.EntityExistsException;
@@ -96,8 +97,14 @@ public class CategoryResource {
     }
 
     @GetMapping("group/products")
-    public  Callable<ResponseEntity<?>> fetchCategoriesAndGroupByproduct() {
-        return () -> ResponseEntity.ok(this.categoryService.fetchCategoriesGroupProducts());
+    public  Callable<ResponseEntity<?>> fetchCategoriesAndGroupByproduct(@RequestParam(value = "discountId", required = false) Long discountId) {
+        
+        return () -> {
+            if(Objects.isNull(discountId)) {
+                return ResponseEntity.ok(this.categoryService.fetchCategoriesGroupProducts());
+            }
+            return ResponseEntity.ok(this.categoryService.fetchCategoriesGroupProductsDiscountNotAvailableOrEquals(discountId));
+        };
     }
 
     @GetMapping("/products-sellable")

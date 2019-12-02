@@ -20,8 +20,14 @@ export class CategoryService {
     return this.http.get<CategoryView[]>(`${CategoryService.BASE_REQUEST}`);
   }
 
-  fetchCategoiesProducts(): Observable<CategoryProductReceiver[]> {
-    return this.http.get<CategoryProductReceiver[]>(`${CategoryService.BASE_REQUEST}/group/products`);
+  fetchCategoriesProducts(discountId?: number): Observable<CategoryProductReceiver[]> {
+    const params: any = {};
+    if (discountId) {
+      params.discountId = discountId;
+    }
+    return this.http.get<CategoryProductReceiver[]>(`${CategoryService.BASE_REQUEST}/group/products`, {
+      params
+    });
   }
 
   fetchCategoriesHasProductSellable(): Observable<CategoryView[]> {
