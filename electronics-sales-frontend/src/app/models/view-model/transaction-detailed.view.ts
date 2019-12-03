@@ -15,6 +15,12 @@ export interface TransactionDetailedView {
 
   discountValue: number;
 
+  discount: number;
+
+  sumDiscount: number;
+
+  subTotal: number;
+
   total: number;
 
 }

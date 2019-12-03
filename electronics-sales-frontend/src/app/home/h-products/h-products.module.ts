@@ -1,3 +1,4 @@
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './../../material/material.module';
 import { ProductBoxModule } from './../product-box/product-box.module';
 import { NgModule } from '@angular/core';
@@ -14,7 +15,9 @@ import { DisplayProductsComponent } from './display-products/display-products.co
     CommonModule,
     HProductsRoutingModule,
     ProductBoxModule,
-    MaterialModule
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class HProductsModule { }

@@ -1,0 +1,59 @@
+<table mat-table [dataSource]="datasource" matSort>
+    <ng-container matColumnDef="productName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Sản phẩm</th>
+      <td mat-cell *matCellDef="let element">
+        <div class="col-12 row">
+            <img class="col-4" [src]="'data:image/png;base64,' + element.image" alt="">
+            <div class="col-6 d-flex align-items-center" [matTooltip]="element.productName">
+              {{ element.productName | cutString: 20 }}
+            </div>
+        </div>
+      </td>
+      <td mat-footer-cell *matFooterCellDef> Tổng cộng : </td>
+    </ng-container>
+
+    <ng-container matColumnDef="productPrice">
+      <th align="end" mat-header-cell *matHeaderCellDef mat-sort-header>Đơn giá</th>
+      <td align="end" mat-cell *matCellDef="let element">
+        {{ element.price | currencyvn }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+
+    <ng-container matColumnDef="quantity">
+      <th align="end" mat-header-cell *matHeaderCellDef mat-sort-header>Số lượng</th>
+      <td align="end" mat-cell *matCellDef="let element">
+        {{ element.quantity }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef> </td>
+    </ng-container>
+
+    <ng-container matColumnDef="subTotal">
+      <th align="end" mat-header-cell *matHeaderCellDef mat-sort-header>Thành tiền</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.subTotal | currencyvn }}
+      </td>
+      <td align="end" mat-footer-cell *matFooterCellDef> </td>
+    </ng-container>
+
+    <ng-container matColumnDef="discount">
+      <th align="end" mat-header-cell *matHeaderCellDef mat-sort-header>Số tiền giảm</th>
+      <td align="end" mat-cell *matCellDef="let element">
+        {{ element.sumDiscount | currencyvn }}
+      </td>
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+      <th align="end" mat-header-cell *matHeaderCellDef mat-sort-header>Tổng tiền</th>
+      <td align="end" mat-cell *matCellDef="let element">
+        {{ element.total | currencyvn }}
+      </td>
+
+      <td align="end" mat-footer-cell *matFooterCellDef> {{total | currencyvn}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayColumns"></tr>
+    <tr mat-footer-row *matFooterRowDef="displayColumns; sticky: true"></tr>
+  </table>

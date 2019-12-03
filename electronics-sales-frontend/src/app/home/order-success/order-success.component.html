@@ -8,6 +8,11 @@
   </div>
 
   <div class="mt-3 col-10 ">
+    <div class="mb-3">
+      <button [routerLink]="['/index']" mat-raised-button color="accent">
+        <mat-icon class="mat-18">assignment_return</mat-icon> Tiếp tục mua hàng
+      </button>
+    </div>
     <div class="card">
       <div class="card-header h3">
         Đơn hàng của bạn
@@ -34,12 +39,20 @@
                     Thành Tiền
                   </div>
                 </th>
+                <th>
+                  <div class="d-flex justify-content-end align-items-center">
+                    Số tiền giảm
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex justify-content-end align-items-center">
+                    Tổng tiền
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr
-                *ngFor="let transactionDetailed of transactionDetailed"
-              >
+              <tr *ngFor="let transactionDetailed of transactionDetailed">
                 <td scope="row">
                   <div class="d-flex justify-content-center align-items-center">
                     <img
@@ -74,6 +87,22 @@
                   <div
                     class="d-flex justify-content-end align-items-center py-5"
                   >
+                    {{ transactionDetailed.subTotal | currencyvn }}
+                  </div>
+                </td>
+
+                <td>
+                  <div
+                    class="d-flex justify-content-end align-items-center py-5"
+                  >
+                    {{ transactionDetailed.sumDiscount | currencyvn }}
+                  </div>
+                </td>
+
+                <td>
+                  <div
+                    class="d-flex justify-content-end align-items-center py-5"
+                  >
                     {{ transactionDetailed.total | currencyvn }}
                   </div>
                 </td>
@@ -83,9 +112,9 @@
         </div>
       </div>
       <div class="card-footer clearfix px-3">
-          <strong class="float-left mx-3">Tổng Cộng :</strong>
-          <div class="float-right">{{sumTotal | currencyvn}}</div>
-        </div>
+        <strong class="float-left mx-3">Tổng Cộng :</strong>
+        <div class="float-right">{{ sumTotal | currencyvn }}</div>
+      </div>
     </div>
 
     <!-- <div class="h3 col-12 text-center mb-5">Đơn hàng của bạn</div> -->

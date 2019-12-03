@@ -44,7 +44,7 @@ public class CustomizeProductRepositoryImpl implements CustomizeProductRepositor
     private EntityManager entityManager;
 
     private static final String[] PRODUCT_COLUMNS_STRING = { "id", "productName", "price", "quantity", "status",
-            "createdTime", "updatedTime", "manufacturer", "discount" };
+            "createdTime", "updatedTime", "manufacturer", "discount", "active" };
 
     private static final String[] DISCOUNT_COLUMNS_STRING = { "id", "discountValue", "startedTime", "discountType" };
 

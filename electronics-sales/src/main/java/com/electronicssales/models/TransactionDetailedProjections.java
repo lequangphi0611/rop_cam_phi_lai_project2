@@ -3,7 +3,7 @@ package com.electronicssales.models;
 import lombok.Value;
 
 @Value
-public class TransactionDetailedProjections {
+public class TransactionDetailedProjections implements TransactionDetailedCalculator {
 
     Long id;
 
@@ -18,9 +18,5 @@ public class TransactionDetailedProjections {
     String discountType;
 
     Long discountValue;
-
-    public Long getTotal() {
-        return this.price * this.quantity;
-    }
     
 }

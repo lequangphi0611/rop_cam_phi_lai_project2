@@ -6,7 +6,11 @@
           <h3>Bộ lọc</h3>
         </div>
 
-        <div class="accordion" id="accordionExample" *ngIf="(manufacturer$ | async) && (manufacturer$ | async)?.length > 0" >
+        <div
+          class="accordion"
+          id="accordionExample"
+          *ngIf="(manufacturer$ | async) && (manufacturer$ | async)?.length > 0"
+        >
           <div class="card card-rop">
             <div class="card-header" id="headingOne">
               <h2 class="">
@@ -31,8 +35,23 @@
             >
               <div class="card-body card-rop">
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item border-top" *ngFor="let manufacturer of manufacturer$ | async; trackBy:manufacturer?.id; let i = index">
-                      <mat-checkbox (change)="manufacturerSelectChange($event.checked, manufacturer.id)">{{manufacturer.manufacturerName}}</mat-checkbox>
+                  <li
+                    class="list-group-item border-top"
+                    *ngFor="
+                      let manufacturer of manufacturer$ | async;
+                      trackBy: manufacturer?.id;
+                      let i = index
+                    "
+                  >
+                    <mat-checkbox
+                      (change)="
+                        manufacturerSelectChange(
+                          $event.checked,
+                          manufacturer.id
+                        )
+                      "
+                      >{{ manufacturer.manufacturerName }}</mat-checkbox
+                    >
                   </li>
                 </ul>
               </div>
@@ -64,11 +83,12 @@
               data-parent="#accordionExample"
             >
               <div class="card-body card-rop">
-                <span>Từ</span>
-                <input type="number" min="0" value="0" class="form-control" />
-                <span>đến</span>
-                <input type="number" min="0" value="0" class="form-control" />
-                <span style="color:darkgrey">Triệu VNĐ</span>
+                <mat-form-field>
+                  <input #fromPriceInput matInput type="number" placeholder="Từ" />
+                </mat-form-field>
+                <mat-form-field>
+                  <input #toPriceInput matInput type="number" placeholder="Đến" />
+                </mat-form-field>
               </div>
             </div>
           </div>
@@ -82,18 +102,19 @@
       <div class="card-right">
         <div class="card-header">
           <div class="row">
-            <h3 *ngIf="(category$ | async)" >{{(category$ | async)?.categoryName}}</h3>
+            <h3 *ngIf="category$ | async">
+              {{ category?.categoryName }}
+            </h3>
             <div class="input-group">
               <div class="input-group-prepend">
                 <label class="input-group-text" for="inputGroupSelect01"
                   >Sắp xếp theo :</label
                 >
               </div>
-              <select class="custom-select" id="inputGroupSelect01">
-                <option selected>Mới nhất</option>
-                <option value="1">Giá từ cao đến thấp</option>
-                <option value="2">Giá từ thấp đến cao</option>
-                <option value="3">Ưu đãi</option>
+              <select [formControl]="fetchOptionSelect" [compareWith]="compareOption" class="custom-select" id="inputGroupSelect01">
+                <option *ngFor="let item of optionsSelect; let i = index" [ngValue]="item.option">
+                  {{item.name}}
+                </option>
               </select>
             </div>
           </div>
@@ -104,10 +125,22 @@
           </div>
           <div class="col-12 clearfix px-0">
             <div class="col-2 float-left px-0">
-              <button *ngIf="hasPrev()"  class="btn btn-primary" (click)="prev()">Trang trước</button>
+              <button
+                *ngIf="hasPrev()"
+                class="btn btn-primary"
+                (click)="prev()"
+              >
+                Trang trước
+              </button>
             </div>
             <div class="col-2 float-right px-0">
-              <button *ngIf="hasNext()" class="btn btn-primary float-right" (click)="next()">Trang kế</button>
+              <button
+                *ngIf="hasNext()"
+                class="btn btn-primary float-right"
+                (click)="next()"
+              >
+                Trang kế
+              </button>
             </div>
           </div>
         </div>

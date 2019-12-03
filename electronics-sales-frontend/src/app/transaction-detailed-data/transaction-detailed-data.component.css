@@ -1,0 +1,19 @@
+.mat-cart {
+  min-width: 500px;
+}
+
+.mat-cell {
+  padding: 1.25rem;
+}
+
+.mat-column-productName img {
+  object-position: center;
+  object-fit: cover;
+  max-width: 100px;
+  max-height: 150px;
+  padding: 5px;
+}
+
+tr.mat-footer-row {
+  font-weight: bold;
+}

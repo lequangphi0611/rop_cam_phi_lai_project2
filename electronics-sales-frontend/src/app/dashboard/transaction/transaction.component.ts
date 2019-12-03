@@ -9,6 +9,8 @@ import { SortType } from 'src/app/models/types/sort-type.type';
 import { Page } from './../../models/page.model';
 import { TransactionDataView, TransactionDataViewColumn } from './../../models/view-model/transaction-data.view.model';
 import { TransactionFetchOption, TransactionService } from './../../services/transaction.service';
+import { TransactionDetailedDialogComponent } from '../transaction-detailed-dialog/transaction-detailed-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 const DEFAULT_PAGE_INDEX = 0;
 
@@ -35,7 +37,8 @@ const DISPLAY_COLUMN = [
   'address',
   'subTotal',
   'discountTotal',
-  'sumTotal'
+  'sumTotal',
+  'viewDetail'
 ];
 
 const FIVE_DAYS_MILISECOND = 1000 * 60 * 60 * 24 * 5;
@@ -66,7 +69,10 @@ export class TransactionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   dateFormat = DATE_TIME_FORMAT_PATTERN;
 
-  constructor(private transactionService: TransactionService) {}
+  constructor(
+    private transactionService: TransactionService,
+    private dialog: MatDialog
+  ) {}
 
   maxDate: Date;
 
@@ -190,6 +196,10 @@ export class TransactionComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     };
     this.transactionFetchOption$.next(this.merge(this.currentOption, option));
+  }
+
+  openDetailTransaction(id: number) {
+    TransactionDetailedDialogComponent.open(this.dialog, {transactionId: id});
   }
 
   ngOnDestroy(): void {
