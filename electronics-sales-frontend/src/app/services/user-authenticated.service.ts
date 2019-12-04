@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthInterceptorService } from './../auth/auth-interceptor.service';
 import { CookieService } from 'ngx-cookie-service';
 import { User } from './../models/view-model/user.view.model';
@@ -43,6 +43,10 @@ export class UserAuthenticatedService {
         return of(false);
       })
     );
+  }
+
+  get value() {
+    return this.userBehavior.value;
   }
 
   load(): void {

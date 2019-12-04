@@ -1,0 +1,24 @@
+<div class="col-12 avartar-content d-flex flex-column justify-content-center">
+  <img class="img-avartar" [src]="image" alt="" (click)="fileInput.click()" />
+
+  <input accept="image/*" class="select-file" type="file" #fileInput />
+
+  <div class="m-2">
+    <button
+      (click)="clear()"
+      [hidden]="!(fileChange | async)"
+      class="col-12"
+      mat-button
+    >
+      <mat-icon class="mat-18">cancel</mat-icon> Xóa ảnh
+    </button>
+    <button
+      (click)="fileInput.click()"
+      [hidden]="(fileChange | async)"
+      class="col-12"
+      mat-button
+    >
+      <mat-icon class="mat-18">touch_app</mat-icon> chọn ảnh
+    </button>
+  </div>
+</div>

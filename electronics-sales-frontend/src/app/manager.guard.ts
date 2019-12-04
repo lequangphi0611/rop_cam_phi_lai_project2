@@ -32,8 +32,6 @@ export class ManagerGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    console.log('manager guard');
-    console.log(next);
     return this.userAuthenticatedData.user$.pipe(
       map(user => user.role),
       map(role => role === MANAGER_ROLE),

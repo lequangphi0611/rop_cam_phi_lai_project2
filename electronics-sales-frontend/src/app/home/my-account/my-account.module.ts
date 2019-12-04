@@ -1,3 +1,4 @@
+import { MaterialModule } from './../../material/material.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -9,7 +10,8 @@ import { MyAccountComponent } from './my-account.component';
   declarations: [MyAccountComponent],
   imports: [
     CommonModule,
-    MyAccountRoutingModule
+    MyAccountRoutingModule,
+    MaterialModule
   ]
 })
 export class MyAccountModule { }

@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import com.electronicssales.entities.User;
+import com.electronicssales.entities.UserInfo;
+import com.electronicssales.models.UserPrincipal;
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.responses.UserInfoResponse;
 import com.electronicssales.models.types.Role;
@@ -52,8 +54,12 @@ public class AccountResource {
     @GetMapping("/current")
     public Callable<ResponseEntity<?>> fetchCurrentUserInfo() {
         return () -> {
-            String username = AuthenticateUtils.getUsernameAuthentecated();
-            return ResponseEntity.ok(userService.getUserInfoByUsername(username));
+            UserPrincipal userPrincipal = AuthenticateUtils.getUserPrincipal();
+            System.out.println(AuthenticateUtils.getSecurityContext().getAuthentication().getDetails());
+            String username = userPrincipal.getUsername();
+            UserInfoResponse user = userService.getUserInfoByUsername(username);
+            user.setPassword(userPrincipal.getPassword());
+            return ResponseEntity.ok(user);
         };
     }
 

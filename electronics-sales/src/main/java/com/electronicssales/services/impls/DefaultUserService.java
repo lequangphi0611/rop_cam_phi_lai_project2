@@ -1,5 +1,6 @@
 package com.electronicssales.services.impls;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.persistence.EntityExistsException;
@@ -69,6 +70,9 @@ public class DefaultUserService implements UserService {
         }
 
         User userTransient = userDtoToUserMapper.mapping(newUserDto);
+        if(Objects.isNull(newUserDto.getPassword())) {
+            userTransient.setPassword(userPersisted.getPassword());
+        }
         userTransient.getUserInfo().setId(userPersisted.getUserInfo().getId());
         userTransient.setRole(userPersisted.getRole());
         userRepository.merge(userTransient);
@@ -100,6 +104,7 @@ public class DefaultUserService implements UserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found !"));
+
         return UserPrincipal.of(user);
     }
 
@@ -160,7 +165,9 @@ public class DefaultUserService implements UserService {
             }
             user.setActived(true);
             user.setUsername(dto.getUsername());
-            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+            if(Objects.nonNull(dto.getPassword())) {
+                user.setPassword(passwordEncoder.encode(dto.getPassword()));
+            }
             Optional.ofNullable(dto.getAvartar())
                     .ifPresent(avartar -> user.setAvartar(Image.of(avartar)));
             user.setUserInfo(userInfoMapper.mapping(dto));

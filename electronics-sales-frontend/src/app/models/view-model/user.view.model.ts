@@ -23,4 +23,6 @@ export interface User {
   avartarId?: number;
 
   role: Role;
+
+  password?: string;
 }

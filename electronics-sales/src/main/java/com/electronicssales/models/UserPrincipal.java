@@ -23,6 +23,8 @@ public class UserPrincipal implements UserDetails {
 
     private String password;
 
+    private String rawPassword;
+
     private boolean accountNonExpired;
 
     private boolean accountNonLocked;

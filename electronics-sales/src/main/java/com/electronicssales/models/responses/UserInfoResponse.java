@@ -21,5 +21,7 @@ public class UserInfoResponse extends RequiredUserInfoDto {
     private Long avartarId;
 
     private Role role;
+
+    private String password;
     
 }

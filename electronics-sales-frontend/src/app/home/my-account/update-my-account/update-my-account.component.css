@@ -1,0 +1,12 @@
+.update-account-form-content {
+  min-width: 700px;
+}
+
+.mat-card-header-text {
+  width: 100% !important;
+  text-align: center;
+}
+
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}

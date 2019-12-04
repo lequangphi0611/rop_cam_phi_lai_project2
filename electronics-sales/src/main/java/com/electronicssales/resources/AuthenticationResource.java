@@ -68,7 +68,6 @@ public class AuthenticationResource {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
         String accessToken = jwtTokenService
                     .setJwtExpirationTime(JWT_EXPIRATION_TIME)
                     .generate(userPrincipal.getUsername());

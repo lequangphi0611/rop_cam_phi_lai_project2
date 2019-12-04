@@ -1,1 +1,27 @@
-<p>my-account works!</p>
+<!-- <div class="col-12 d-flex justify-content-center py-3"> -->
+  <!-- <mat-card class="col-10 p-0"> -->
+    <!-- <mat-card-content> -->
+      <mat-sidenav-container>
+        <mat-sidenav #sidenav opened mode="side" >
+          <mat-nav-list>
+            <a
+              *ngFor="let item of listItem"
+              mat-list-item
+              [routerLink]="item.link"
+              routerLinkActive="active-list-item"
+              class="text-center"
+
+            >
+              <mat-icon class="mat-18 mr-1">{{item.iconName}}</mat-icon> {{item.name}}
+            </a>
+          </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content>
+          <div style="min-height: 80vh" class="content">
+            <router-outlet></router-outlet>
+          </div>
+        </mat-sidenav-content>
+      </mat-sidenav-container>
+    <!-- </mat-card-content>
+  </mat-card>
+</div> -->

@@ -1,3 +1,4 @@
+import { LIST_ITEM_USER } from './../List-item-user';
 import { CartDataService } from './../cart-data.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,6 +10,8 @@ import { NavItemData } from './sub-navigation/sub-navigation.component';
 import { Component, OnInit } from '@angular/core';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { CategoryService } from 'src/app/services/category.service';
+import { ConfirmDialogComponent } from 'src/app/confirm/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 const SUB_NAV_ITEMS: NavItemData[] = [
   {
@@ -30,11 +33,6 @@ const SUB_NAV_ITEMS: NavItemData[] = [
 ];
 
 const NAV_ITEMS_RIGHT: { name: string; link: string; isLogin: boolean }[] = [
-  // {
-  //   name: 'Giỏ hàng',
-  //   link: 'cart',
-  //   isLogin: false,
-  // },
   {
     name: 'Đăng ký',
     link: 'register',
@@ -63,12 +61,15 @@ export class HomeHeaderComponent implements OnInit {
 
   seachForm: FormGroup;
 
+  listItemUser = LIST_ITEM_USER;
+
   constructor(
     private categoryService: CategoryService,
     public userAuthenticatedService: UserAuthenticatedService,
     private router: Router,
     private formBuilder: FormBuilder,
-    private cartData: CartDataService
+    private cartData: CartDataService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -99,7 +100,14 @@ export class HomeHeaderComponent implements OnInit {
   }
 
   async logOut(): Promise<void> {
-    this.userAuthenticatedService.clear();
+    ConfirmDialogComponent.open(this.dialog, {
+      message: 'Bạn có muốn đăng xuất ?',
+      actionName: 'Đăng xuất',
+      action: () => {
+        this.userAuthenticatedService.clear();
+        this.router.navigate(['/index']);
+      }
+    });
   }
 
   goToProducts(categoryId: number) {

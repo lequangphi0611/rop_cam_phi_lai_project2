@@ -107,7 +107,10 @@
           <i class="fa fa-user"></i> {{(currUser$ | async).firstname}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="Myacount.html">Tài khoản của tôi</a>
+          <a class="dropdown-item d-flex flex-row align-items-center" *ngFor="let item of listItemUser" [routerLink]="item.link">
+            <mat-icon class="mat-18 mr-1">{{item.iconName}}</mat-icon>
+            {{item.name}}
+          </a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" (click)="logOut()">Đăng xuất</a>
         </div>

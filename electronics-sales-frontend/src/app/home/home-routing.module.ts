@@ -1,3 +1,4 @@
+import { AuthenticatedGuard } from './../authenticated.guard';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home.component';
@@ -59,6 +60,7 @@ const routes: Routes = [
       },
       {
         path: 'my-account',
+        canActivate: [AuthenticatedGuard],
         loadChildren: () =>
           import('./my-account/my-account.module').then(m => m.MyAccountModule)
       }

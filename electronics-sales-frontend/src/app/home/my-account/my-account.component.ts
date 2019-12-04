@@ -1,3 +1,4 @@
+import { LIST_ITEM_USER } from './../List-item-user';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -6,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./my-account.component.css']
 })
 export class MyAccountComponent implements OnInit {
+
+  listItem = LIST_ITEM_USER;
 
   constructor() { }
 

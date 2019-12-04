@@ -1,0 +1,168 @@
+<div class="col-12 d-flex p-5 justify-content-center">
+  <div class="col-7">
+    <mat-card>
+      <mat-card-header class="d-flex justify-content-center">
+        <mat-card-title class="col-12 text-center"
+          >Tài khoản của bạn</mat-card-title
+        >
+      </mat-card-header>
+      <mat-card-content>
+        <div class="col-12 p-0" [formGroup]="myAccountForm">
+          <div class="form-group col-12 row">
+            <div class="form-group col-8 row p-0">
+              <div class="form-group col-6">
+                <mat-form-field class="col-12 p-0">
+                  <mat-label>Họ</mat-label>
+                  <input
+                    formControlName="lastname"
+                    matInput
+                    type="text"
+                    required
+                    placeholder=""
+                  />
+                  <mat-error *ngIf="lastnameControl.hasError('required')">
+                    Không được để trống họ
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="form-group col-6">
+                <mat-form-field class="col-12 p-0">
+                  <mat-label>Tên</mat-label>
+                  <input
+                    formControlName="firstname"
+                    matInput
+                    type="text"
+                    required
+                    placeholder=""
+                  />
+                  <mat-error *ngIf="firstnameControl.hasError('required')">
+                    Không được để trống tên
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group col-12">
+                <mat-radio-group
+                  formControlName="gender"
+                  aria-label="Select an option"
+                >
+                  <mat-radio-button [value]="true">Nam</mat-radio-button>
+                  <mat-radio-button [value]="false" class="ml-5"
+                    >Nữ</mat-radio-button
+                  >
+                </mat-radio-group>
+              </div>
+
+              <div class="form-group col-12">
+                <mat-form-field class="col-12 p-0">
+                  <mat-label>Tên đăng nhập</mat-label>
+                  <input
+                    formControlName="username"
+                    matInput
+                    type="text"
+                    required
+                    placeholder=""
+                  />
+                  <mat-error *ngIf="usernameControl.hasError('required')">
+                    Không được để trống tên đăng nhập
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div class="form-group col-12">
+                <mat-form-field class="col-12 p-0">
+                  <input
+                    matInput
+                    formControlName="birthday"
+                    [matDatepicker]="picker"
+                    placeholder="Ngày sinh"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-error *ngIf="birthdayControl.hasError('required')">
+                    Không được để trống ngày sinh
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="form-group col-4 d-flex justify-content-end p-0">
+              <app-choose-avartar
+                (fileChange)="onAvartarChange($event)"
+              ></app-choose-avartar>
+            </div>
+
+            <div class="form-group col-12 row">
+              <mat-form-field class="col-12 p-0">
+                <mat-label>Email</mat-label>
+                <input
+                  formControlName="email"
+                  matInput
+                  type=""
+                  required
+                  placeholder=""
+                />
+                <mat-error *ngIf="emailControl.hasError('required')">
+                  Không được để trống email
+                </mat-error>
+                <mat-error *ngIf="emailControl.hasError('pattern')">
+                  email không đúng định dạng (vd : abc@gmail.com)
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-group col-12 row">
+              <mat-form-field class="col-12 p-0">
+                <mat-label>Số điện thoại</mat-label>
+                <input
+                  formControlName="phoneNumber"
+                  matInput
+                  type=""
+                  required
+                  placeholder=""
+                />
+                <mat-error *ngIf="phoneNumberControl.hasError('required')">
+                  Không được để trống số điện thoại
+                </mat-error>
+                <mat-error *ngIf="phoneNumberControl.hasError('pattern')">
+                  số điện thoại không đúng (vd: 0773927601)
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-group col-12 row">
+              <mat-form-field class="col-12 p-0">
+                <mat-label>Địa Chỉ</mat-label>
+                <textarea
+                  formControlName="address"
+                  matInput
+                  type=""
+                  required
+                  placeholder=""
+                ></textarea>
+                <mat-error *ngIf="addressControl.hasError('required')">
+                  Không được để trống địa chỉ
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions align="center">
+        <div class="col-12 d-flex flex-row justify-content-center">
+          <button mat-raised-button class="col-4" (click)="reset()">Hủy</button>
+          <button
+            [disabled]="myAccountForm.invalid"
+            mat-raised-button
+            color="primary"
+            (click)="onSubmit()"
+            class="col-4"
+          >
+            Lưu
+          </button>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

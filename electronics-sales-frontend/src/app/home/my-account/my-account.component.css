@@ -1,0 +1,18 @@
+.mat-sidenav {
+  /* background: #f8f9fa; */
+  min-width: 200px;
+  text-align: center;
+}
+
+.content {
+  background: white;
+}
+
+.mat-drawer-backdrop.mat-drawer-shown {
+  background-color: #673ab7;
+
+}
+
+.active-list-item {
+  color: #3F51B5 ;
+}

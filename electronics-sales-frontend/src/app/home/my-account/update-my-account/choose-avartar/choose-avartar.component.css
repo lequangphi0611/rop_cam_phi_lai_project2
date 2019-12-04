@@ -1,0 +1,14 @@
+
+.img-avartar {
+  width: 150px;
+  height: 150px;
+  object-position: center;
+  object-fit: cover;
+
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.select-file {
+  display: none;
+}

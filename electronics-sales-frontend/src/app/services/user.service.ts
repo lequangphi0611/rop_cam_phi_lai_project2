@@ -115,7 +115,7 @@ export class UserService {
   update(user: UserDto, avartar?: File) {
     const body = this.getFormDataFrom(user, avartar);
     const { id } = user;
-    return this.http.put(`${ACCOUNT_URL}/${id}`, body);
+    return this.http.put<User>(`${ACCOUNT_URL}/${id}`, body);
   }
 
   remove(userId: number) {

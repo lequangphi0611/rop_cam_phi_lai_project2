@@ -1,3 +1,4 @@
+import { ConfirmModule } from './../confirm/confirm.module';
 import { CartDataService } from './cart-data.service';
 import { StorageServiceModule } from 'ngx-webstorage-service';
 import { MaterialModule } from './../material/material.module';
@@ -27,7 +28,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     LazyLoadImageModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ConfirmModule
   ],
   providers: [
 
