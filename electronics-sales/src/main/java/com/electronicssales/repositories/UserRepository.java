@@ -19,6 +19,10 @@ public interface UserRepository extends MyCustomizeRepository<User, Long>, Custo
     String FIND_BY_ID = "SELECT u FROM User u WHERE u.id = ?1";
 
     String UPDATE_ATIVED = "UPDATE users SET actived = ?2 WHERE id = ?1";
+
+    String UPDATE_PASSWORD_BY_USERNAME = "UPDATE users SET password = ?2 WHERE username = ?1";
+
+    String GET_PASSWORD_BY_USERNAME = "SELECT u.password FROM User u WHERE u.username = ?1";
     
     Optional<User> findByUsername(String username);
 
@@ -37,4 +41,10 @@ public interface UserRepository extends MyCustomizeRepository<User, Long>, Custo
     @Query(value = UPDATE_ATIVED, nativeQuery = true)
     void updateActived(long userId, boolean actived);
 
+    @Modifying
+    @Query(value = UPDATE_PASSWORD_BY_USERNAME, nativeQuery = true)
+    void updatePasswordByUserName(String username, String newPassword);
+
+    @Query(GET_PASSWORD_BY_USERNAME)
+    Optional<String> getPasswordOf(String username);
 }

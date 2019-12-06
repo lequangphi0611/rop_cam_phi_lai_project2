@@ -145,6 +145,12 @@ export class UserService {
         })
       );
   }
+
+  updatePassword(oldPassword: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${ACCOUNT_URL}/update-password`, {
+      oldPassword, newPassword
+    });
+  }
 }
 
 export interface EmployeeFetchOption {

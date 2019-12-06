@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard.component';
 import { SideBarItemComponent } from './side-bar-item/side-bar-item.component';
+import { ChangePasswordModule } from '../change-password/change-password.module';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { SideBarItemComponent } from './side-bar-item/side-bar-item.component';
     CommonModule,
     DashboardRoutingModule,
     MaterialModule,
-    ConfirmModule
+    ConfirmModule,
+    ChangePasswordModule
   ]
 })
 export class DashboardModule { }

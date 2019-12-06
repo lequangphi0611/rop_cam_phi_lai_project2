@@ -1,9 +1,10 @@
+import { ChangePasswordDialogComponent } from 'src/app/change-password/change-password-dialog.component';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Role } from './../models/types/role.type';
 import { UserAuthenticatedService } from '../services/user-authenticated.service';
 import { ConfirmDialogComponent } from '../confirm/confirm-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 export interface SideBarItem {
   name: string;
@@ -92,6 +93,14 @@ export class DashboardComponent implements OnInit {
         action: () => this.logout()
       }
     );
+  }
+
+  openChangePasswordForm() {
+    const config: MatDialogConfig = {
+      autoFocus : true,
+      disableClose: false
+    };
+    this.dialog.open(ChangePasswordDialogComponent, config);
   }
 
   logout() {

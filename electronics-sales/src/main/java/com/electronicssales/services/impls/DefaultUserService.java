@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 
 import com.electronicssales.entities.Image;
 import com.electronicssales.entities.User;
@@ -43,6 +44,9 @@ public class DefaultUserService implements UserService {
     @Lazy
     @Autowired
     private Mapper<User, UserDto> userDtoToUserMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -122,6 +126,19 @@ public class DefaultUserService implements UserService {
     @Override
     public void updateActived(long userId, boolean actived) {
         userRepository.updateActived(userId, actived);
+    }
+
+    @Transactional
+    @Override
+    public void updatePasswordByUsername(String username, String password) {
+        userRepository.updatePasswordByUserName(username, password);
+    }
+
+    @Override
+    public boolean checkValidOldPassword(String username, String oldPassword) {
+        String password = userRepository.getPasswordOf(username)
+            .orElseThrow(EntityNotFoundException::new);
+        return passwordEncoder.matches(oldPassword, password);
     }
 
     @Lazy

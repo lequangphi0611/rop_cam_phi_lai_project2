@@ -29,5 +29,9 @@ public interface UserService extends UserDetailsService {
     Page<UserProjections> fetchEmployees(String search, Pageable pageable);
 
     void updateActived(long userId, boolean actived);
+
+    void updatePasswordByUsername(String username, String password);
+
+    boolean checkValidOldPassword(String username, String oldPassword);
     
 }

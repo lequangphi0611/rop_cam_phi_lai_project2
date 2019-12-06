@@ -13,6 +13,7 @@ import { HomeContentDefaultModule } from './home-content-default/home-content-de
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { SubNavigationComponent } from './home-header/sub-navigation/sub-navigation.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChangePasswordModule } from '../change-password/change-password.module';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    ConfirmModule
+    ConfirmModule,
+    ChangePasswordModule
   ],
   providers: [
 

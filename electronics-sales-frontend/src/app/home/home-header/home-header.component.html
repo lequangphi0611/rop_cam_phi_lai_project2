@@ -24,7 +24,11 @@
               </button>
             </ng-container>
             <ng-container *ngIf="category.childrens?.length > 0">
-              <button mat-menu-item (click)="goToProducts(category.id)" [matMenuTriggerFor]="childMenu">
+              <button
+                mat-menu-item
+                (click)="goToProducts(category.id)"
+                [matMenuTriggerFor]="childMenu"
+              >
                 {{ category.categoryName }} ({{ category.productCount }})
               </button>
               <mat-menu #childMenu="matMenu">
@@ -44,14 +48,17 @@
         </mat-menu>
       </li>
     </ul>
-    <form [formGroup]="seachForm" class="form-inline col-lg-12 m-3 my-2 my-lg-0s" (submit)="onSubmit()">
+    <form
+      [formGroup]="seachForm"
+      class="form-inline col-lg-12 m-3 my-2 my-lg-0s"
+      (submit)="onSubmit()"
+    >
       <input
         class="form-control mr-sm-2 col-8"
         type="search"
         placeholder="Nhập nội dung tìm kiếm..."
         aria-label="Search"
         formControlName="search"
-
       />
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
         Tìm kiếm
@@ -73,21 +80,19 @@
 
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <ul class="navbar-nav">
-        <li class="nav-item mr-3">
-            <a
-              class="nav-link"
-              [routerLink]="'cart'"
-              routerLinkActive="active"
-            >
-              <mat-icon [matBadge]="cartItemsCount | async" matBadgeColor="warn">shopping_cart</mat-icon>
-            </a>
-          </li>
+      <li class="nav-item mr-3">
+        <a class="nav-link" [routerLink]="'cart'" routerLinkActive="active">
+          <mat-icon [matBadge]="cartItemsCount | async" matBadgeColor="warn"
+            >shopping_cart</mat-icon
+          >
+        </a>
+      </li>
       <li *ngFor="let navItem of navItemRight$ | async" class="nav-item">
         <a
           class="nav-link"
           [routerLink]="[navItem.link]"
           routerLinkActive="active"
-          *ngIf="(!navItem.isLogin) || (navItem.isLogin && !(currUser$ | async))"
+          *ngIf="!navItem.isLogin || (navItem.isLogin && !(currUser$ | async))"
         >
           {{ navItem.name }}
         </a>
@@ -104,15 +109,33 @@
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <i class="fa fa-user"></i> {{(currUser$ | async).firstname}}
+          <i class="fa fa-user"></i> {{ (currUser$ | async).firstname }}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item d-flex flex-row align-items-center" *ngFor="let item of listItemUser" [routerLink]="item.link">
-            <mat-icon class="mat-18 mr-1">{{item.iconName}}</mat-icon>
-            {{item.name}}
+          <a
+            class="dropdown-item d-flex flex-row align-items-center"
+            *ngFor="let item of listItemUser"
+            [routerLink]="item.link"
+          >
+            <mat-icon class="mat-18 mr-1">{{ item.iconName }}</mat-icon>
+            {{ item.name }}
           </a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" (click)="logOut()">Đăng xuất</a>
+          <a
+            class="dropdown-item d-flex flex-row align-items-center"
+            (click)="openChangePassDialog()"
+          >
+            <mat-icon class="mat-18 mr-1">swap_horiz</mat-icon>
+            Đổi mật khẩu
+          </a>
+          <div class="dropdown-divider"></div>
+          <a
+            class="dropdown-item d-flex flex-row align-items-center"
+            (click)="logOut()"
+          >
+            <mat-icon class="mat-18 mr-1">exit_to_app</mat-icon>
+            Đăng xuất</a
+          >
         </div>
       </li>
     </ul>

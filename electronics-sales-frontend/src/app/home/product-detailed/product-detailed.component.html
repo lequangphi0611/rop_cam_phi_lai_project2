@@ -23,7 +23,7 @@
               <span class="h6">
                 {{ (product$ | async)?.price | currencyvn }}
                 <span class="badge badge-danger"
-                  >Giảm {{(product$ | async)?.discount | discount}}
+                  >Giảm {{ (product$ | async)?.discount | discount }}
                 </span>
               </span>
             </div>
@@ -34,8 +34,13 @@
               [parameters$]="parameters$"
             ></app-product-detailed-parameter-list>
             <br />
-            <div class="row px-0" *ngIf="(product$ | async) as product">
-              <button type="button" (click)="addToCart(product)" class="btn btn-danger col m-2" [matTooltip]="'Đã có ' + cartRemaining + ' trong giỏ hàng'">
+            <div class="row px-0" *ngIf="product$ | async as product">
+              <button
+                type="button"
+                (click)="addToCart(product)"
+                class="btn btn-danger col m-2"
+                [matTooltip]="cartRemaining > 0 ? 'Đã có ' + cartRemaining + ' trong giỏ hàng' : 'Chưa có trong giỏ hàng'"
+              >
                 Thêm vào giỏ hàng
               </button>
               <button type="button" class="btn btn-warning text-white col m-2">
@@ -50,47 +55,20 @@
     <div class="clear"></div>
     <hr style="background-color:red; " />
 
-    <div class="row col-12" style="padding: 20px;">
-      <div class="card border-light col-6" style="margin: 10px; padding: 20px;">
-        <div class="row">
+    <div class="row col-12" style="padding: 20px;"  *ngIf="(product$ | async) as product" >
+      <div class="card border-light col-12" style="margin: 10px; padding: 20px;">
+        <div class="row" *ngIf="product.descriptions as descriptions" >
           <h4 class="product-title">
-            Đặc điểm nổi bật của Samsung Galaxy S10+ (512GB)
+            Đặc điểm nổi bật của {{product.productName}}
           </h4>
-          <p>
-            Samsung Galaxy S10+ (512GB) đi theo kiểu thiết kế màn hình
-            Infinity-O với phần camera được đặt phía trong màn hình rất độc đáo.
-          </p>
-          <p>
-            Kiểu thiết kế mới này mang lại phần viền màn hình mỏng ở tất cả các
-            cạnh, từ đó khiến tổng thể máy không quá lớn so với kích thước màn
-            hình.
-          </p>
 
-          <div class="card-body">
-            <div class="product-description">
+          <div class="card-body p-0">
+            <div class="product-description" *ngFor="let description of descriptions" >
               <h5 class="title-description">
-                Camera được nâng lên tầm cao mới
+                {{description.title}}
               </h5>
-              <img
-                class="col-12"
-                src="img/DienThoai/SamSung/Samsung Galaxy S10+/samsung-galaxy-s10-plus_5_1.jpg"
-                alt=""
-              />
               <p>
-                Máy sở hữu 3 camera với các thông số lần lượt là: ống kính chính
-                góc rộng (77 độ) 12 MP (khẩu độ f/1.5), ống kính phụ tele 12 MP
-                (khẩu độ f/2.4) và ống kính phụ góc siêu rộng (123 độ, f/2.2) 16
-                MP.
-              </p>
-              <h5 class="title-description">Nhiều tính năng cao cấp khác</h5>
-              <img
-                class="col-12"
-                src="img/DienThoai/SamSung/Samsung Galaxy S10+/samsung-galaxy-s10-plus_mota.jpg"
-                alt=""
-              />
-              <p>
-                Vân tay siêu âm hiện đại và tiên tiến cũng là 1 tính năng hấp
-                dẫn trên S10+ giúp mở khoá máy nhanh chóng và đẳng cấp.
+                {{description.text}}
               </p>
             </div>
           </div>
@@ -98,77 +76,6 @@
 
         <div class="row container"></div>
       </div>
-      <div class="card border-light col-5 ">
-        <div class="product-offer">
-          <p>
-            <b><i class="fas fa-gift mr-3 text-info"></i> Trong hộp có:</b
-            ><a href="">
-              Trong hộp có: Pin, Sạc, Tai nghe, Cáp OTG, Cây lấy sim, Ốp lưng,
-              Hộp, Sách hướng dẫn
-            </a>
-          </p>
-          <p>
-            <i class="fas fa-handshake mr-3 text-info"></i> Bảo hành chính hãng
-            12 tháng.
-          </p>
-          <p>
-            <i class="fas fas fa-undo mr-3 text-info"></i>Lỗi là đổi mới trong 1
-            tháng tại các cửa hàng Infinity trong toàn quốc
-          </p>
-        </div>
-        <hr />
-        <div class="form-group">
-          <label for="comment"
-            >Bạn có thắc mắc gì xin để lại ở phía dưới:</label
-          >
-          <textarea class="form-control" rows="5" id="comment"></textarea>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <h5>Đánh giá chất lượng:</h5>
-          </div>
-          <div class="col-md-6 text-warning">
-            <i class="fa fa-star rating-light"></i
-            ><i class="fa fa-star rating-yelow"></i><i class="fa fa-star"></i
-            ><i class="fa fa-star"></i><i class="fa fa-star"></i>
-          </div>
-        </div>
-      </div>
-      <div class="container">
-        <div class="row">
-          <div class="comment container">
-            <div class="card comment-item row">
-              <div class="comment-user border-bottom row">
-                <img
-                  class="comment-item-image-user"
-                  src="img/user/Person-Male-Light-icon.png"
-                  alt=""
-                />
-                <span class="comment-item-user">Trần được</span>
-              </div>
-              <div class="card-body comment-body">
-                <p>Sản phẩm rất ok nhưng hơi đắt</p>
-              </div>
-
-              <div class="childrens-comment">
-                <div class="comment-item row">
-                  <img class="comment-item-image" src="" alt="" />
-                  <p class="comment-item-text">
-                    <img class="comment-item-text-img" src="" alt="" />
-                  </p>
-                  <div class="comment-item row">
-                    <img class="comment-item-image" src="" alt="" />
-                    <p class="comment-item-text">
-                      <img class="comment-item-text-img" src="" alt="" />
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-    <!-- </div> -->
   </div>
 </div>

@@ -42,7 +42,7 @@ export class OrderSuccessComponent implements OnInit, OnDestroy {
 
   get sumTotal() {
     return this.transactionDetailed
-      .reduce((total, current) => total + current.total , 0)
+      .reduce((total, current) => total + current.total , 0);
   }
 
   ngOnDestroy(): void {

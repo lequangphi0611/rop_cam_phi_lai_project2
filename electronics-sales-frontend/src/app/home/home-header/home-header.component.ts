@@ -11,7 +11,8 @@ import { Component, OnInit } from '@angular/core';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { CategoryService } from 'src/app/services/category.service';
 import { ConfirmDialogComponent } from 'src/app/confirm/confirm-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ChangePasswordDialogComponent } from 'src/app/change-password/change-password-dialog.component';
 
 const SUB_NAV_ITEMS: NavItemData[] = [
   {
@@ -83,7 +84,7 @@ export class HomeHeaderComponent implements OnInit {
   }
 
   trackByCategory(index: number, item: CategoryView) {
-    if(!item) {
+    if (!item) {
       return index;
     }
     return item.id;
@@ -128,5 +129,13 @@ export class HomeHeaderComponent implements OnInit {
       queryParams,
       queryParamsHandling: 'merge'
     });
+  }
+
+  openChangePassDialog() {
+    const config: MatDialogConfig = {
+      autoFocus : true,
+      disableClose: false
+    };
+    this.dialog.open(ChangePasswordDialogComponent, config);
   }
 }

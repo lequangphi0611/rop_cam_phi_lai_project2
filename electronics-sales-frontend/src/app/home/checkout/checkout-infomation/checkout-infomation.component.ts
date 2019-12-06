@@ -164,10 +164,7 @@ export class CheckoutInfomationComponent implements OnInit, OnDestroy {
     this.saveOrUpdateUserInfo()
       .pipe(
         map(user => this.getTransationDto(user)),
-        switchMap(transaction => {
-          console.log(transaction);
-          return this.transactionService.create(transaction);
-        })
+        switchMap(transaction => this.transactionService.create(transaction))
       )
     .subscribe(
       (result) => this.onSuccess(result),

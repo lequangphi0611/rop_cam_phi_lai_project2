@@ -47,9 +47,13 @@
               </button>
 
               <mat-menu #menu="matMenu">
-                <button mat-menu-item>
+                <button mat-menu-item [routerLink]="['my-account']">
                   <mat-icon>person</mat-icon>
                   <span>Tài khoản của tôi</span>
+                </button>
+                <button mat-menu-item (click)="openChangePasswordForm()">
+                  <mat-icon>swap_horiz</mat-icon>
+                  <span>Đổi mật khẩu</span>
                 </button>
                 <button mat-menu-item (click)="openLogoutConfirm()">
                   <mat-icon>exit_to_app</mat-icon>

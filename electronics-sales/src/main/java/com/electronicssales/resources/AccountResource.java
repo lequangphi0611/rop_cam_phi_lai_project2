@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import javax.activity.InvalidActivityException;
+
 import com.electronicssales.entities.User;
 import com.electronicssales.entities.UserInfo;
+import com.electronicssales.errors.InvalidOldPasswordException;
 import com.electronicssales.models.UserPrincipal;
+import com.electronicssales.models.dtos.UpdatePasswordRequest;
 import com.electronicssales.models.dtos.UserDto;
 import com.electronicssales.models.responses.UserInfoResponse;
 import com.electronicssales.models.types.Role;
@@ -21,11 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,11 +57,14 @@ public class AccountResource {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Lazy
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/current")
     public Callable<ResponseEntity<?>> fetchCurrentUserInfo() {
         return () -> {
             UserPrincipal userPrincipal = AuthenticateUtils.getUserPrincipal();
-            System.out.println(AuthenticateUtils.getSecurityContext().getAuthentication().getDetails());
             String username = userPrincipal.getUsername();
             UserInfoResponse user = userService.getUserInfoByUsername(username);
             user.setPassword(userPrincipal.getPassword());
@@ -111,6 +120,18 @@ public class AccountResource {
             UserInfoResponse result = Optional.of(userDto).map(userService::updateUser).map(userInfoMapper::mapping)
                     .get();
             return ResponseEntity.ok(result);
+        };
+    }
+
+    @PostMapping(value = "/update-password")
+    public Callable<ResponseEntity<?>> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest) {
+        return () -> {
+            String username = AuthenticateUtils.getUsernameAuthentecated();
+            if(!userService.checkValidOldPassword(username, updatePasswordRequest.getOldPassword())) {
+                throw new InvalidOldPasswordException("Invalid old password !");
+            }
+            userService.updatePasswordByUsername(username, passwordEncoder.encode(updatePasswordRequest.getNewPassword()));
+            return ResponseEntity.ok().build();
         };
     }
 
