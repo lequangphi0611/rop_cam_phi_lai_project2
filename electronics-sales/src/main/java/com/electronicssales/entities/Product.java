@@ -25,7 +25,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.electronicssales.models.RevenueProductStatisticalProjections;
-import com.electronicssales.models.StatisticalContants;
+import com.electronicssales.models.ProjectionsContants;
 import com.electronicssales.models.types.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -51,7 +51,7 @@ import lombok.experimental.FieldDefaults;
 @SqlResultSetMappings(
 	value = {
 		@SqlResultSetMapping(
-			name = StatisticalContants.REVENUE_PRODUCT_STATISTICAL_MAPPING_NAME,
+			name = ProjectionsContants.REVENUE_PRODUCT_STATISTICAL_MAPPING_NAME,
 			classes = {
 				@ConstructorResult(
 					targetClass = RevenueProductStatisticalProjections.class,

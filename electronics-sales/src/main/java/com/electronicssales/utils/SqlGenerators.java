@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
 
-public class GenerateSqlUtil {
+public class SqlGenerators {
 
     public static final String GROUP_BY_KEYWORD = "GROUP BY";
 
@@ -31,7 +31,7 @@ public class GenerateSqlUtil {
         }
 
         String orders = sort.get()
-            .map(GenerateSqlUtil::mapOrder)
+            .map(SqlGenerators::mapOrder)
             .collect(Collectors.joining(COMMA_DELIMITER));
         return new StringBuilder(ORDER_BY_KEYWORD)
             .append(SPACE)

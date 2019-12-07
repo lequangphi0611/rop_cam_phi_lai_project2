@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 import com.electronicssales.models.CategoryStatisticalProjections;
 import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
 import com.electronicssales.models.RevenueProductStatisticalProjections;
-import com.electronicssales.models.StatisticalContants;
+import com.electronicssales.models.ProjectionsContants;
+import com.electronicssales.repositories.BaseStatisticalRepository;
 import com.electronicssales.repositories.StatisticalRepository;
 
 @SuppressWarnings("unchecked")
-@Component
-public class StatisticalRepositoryImpl implements StatisticalRepository {
+public class BaseStatisticalRepositoryImpl implements BaseStatisticalRepository {
 	
 	private static final String CATEGORY_STATISTICAL_QUERY = "SELECT c.category_name AS categoryName, " 
 						+ "COUNT(DISTINCT p.id) AS productCount, "
@@ -35,7 +35,7 @@ public class StatisticalRepositoryImpl implements StatisticalRepository {
 			"   FROM images i " + 
 			"   INNER JOIN product_images pis ON pis.image_id = i.id " + 
 			"   WHERE pis.product_id = p.id) AS image, " +
-			"           COUNT(td.id) AS numberOfSales, " + 
+			"           COUNT(td.id) AS nusmberOfSales, " + 
 			"           SUM(td.quantity) AS quantityProductSold, " + 
 			"           SUM((td.price - (CASE td.discount_type " + 
 			"                                WHEN 'PERCENT' THEN (td.price * td.discount_value / 100) " + 
@@ -69,12 +69,8 @@ public class StatisticalRepositoryImpl implements StatisticalRepository {
 	public List<CategoryStatisticalProjections> getCategoryStatistical() {
 		return entityManager.createNativeQuery(
 					CATEGORY_STATISTICAL_QUERY, 
-					StatisticalContants.CATEGORY_STATISTICAL_MAPPING_NAME)
+					ProjectionsContants.CATEGORY_STATISTICAL_MAPPING_NAME)
 				.getResultList();
-	}
-	
-	@Bean
-	void test() {
 	}
 
 	@Override
@@ -82,7 +78,7 @@ public class StatisticalRepositoryImpl implements StatisticalRepository {
 		return entityManager
 				.createNativeQuery(
 					REVENUE_PRODUCT_STATISTICAL_QUERY,
-					StatisticalContants.REVENUE_PRODUCT_STATISTICAL_MAPPING_NAME
+					ProjectionsContants.REVENUE_PRODUCT_STATISTICAL_MAPPING_NAME
 				)
 				.setParameter(1, top == null ? DEFAULT_TOP_QUERY_PARAMETER : top)
 				.getResultList();
@@ -92,7 +88,7 @@ public class StatisticalRepositoryImpl implements StatisticalRepository {
 	public List<RevenueOverMonthStatisticalProjections> getRevenueMonthStatistical() {
 		return entityManager.createNativeQuery(
 				REVENUE_OVER_MONTH_STATISTICAL_QUERY, 
-				StatisticalContants.REVENUE_OVER_MONTH_STATISTICAL_PROJECTIONS_MAPPING
+				ProjectionsContants.REVENUE_OVER_MONTH_STATISTICAL_PROJECTIONS_MAPPING
 			)
 			.getResultList();
 	}

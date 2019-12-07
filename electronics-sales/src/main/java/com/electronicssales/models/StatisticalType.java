@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public enum StatisticalType {
 
-	DAYS,
+	DAY,
 	
 	MONTH,
 	

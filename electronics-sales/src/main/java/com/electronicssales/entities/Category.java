@@ -21,7 +21,7 @@ import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 
 import com.electronicssales.models.CategoryStatisticalProjections;
-import com.electronicssales.models.StatisticalContants;
+import com.electronicssales.models.ProjectionsContants;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,7 +40,7 @@ import lombok.experimental.FieldDefaults;
 @SqlResultSetMappings(
 	value = {
 		@SqlResultSetMapping(
-				name = StatisticalContants.CATEGORY_STATISTICAL_MAPPING_NAME,
+				name = ProjectionsContants.CATEGORY_STATISTICAL_MAPPING_NAME,
 				classes = {
 						@ConstructorResult(
 								targetClass = CategoryStatisticalProjections.class,

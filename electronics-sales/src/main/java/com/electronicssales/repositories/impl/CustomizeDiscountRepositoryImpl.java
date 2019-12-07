@@ -18,7 +18,7 @@ import com.electronicssales.models.DiscountProjections;
 import com.electronicssales.models.dtos.DiscountDto;
 import com.electronicssales.repositories.CustomizeDiscountRepository;
 import com.electronicssales.repositories.ProductRepository;
-import com.electronicssales.utils.GenerateSqlUtil;
+import com.electronicssales.utils.SqlGenerators;
 import com.electronicssales.utils.Mapper;
 
 import org.slf4j.Logger;
@@ -91,9 +91,9 @@ public class CustomizeDiscountRepositoryImpl implements CustomizeDiscountReposit
                 countSqlBuilder.append(" WHERE ").append(conditionsJoined);
             }
         });
-        fetchAllSqlBuilder.append(GenerateSqlUtil.SPACE).append(GenerateSqlUtil.buildGroupBy(COLUMN_GROUP));
+        fetchAllSqlBuilder.append(SqlGenerators.SPACE).append(SqlGenerators.buildGroupBy(COLUMN_GROUP));
 
-        fetchAllSqlBuilder.append(GenerateSqlUtil.SPACE).append(GenerateSqlUtil.buildOrderBy(pageable.getSort()));
+        fetchAllSqlBuilder.append(SqlGenerators.SPACE).append(SqlGenerators.buildOrderBy(pageable.getSort()));
 
         Query fetchAllQuery = entityManager.createNativeQuery(fetchAllSqlBuilder.toString(),
                 DISCOUNT_PROJECTIONS_MAPPING);

@@ -1,20 +1,13 @@
 package com.electronicssales.repositories;
 
-import java.util.List;
-
 import org.springframework.stereotype.Repository;
 
-import com.electronicssales.models.CategoryStatisticalProjections;
-import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
-import com.electronicssales.models.RevenueProductStatisticalProjections;
+import com.electronicssales.entities.Transaction;
 
 @Repository
-public interface StatisticalRepository {
+public interface StatisticalRepository extends 
+	org.springframework.data.repository.Repository<Transaction, Long> ,
+		BaseStatisticalRepository ,
+		RevenueStatisticalRepository {
 
-	List<CategoryStatisticalProjections> getCategoryStatistical();
-	
-	List<RevenueProductStatisticalProjections> getRevenueProductStatistical(Integer top);
-
-	List<RevenueOverMonthStatisticalProjections> getRevenueMonthStatistical();
-	
 }

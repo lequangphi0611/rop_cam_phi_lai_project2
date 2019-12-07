@@ -21,8 +21,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.electronicssales.models.RevenueByDayStatisticalProjections;
+import com.electronicssales.models.RevenueByMonthStatisticalProjections;
 import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
-import com.electronicssales.models.StatisticalContants;
+import com.electronicssales.models.RevenueStatisticalProjections;
+import com.electronicssales.models.ProjectionsContants;
 import com.electronicssales.models.TransactionProjections;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -42,10 +45,58 @@ import lombok.Data;
                 @ColumnResult(name = "subTotal", type = Long.class),
                 @ColumnResult(name = "discountTotal", type = Long.class),
                 @ColumnResult(name = "sumTotal", type = Long.class), })),
-        @SqlResultSetMapping(name = StatisticalContants.REVENUE_OVER_MONTH_STATISTICAL_PROJECTIONS_MAPPING, classes = {
+        @SqlResultSetMapping(name = ProjectionsContants.REVENUE_OVER_MONTH_STATISTICAL_PROJECTIONS_MAPPING, classes = {
                 @ConstructorResult(targetClass = RevenueOverMonthStatisticalProjections.class, columns = {
                         @ColumnResult(name = "month", type = Integer.class),
-                        @ColumnResult(name = "revenue", type = Long.class) }) }) })
+                        @ColumnResult(name = "revenue", type = Long.class) 
+                }) 
+        }),
+        @SqlResultSetMapping(
+        		name = ProjectionsContants.REVENUE_STATISTICAL_MAPPING_NAME,
+        		classes = {
+        			@ConstructorResult(
+        				targetClass = RevenueStatisticalProjections.class,
+        				columns = {
+        					@ColumnResult(name = "year", type = Integer.class),
+        					@ColumnResult(name = "minRevenue", type = Long.class),
+        					@ColumnResult(name = "maxRevenue", type = Long.class),
+        					@ColumnResult(name = "totalRevenue", type = Long.class)
+        				}
+        			)
+        		}
+        ),
+        @SqlResultSetMapping(
+        		name = ProjectionsContants.REVENUE_BY_MONTH_STATISTICAL_MAPPING_NAME,
+        		classes = {
+        			@ConstructorResult(
+        				targetClass = RevenueByMonthStatisticalProjections.class,
+        				columns = {
+        					@ColumnResult(name = "month", type = Integer.class),
+        					@ColumnResult(name = "year", type = Integer.class),
+        					@ColumnResult(name = "minRevenue", type = Long.class),
+        					@ColumnResult(name = "maxRevenue", type = Long.class),
+        					@ColumnResult(name = "totalRevenue", type = Long.class)
+        				}
+        			)
+        		}
+        ),
+        @SqlResultSetMapping(
+        		name = ProjectionsContants.REVENUE_BY_DAY_STATISTICAL_MAPPING_NAME,
+        		classes = {
+        			@ConstructorResult(
+        				targetClass = RevenueByDayStatisticalProjections.class,
+        				columns = {
+        					@ColumnResult(name = "day", type = Integer.class),
+        					@ColumnResult(name = "month", type = Integer.class),
+        					@ColumnResult(name = "year", type = Integer.class),
+        					@ColumnResult(name = "minRevenue", type = Long.class),
+        					@ColumnResult(name = "maxRevenue", type = Long.class),
+        					@ColumnResult(name = "totalRevenue", type = Long.class)
+        				}
+        			)
+        		}
+        )
+})
 public class Transaction {
 
     @Id
