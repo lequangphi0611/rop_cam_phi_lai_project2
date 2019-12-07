@@ -57,11 +57,10 @@
 
     <div class="row col-12" style="padding: 20px;"  *ngIf="(product$ | async) as product" >
       <div class="card border-light col-12" style="margin: 10px; padding: 20px;">
-        <div class="row" *ngIf="product.descriptions as descriptions" >
+        <div class="w-100" *ngIf="product.descriptions as descriptions" >
           <h4 class="product-title">
             Đặc điểm nổi bật của {{product.productName}}
           </h4>
-
           <div class="card-body p-0">
             <div class="product-description" *ngFor="let description of descriptions" >
               <h5 class="title-description">

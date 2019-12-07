@@ -16,6 +16,6 @@ public interface CustomizeDiscountRepository {
 
     Discount update(DiscountDto discountDto);
 
-    void deleteById(Long id);
+    void customizeDeleteById(Long id);
     
 }

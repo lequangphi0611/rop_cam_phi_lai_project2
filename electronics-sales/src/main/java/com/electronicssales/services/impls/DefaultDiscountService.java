@@ -80,7 +80,7 @@ public class DefaultDiscountService implements DiscountService {
     @Transactional
     @Override
     public void deleteById(long discountId) {
-        discountRepository.deleteById(discountId);
+        discountRepository.customizeDeleteById(discountId);
     }
 
     @Override

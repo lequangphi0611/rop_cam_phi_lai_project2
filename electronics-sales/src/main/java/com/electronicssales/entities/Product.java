@@ -126,13 +126,6 @@ public class Product {
     @OneToMany(
         mappedBy = "product",
         fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE
-    )
-    Collection<Review> reviews;
-
-    @OneToMany(
-        mappedBy = "product",
-        fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )

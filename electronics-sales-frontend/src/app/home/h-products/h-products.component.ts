@@ -192,6 +192,7 @@ export class HProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         map(option => this.mergeOption(option))
       )
       .subscribe(() => this.fetchProductChange$.next(true));
+    this.fetchManufacturers();
   }
 
   initFetchOption() {
@@ -207,6 +208,7 @@ export class HProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         return this.categoryService.getManufacturersBy(value);
       })
     );
+    this.manufacturer$.subscribe(console.log);
   }
 
   ngAfterViewInit() {

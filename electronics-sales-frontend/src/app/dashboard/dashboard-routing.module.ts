@@ -37,6 +37,7 @@ const routes: Routes = [
       },
       {
         path: 'transactions',
+        canActivate: [ManagerGuard],
         loadChildren: () =>
           import('./transaction/transaction.module').then(
             m => m.TransactionModule

@@ -18,7 +18,6 @@ import com.electronicssales.models.types.FetchProductType;
 import com.electronicssales.models.types.ProductSortType;
 import com.electronicssales.models.types.SortType;
 import com.electronicssales.services.ProductService;
-import com.electronicssales.services.ReviewService;
 import com.electronicssales.utils.Mapper;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -27,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,10 +48,6 @@ public class ProductResource {
     @Lazy
     @Autowired
     private ProductService productService;
-
-    @Lazy
-    @Autowired
-    private ReviewService reviewService;
 
     @Lazy
     @Autowired
@@ -228,13 +222,6 @@ public class ProductResource {
     @GetMapping("/{id}/categories")
     public Callable<ResponseEntity<?>> fetchCategories(@PathVariable("id") long productId) {
         return () -> ResponseEntity.ok(productService.getCategoriesBy(productId));
-    }
-
-    @GetMapping("/{id}/reviews")
-    public Callable<ResponseEntity<?>> fetchReviews(@PathVariable long id, @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) Integer size) {
-        Pageable pageable = (size == null || size <= 0) ? null : PageRequest.of(page, size);
-        return () -> ResponseEntity.ok(reviewService.findByProductId(id, pageable));
     }
 
     @RequestMapping(value = "/productName/{productName}")

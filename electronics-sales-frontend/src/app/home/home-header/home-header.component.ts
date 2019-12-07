@@ -24,10 +24,6 @@ const SUB_NAV_ITEMS: NavItemData[] = [
     link: 'about',
   },
   {
-    name: 'Tin tức',
-    link: 'news',
-  },
-  {
     name: 'Hỏi đáp',
     link: 'questions-answers',
   },

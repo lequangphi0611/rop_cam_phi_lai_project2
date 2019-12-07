@@ -167,7 +167,7 @@ public class CustomizeDiscountRepositoryImpl implements CustomizeDiscountReposit
 
     @Transactional
     @Override
-    public void deleteById(Long id) {
+    public void customizeDeleteById(Long id) {
         // remove all discount product
         this.productRepository.removeAllDiscount(id);
 

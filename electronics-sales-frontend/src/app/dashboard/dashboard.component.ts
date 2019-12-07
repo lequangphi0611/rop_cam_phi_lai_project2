@@ -55,7 +55,7 @@ const SIDE_BAR_ITEMS: SideBarItem[] = [
     name: 'Đơn hàng',
     fontAwesomeClass: 'fas fa-clipboard-list',
     links: [`transactions`],
-    roles: DASHBOARD_ROLE
+    roles: MANAGER_ROLE
   },
   {
     name: 'Nhân viên',
