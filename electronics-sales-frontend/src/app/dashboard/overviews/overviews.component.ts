@@ -1,4 +1,8 @@
+import { StatisticalService } from './../../services/statistical.service';
 import { Component, OnInit } from '@angular/core';
+import { ProductStatisticalView } from 'src/app/models/view-model/product-statistical';
+
+const DEFAULT_LIMIT_ELEMENT = 5;
 
 @Component({
   selector: 'app-overviews',
@@ -7,9 +11,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OverviewsComponent implements OnInit {
 
-  constructor() { }
+  revenueProductStatisticals: ProductStatisticalView[];
+
+  constructor(private statisticalService: StatisticalService) { }
 
   ngOnInit() {
+    this.fetchRevenueProductStatisticals(DEFAULT_LIMIT_ELEMENT);
+  }
+
+  fetchRevenueProductStatisticals(top?: number) {
+    this.statisticalService.getRevenueProductStatistical(top)
+      .subscribe(response => this.revenueProductStatisticals = response);
   }
 
 }

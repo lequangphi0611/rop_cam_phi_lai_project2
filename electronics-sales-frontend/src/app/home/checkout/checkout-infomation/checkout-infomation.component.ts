@@ -136,7 +136,8 @@ export class CheckoutInfomationComponent implements OnInit, OnDestroy {
   ): TransactionDetailedDto {
     const { productId, quantity, product } = checkoutItem;
     const { price, discount } = product;
-    let { discountType, discountValue } = discount;
+    let discountType;
+    let discountValue;
     if (discount) {
       discountType = discount.discountType;
       discountValue = discount.discountValue;

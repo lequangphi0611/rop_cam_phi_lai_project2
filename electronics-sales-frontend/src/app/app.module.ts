@@ -1,3 +1,4 @@
+import { StatisticalService } from './services/statistical.service';
 import { TransactionService } from './services/transaction.service';
 import { UserInfoService } from './services/user-info.service';
 import { CartDataService } from './home/cart-data.service';
@@ -54,7 +55,8 @@ import { DiscountService } from './services/discount.service';
     StorageServiceModule,
     CartDataService,
     UserInfoService,
-    TransactionService
+    TransactionService,
+    StatisticalService
   ],
   bootstrap: [AppComponent],
 })

@@ -1,0 +1,42 @@
+<div class="top" *ngIf="productStatisticals" >
+  <div class="top-title col-7">
+    <h5>{{ title }}</h5>
+  </div>
+  <div class="dt-buttons col-4">
+    <button type="button" class="btn btn-outline-success">Copy</button>
+    <button type="button" class="btn btn-outline-success">CSV</button>
+    <button type="button" class="btn btn-outline-success">Excel</button>
+    <button type="button" class="btn btn-outline-success">PDF</button>
+    <button type="button" class="btn btn-outline-success">Print</button>
+  </div>
+  <div class="top-body row col-12">
+    <table class="table">
+      <thead class="thead-light">
+        <tr>
+          <th>STT</th>
+          <th>Tên sản phẩm</th>
+          <th>Lượt bán</th>
+          <th>Số lượng đã bán</th>
+          <th>Doanh thu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let element of productStatisticals; let i = index;" >
+          <th>{{i + 1}}</th>
+          <td>
+              <div class="row d-flex flex-row align-items-center">
+                  <img class="td-row mr-2" [src]="'data:image/png;base64,' + element.image" alt="">
+                  <p [matTooltip]="element.productName.length >= 40 ? element.productName : ''">
+                    {{element.productName | cutString: 40}}
+                  </p>
+              </div>
+          </td>
+          <td>{{element.numberOfSales}}</td>
+          <td>{{element.quantityProductSold}}</td>
+          <td>{{element.revenue | currencyvn}}</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>

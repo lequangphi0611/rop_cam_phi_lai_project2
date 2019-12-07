@@ -1,0 +1,30 @@
+<div class="total-cell border ">
+  <div class="total-cell-title">
+    <h5>Tổng {{categoryStatistical?.totalProductSold}} sản phẩm đã bán</h5>
+  </div>
+  <div class="row col-12" *ngIf="categoryStatistical">
+    <div class="col" *ngFor="let element of categoryStatistical?.categoryStatisticals" >
+      <div class="card">
+        <div class="stat-widget-two">
+          <div class="stat-content">
+            <div class="stat-text">{{ element.categoryName }}</div>
+            <div class="stat-digit">{{ element.totalProductSold }}</div>
+          </div>
+          <div class="progress" *ngIf="((element.totalProductSold / categoryStatistical.totalProductSold) * 100) as totalProductSoldPercent" >
+            <div
+              class="progress-bar"
+              role="progressbar"
+              [style.width.%]="totalProductSoldPercent"
+            >
+              {{ totalProductSoldPercent | number }} %
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /# column -->
+  </div>
+</div>
+
+
+

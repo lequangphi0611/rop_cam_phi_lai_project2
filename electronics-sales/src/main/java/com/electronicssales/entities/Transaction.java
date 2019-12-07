@@ -16,10 +16,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
+import com.electronicssales.models.StatisticalContants;
 import com.electronicssales.models.TransactionProjections;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,23 +32,20 @@ import lombok.Data;
 @Entity
 @Table(name = "transactions")
 @Data
-@SqlResultSetMapping(
-    name = "TransactionProjectionsMapping",
-    classes = @ConstructorResult(
-        targetClass = TransactionProjections.class,
-        columns = {
-            @ColumnResult(name = "id",type = Long.class),
-            @ColumnResult(name = "createdTime", type = Date.class),
-            @ColumnResult(name = "fullname", type = String.class),
-            @ColumnResult(name = "email", type = String.class),
-            @ColumnResult(name = "phoneNumber", type = String.class),
-            @ColumnResult(name = "address", type = String.class),
-            @ColumnResult(name = "subTotal", type = Long.class),
-            @ColumnResult(name = "discountTotal", type = Long.class),
-            @ColumnResult(name = "sumTotal", type = Long.class),
-        }
-    )
-)
+@SqlResultSetMappings(value = {
+        @SqlResultSetMapping(name = "TransactionProjectionsMapping", classes = @ConstructorResult(targetClass = TransactionProjections.class, columns = {
+                @ColumnResult(name = "id", type = Long.class), @ColumnResult(name = "createdTime", type = Date.class),
+                @ColumnResult(name = "fullname", type = String.class),
+                @ColumnResult(name = "email", type = String.class),
+                @ColumnResult(name = "phoneNumber", type = String.class),
+                @ColumnResult(name = "address", type = String.class),
+                @ColumnResult(name = "subTotal", type = Long.class),
+                @ColumnResult(name = "discountTotal", type = Long.class),
+                @ColumnResult(name = "sumTotal", type = Long.class), })),
+        @SqlResultSetMapping(name = StatisticalContants.REVENUE_OVER_MONTH_STATISTICAL_PROJECTIONS_MAPPING, classes = {
+                @ConstructorResult(targetClass = RevenueOverMonthStatisticalProjections.class, columns = {
+                        @ColumnResult(name = "month", type = Integer.class),
+                        @ColumnResult(name = "revenue", type = Long.class) }) }) })
 public class Transaction {
 
     @Id
@@ -61,11 +61,7 @@ public class Transaction {
     @JoinColumn(name = "customer_id")
     private UserInfo customerInfo;
 
-    @OneToMany(
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE,
-        mappedBy = "transaction"
-    )
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "transaction")
     private Collection<TransactionDetailed> transactionDetaileds;
-    
+
 }

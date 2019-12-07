@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -16,10 +18,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.electronicssales.models.RevenueProductStatisticalProjections;
+import com.electronicssales.models.StatisticalContants;
 import com.electronicssales.models.types.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -42,6 +48,25 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@SqlResultSetMappings(
+	value = {
+		@SqlResultSetMapping(
+			name = StatisticalContants.REVENUE_PRODUCT_STATISTICAL_MAPPING_NAME,
+			classes = {
+				@ConstructorResult(
+					targetClass = RevenueProductStatisticalProjections.class,
+					columns = {
+						@ColumnResult(name = "productName", type = String.class),
+						@ColumnResult(name = "image", type = byte[].class),
+						@ColumnResult(name = "numberOfSales", type = Integer.class),
+						@ColumnResult(name = "quantityProductSold", type = Integer.class),
+						@ColumnResult(name = "revenue", type = Long.class)
+					}
+				)
+			}
+		)
+	}
+)
 public class Product {
 
     @Id

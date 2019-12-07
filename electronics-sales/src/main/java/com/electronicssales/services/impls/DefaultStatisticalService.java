@@ -1,0 +1,38 @@
+package com.electronicssales.services.impls;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
+import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
+import com.electronicssales.models.RevenueProductStatisticalProjections;
+import com.electronicssales.models.responses.CategoryStatisticalResponse;
+import com.electronicssales.repositories.StatisticalRepository;
+import com.electronicssales.services.StatisticalService;
+
+@Lazy
+@Service
+public class DefaultStatisticalService implements StatisticalService {
+	
+	@Lazy
+	@Autowired 
+	private StatisticalRepository statisticalRepository; 
+	
+	@Override
+	public CategoryStatisticalResponse getCategoryStatistical() {
+		return new CategoryStatisticalResponse(statisticalRepository.getCategoryStatistical());
+	}
+	
+	@Override
+	public List<RevenueProductStatisticalProjections> getRevenueProductStatistical(Integer top) {
+		return statisticalRepository.getRevenueProductStatistical(top);
+	}
+	
+	@Override
+	public List<RevenueOverMonthStatisticalProjections> getRevenueOverMonthStatistical() {
+		return statisticalRepository.getRevenueMonthStatistical();
+	}
+	
+}
