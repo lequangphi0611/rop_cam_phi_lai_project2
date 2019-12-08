@@ -8,9 +8,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,7 +23,9 @@ import com.electronicssales.models.RevenueStatisticalProjections;
 import com.electronicssales.models.ProjectionsContants;
 import com.electronicssales.models.StatisticalType;
 import com.electronicssales.repositories.RevenueStatisticalRepository;
+import com.electronicssales.utils.SqlDelimiters;
 import com.electronicssales.utils.SqlGenerators;
+import com.electronicssales.utils.SqlKeyWords;
 
 @SuppressWarnings("unchecked")
 public class RevenueStatisticalRepositoryImpl implements RevenueStatisticalRepository {
@@ -76,7 +81,7 @@ public class RevenueStatisticalRepositoryImpl implements RevenueStatisticalRepos
 	private EntityManager entityManager;
 	
 	@Override
-	public <T extends RevenueStatisticalProjections> List<T> getRevenueStatistical(StatisticalType statisticalType,
+	public <T extends RevenueStatisticalProjections> Page<T> getRevenueStatistical(StatisticalType statisticalType,
 			Pageable pageable) {
 		StringBuilder queryBuilder = new StringBuilder(getFullReveneStatisticalQuery(statisticalType));
 		
@@ -90,13 +95,43 @@ public class RevenueStatisticalRepositoryImpl implements RevenueStatisticalRepos
 			.append(SqlGenerators.buildOrderBy(sort));
 		
 		String sqlResultsetMappingName = getRevenueStatisticalMapping(statisticalType);
-		return entityManager.createNativeQuery(
+		Query fetchAllQuery = entityManager.createNativeQuery(
 					queryBuilder.toString(), 
 					sqlResultsetMappingName
-				)
+		);
+		
+		if(pageable.isPaged()) {
+			fetchAllQuery
 				.setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize())
-				.getResultList();
+				.setMaxResults(pageable.getPageSize());
+		}
+		
+		Query countQuery = entityManager.createNativeQuery(getCountQueryBy(statisticalType));
+		
+		final List<T> result = fetchAllQuery.getResultList();
+		final int totalElements = (int)countQuery.getSingleResult();
+		return new PageImpl<T>(result, pageable, totalElements);
+	}
+	
+	private String getCountQueryBy(StatisticalType statisticalType) {
+		StringBuilder builder = new StringBuilder(SqlKeyWords.SELECT)
+				.append(SqlDelimiters.SPACE);
+		switch (statisticalType) {
+		case YEAR:
+			builder.append("COUNT(DISTINCT YEAR(created_time)) ");
+			break;
+			
+		case MONTH:
+			builder.append("COUNT(DISTINCT MONTH(created_time)) ");
+			break;
+
+		default:
+			builder.append("COUNT(DISTINCT DAY(created_time)) ");
+		}
+		builder.append(SqlKeyWords.FROM)
+			.append(SqlDelimiters.SPACE)
+			.append("transactions t");
+		return builder.toString();
 	}
 	
 	private String getFullReveneStatisticalQuery(StatisticalType statisticalType) {

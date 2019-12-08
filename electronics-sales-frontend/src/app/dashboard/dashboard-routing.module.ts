@@ -49,17 +49,28 @@ const routes: Routes = [
         loadChildren: () =>
           import('./employees/employees.module').then(m => m.EmployeesModule)
       },
-      { path: 'discounts', loadChildren: () => import('./discount/discount.module').then(m => m.DiscountModule) },
+      {
+        path: 'discounts',
+        loadChildren: () =>
+          import('./discount/discount.module').then(m => m.DiscountModule)
+      },
       {
         path: 'my-account',
         loadChildren: () =>
-          import('../home/my-account/update-my-account/update-my-account.module').then(
-            m => m.UpdateMyAccountModule
-          )
+          import(
+            '../home/my-account/update-my-account/update-my-account.module'
+          ).then(m => m.UpdateMyAccountModule)
       },
+      {
+        path: 'statistical',
+        canActivate: [ManagerGuard],
+        loadChildren: () =>
+          import('./statistical/statistical.module').then(
+            m => m.StatisticalModule
+          )
+      }
     ]
-  },
-
+  }
 ];
 
 @NgModule({

@@ -2,6 +2,7 @@ package com.electronicssales.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
@@ -18,6 +19,6 @@ public interface StatisticalService {
 	
 	List<RevenueOverMonthStatisticalProjections> getRevenueOverMonthStatistical();
 	
-	<T extends RevenueStatisticalProjections> List<T> getRevenueStatistical(StatisticalType statisticalType, Pageable pageable);
+	<T extends RevenueStatisticalProjections> Page<T> getRevenueStatistical(StatisticalType statisticalType, Pageable pageable);
 	
 }

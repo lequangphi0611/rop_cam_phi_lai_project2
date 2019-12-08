@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ public class DefaultStatisticalService implements StatisticalService {
 	}
 	
 	@Override
-	public <T extends RevenueStatisticalProjections> List<T> getRevenueStatistical(StatisticalType statisticalType,
+	public <T extends RevenueStatisticalProjections> Page<T> getRevenueStatistical(StatisticalType statisticalType,
 			Pageable pageable) {
 		return statisticalRepository.getRevenueStatistical(statisticalType, pageable);
 	}

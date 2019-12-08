@@ -62,6 +62,12 @@ const SIDE_BAR_ITEMS: SideBarItem[] = [
     fontAwesomeClass: 'fas fa-user-friends',
     links: [`employees`],
     roles: MANAGER_ROLE
+  },
+  {
+    name: 'Thống kê',
+    fontAwesomeClass: 'fas fa-chart-bar',
+    links: [`statistical`],
+    roles: MANAGER_ROLE
   }
 ];
 
