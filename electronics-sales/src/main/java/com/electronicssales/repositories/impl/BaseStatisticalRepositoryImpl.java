@@ -35,7 +35,7 @@ public class BaseStatisticalRepositoryImpl implements BaseStatisticalRepository 
 			"   FROM images i " + 
 			"   INNER JOIN product_images pis ON pis.image_id = i.id " + 
 			"   WHERE pis.product_id = p.id) AS image, " +
-			"           COUNT(td.id) AS nusmberOfSales, " + 
+			"           COUNT(td.id) AS numberOfSales, " + 
 			"           SUM(td.quantity) AS quantityProductSold, " + 
 			"           SUM((td.price - (CASE td.discount_type " + 
 			"                                WHEN 'PERCENT' THEN (td.price * td.discount_value / 100) " + 

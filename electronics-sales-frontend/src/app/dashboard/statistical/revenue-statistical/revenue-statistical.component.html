@@ -1,1 +1,76 @@
-<p>revenue-statistical works!</p>
+<div class="col-12">
+
+  <div class="col-12 row">
+    <p class="col-3">Thống kê theo : </p>
+    <div class="col-8 d-flex-justify-content-center">
+        <mat-radio-group [formControl]="statisticalTypeControl">
+            <mat-radio-button  *ngFor="let statisticalType of statisticalTypes" class="mx-4" [value]="statisticalType">
+              {{getStatisticalTypeName(statisticalType)}}
+            </mat-radio-button>
+          </mat-radio-group>
+    </div>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <div class="col-12 d-flex justify-content-center">
+        <mat-table
+      [dataSource]="dataSource"
+      class="col-12 w-100 p-0"
+      matSort
+      matSortStart="desc"
+      (matSortChange)="onSortChange($event)"
+    >
+      <ng-container matColumnDef="createdTime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{timeHeaderName}}</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+          <p class="text-left p-2">
+           {{format(element.year, element.month, element.day)}}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="minRevenue">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Doanh thu thấp nhất</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+          <p class="text-left p-2">
+           {{element.minRevenue | currencyvn}}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="maxRevenue">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Doanh thu cao nhất</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+          <p class="text-left p-2">
+           {{element.maxRevenue | currencyvn}}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalRevenue">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tổng</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+          <p class="text-left p-2">
+           {{element.totalRevenue | currencyvn}}
+          </p>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </mat-table>
+      </div>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <mat-paginator
+
+      [length]="dataSource?.totalElements"
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 15]"
+    >
+    </mat-paginator>
+  </mat-card-actions>
+</mat-card>
+</div>
+

@@ -1,5 +1,5 @@
 import { tap, map } from 'rxjs/operators';
-import { StatistycalType } from './../../../models/types/statistical.type';
+import { StatisticalType } from './../../../models/types/statistical.type';
 import {
   StatisticalService,
   StatisticalOption
@@ -33,7 +33,7 @@ export class RevenueStatisticalDataSource extends DataSource<
 
   load(
     option: {
-      statisticalType?: StatistycalType;
+      statisticalType?: StatisticalType;
       pageable?: StatisticalOption;
     } = {}
   ) {

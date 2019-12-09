@@ -42,12 +42,15 @@ public class CustomizeImportInvoiceRepositoryImpl implements CustomizeImportInvo
 			"	FROM images i" + 
 			"		INNER JOIN product_images pImage" + 
 			"			ON i.id = pImage.image_id" + 
-			"	WHERE pImage.product_id = p.id) as productImage" + 
+			"	WHERE pImage.product_id = p.id) as productImage, " + 
+			"i1.data as creatorAvartar " +
 			"	FROM import_invoices import" + 
 			"		INNER JOIN users u" + 
 			"			ON import.creator_id = u.id" + 
 			"		INNER JOIN products p" + 
-			"			ON import.product_id = p.id";
+			"			ON import.product_id = p.id " +
+			"		LEFT JOIN images i1 " + 
+			"			ON i1.id = u.avartar_id";
 	
 	private static final String COUNT_QUERY = "SELECT COUNT(import.id) FROM import_invoices import";
 	
@@ -69,7 +72,6 @@ public class CustomizeImportInvoiceRepositoryImpl implements CustomizeImportInvo
 		StringBuilder fetchAllQuerybuilder = new StringBuilder(FETCH_ALL_IMPORT_INVOICE_QUERY);
 		StringBuilder countQueryBuilder = new StringBuilder(COUNT_QUERY);
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		
 		if(Objects.nonNull(option) && !option.isEmpty()) {
 			StringBuilder conditionBuilder = new StringBuilder(SqlKeyWords.WHERE)
 					.append(SqlDelimiters.SPACE);
@@ -89,7 +91,7 @@ public class CustomizeImportInvoiceRepositoryImpl implements CustomizeImportInvo
 						.append(":")
 						.append(TO_DATE_PARAMETER_NAME)
 				);
-				parameters.put(FROM_DATE_PARAMETER_NAME, option.getToDate());
+				parameters.put(TO_DATE_PARAMETER_NAME, option.getToDate());
 			}
 			conditionBuilder.append(String.join(SqlOperators.AND, conditions));
 			fetchAllQuerybuilder.append(SqlDelimiters.SPACE).append(conditionBuilder);
@@ -124,11 +126,6 @@ public class CustomizeImportInvoiceRepositoryImpl implements CustomizeImportInvo
 		final List<ImportInvoiceProjections> importInvoices = fetchAllQuery.getResultList();
 		final int totalElements = (int) countQuery.getSingleResult();
 		return new PageImpl<>(importInvoices, pageable, totalElements);
-	}
-	
-	@Bean
-	public void test() {
-		this.getImportInvoices(ImportInvoiceFetchOption.nonOption(), Pageable.unpaged()).forEach(System.out::println);;
 	}
 
 }

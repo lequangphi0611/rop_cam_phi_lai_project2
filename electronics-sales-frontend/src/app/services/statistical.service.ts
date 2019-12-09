@@ -1,17 +1,24 @@
-import { tap } from "rxjs/operators";
-import { RevenueStatisticalView } from "./../models/view-model/revenue-statistical.model";
-import { RevenueMonthView } from "./../models/view-model/revenue-month.view.model";
-import { Observable } from "rxjs";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { CategoryStatistical } from "../models/view-model/category-statistical.model";
-import { ProductStatisticalView } from "../models/view-model/product-statistical";
-import { Page } from "../models/page.model";
-import { StatistycalType } from "../models/types/statistical.type";
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Page } from '../models/page.model';
+import { StatisticalType } from '../models/types/statistical.type';
+import { CategoryStatistical } from '../models/view-model/category-statistical.model';
+import { ProductStatisticalView } from '../models/view-model/product-statistical';
+import { RevenueMonthView } from './../models/view-model/revenue-month.view.model';
+import { RevenueStatisticalView } from './../models/view-model/revenue-statistical.model';
+import { Pageable } from '../models/pageable';
+import { ImportInvoiceReportView } from '../models/view-model/import-invoice-report.view.model';
+import { tap } from 'rxjs/operators';
+import { formatDate } from '@angular/common';
 
-const STATISTICAL_URL = "/api/statisticals";
+const STATISTICAL_URL = '/api/statisticals';
 
-export interface StatisticalOption {
+const FORMAT_DATE_PATTERN = 'yyyy-MM-dd';
+
+const LOCALE = 'en-US';
+
+export interface StatisticalOption  {
   page?: number;
 
   size?: number;
@@ -21,14 +28,23 @@ export interface StatisticalOption {
   direction?: string;
 }
 
+export interface ImportInvoiceReportOption extends Pageable {
+
+
+  fromDate?: Date;
+
+  toDate?: Date;
+
+}
+
 const DEFAULT_STATISTICAL_OPTION: StatisticalOption = {
   page: 0,
   size: 10,
-  direction: "DESC"
+  direction: 'DESC'
 };
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class StatisticalService {
   constructor(private http: HttpClient) {}
@@ -41,7 +57,7 @@ export class StatisticalService {
     return this.http.get<ProductStatisticalView[]>(
       `${STATISTICAL_URL}/revenue-product`,
       {
-        params: new HttpParams().set("top", top.toString())
+        params: new HttpParams().set('top', top.toString())
       }
     );
   }
@@ -54,7 +70,7 @@ export class StatisticalService {
 
   getRevenueStatisticalBy(
     option: StatisticalOption = {},
-    statisticalType: StatistycalType = StatistycalType.DAY
+    statisticalType: StatisticalType = StatisticalType.DAY
   ): Observable<Page<RevenueStatisticalView>> {
     option = {...DEFAULT_STATISTICAL_OPTION, ...option};
     const {page, size, sort, direction} = option;
@@ -71,5 +87,30 @@ export class StatisticalService {
         }
       }
     );
+  }
+
+  getImportInvoceReports(option: ImportInvoiceReportOption = {}) {
+    const { page, size, sort, direction, fromDate, toDate } = option;
+    const params: any = { page, size };
+    if (sort) {
+      params.sort = `${sort},${direction || 'ASC'}`;
+    }
+
+    params.fromDate = formatDate(fromDate, FORMAT_DATE_PATTERN, LOCALE) || '';
+    params.toDate = formatDate(toDate, FORMAT_DATE_PATTERN, LOCALE) || '';
+    return this.http
+      .get<Page<ImportInvoiceReportView>>(
+        `${STATISTICAL_URL}/import-invoice-reports`,
+        {
+          params
+        }
+      )
+      .pipe(
+        tap(result =>
+          result.content.forEach(
+            value => (value.importTime = new Date(value.importTime))
+          )
+        )
+      );
   }
 }

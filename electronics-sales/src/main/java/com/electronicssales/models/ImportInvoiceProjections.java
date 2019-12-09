@@ -21,4 +21,7 @@ public class ImportInvoiceProjections {
 	@ToString.Exclude
 	byte[] productImage;
 	
+	@ToString.Exclude
+	byte[] creatorAvartar;
+	
 }

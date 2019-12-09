@@ -1,4 +1,4 @@
-export enum StatistycalType {
+export enum StatisticalType {
 
   DAY = 'DAY',
 
@@ -8,4 +8,4 @@ export enum StatistycalType {
 
 }
 
-export const values = [StatistycalType.DAY, StatistycalType.MONTH, StatistycalType.YEAR];
+export const values = [StatisticalType.DAY, StatisticalType.MONTH, StatisticalType.YEAR];

@@ -1,0 +1,72 @@
+<div class="col-12">
+
+  <mat-card>
+    <mat-card-content>
+      <div class="col-12 d-flex justify-content-center">
+        <mat-table
+      [dataSource]="dataSource"
+      class="col-12 w-100 p-0"
+      matSort
+      matSortStart="desc"
+
+    >
+    <!-- (matSortChange)="onSortChange($event)" -->
+      <ng-container matColumnDef="importTime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Thời gian</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+          <div class="d-flex align-items-center text-left p-2">
+           {{element.importTime | date : 'HH:mm dd/MM/yyyy'}}
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="creatorUsername">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Người tạo</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+            <img class="td-img avartar mr-2" [src]="element.creatorAvartar | imageBase64: '/assets/img/avatar_user.png'" alt="">
+
+            <span>
+              {{element.creatorUsername}}
+            </span>
+
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="productName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Sản phẩm</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+          <img class="td-img mr-2" [src]="element.productImage | imageBase64: '/assets/img/avatar_user.png'" alt="">
+
+            <span>
+              {{element.productName}}
+            </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Số lượng</th>
+        <td mat-cell *matCellDef="let element" class="mx-2 text-left p-2">
+          <p class="text-right p-2">
+           {{element.quantity}}
+          </p>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </mat-table>
+      </div>
+  </mat-card-content>
+  <mat-card-actions align="end">
+      <mat-paginator
+
+      [length]="dataSource?.totalElements"
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 15]"
+    >
+    </mat-paginator>
+  </mat-card-actions>
+</mat-card>
+
+</div>

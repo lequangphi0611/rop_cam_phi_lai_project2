@@ -38,6 +38,7 @@ import lombok.Data;
 				@ColumnResult(name = "creatorUsername", type = String.class),
 				@ColumnResult(name = "productName", type = String.class),
 				@ColumnResult(name = "productImage", type = byte[].class),
+				@ColumnResult(name = "creatorAvartar", type = byte[].class),
 			}
 		)
 	}

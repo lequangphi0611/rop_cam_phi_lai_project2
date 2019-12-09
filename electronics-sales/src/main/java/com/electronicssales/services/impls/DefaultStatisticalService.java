@@ -8,11 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.electronicssales.models.ImportInvoiceFetchOption;
+import com.electronicssales.models.ImportInvoiceProjections;
 import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
 import com.electronicssales.models.RevenueProductStatisticalProjections;
 import com.electronicssales.models.RevenueStatisticalProjections;
 import com.electronicssales.models.StatisticalType;
 import com.electronicssales.models.responses.CategoryStatisticalResponse;
+import com.electronicssales.repositories.ImportInvoiceRepository;
 import com.electronicssales.repositories.StatisticalRepository;
 import com.electronicssales.services.StatisticalService;
 
@@ -23,6 +26,9 @@ public class DefaultStatisticalService implements StatisticalService {
 	@Lazy
 	@Autowired 
 	private StatisticalRepository statisticalRepository; 
+	
+	@Autowired
+	private ImportInvoiceRepository importInvoiceRepository;
 	
 	@Override
 	public CategoryStatisticalResponse getCategoryStatistical() {
@@ -45,4 +51,8 @@ public class DefaultStatisticalService implements StatisticalService {
 		return statisticalRepository.getRevenueStatistical(statisticalType, pageable);
 	}
 	
+	@Override
+	public Page<ImportInvoiceProjections> getImportInvoiceReport(ImportInvoiceFetchOption option, Pageable pageable) {
+		return importInvoiceRepository.getImportInvoices(option, pageable);
+	}
 }
