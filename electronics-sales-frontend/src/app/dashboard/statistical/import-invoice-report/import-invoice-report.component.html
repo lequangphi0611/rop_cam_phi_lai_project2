@@ -1,5 +1,43 @@
 <div class="col-12">
-
+  <div class="col-12 row">
+    <div class="form-group col-5 mr-2 ml-0">
+      <label for="fromDate" class="col-3">Từ ngày : </label>
+      <mat-form-field class="col-8 p-0">
+        <input
+          matInput
+          id="fromDate"
+          [max]="toDateControl.value"
+          class="col-12 p-0"
+          [matDatepicker]="fromDatePicker"
+          [formControl]="fromDateControl"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="fromDatePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker touchUi #fromDatePicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="form-group col-5 mr-2 ml-0">
+      <label for="toDate" class="col-3">Đến ngày : </label>
+      <mat-form-field class="col-8 p-0">
+        <input
+          matInput
+          id="toDate"
+          class="col-12 p-0"
+          [min]="fromDateControl.value"
+          [max]="maxDate"
+          [matDatepicker]="toDatePicker"
+          [formControl]="toDateControl"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="toDatePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker touchUi #toDatePicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
   <mat-card>
     <mat-card-content>
       <div class="col-12 d-flex justify-content-center">

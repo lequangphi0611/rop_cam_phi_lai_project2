@@ -34,7 +34,7 @@ export class ImportInvoiceReportDataSource extends DataSource<ImportInvoiceRepor
         map(result => result.totalElements),
         tap(totalElements => (this._totalElements = totalElements))
       )
-      .subscribe(console.log);
+      .subscribe();
   }
 
   get totalElements() {

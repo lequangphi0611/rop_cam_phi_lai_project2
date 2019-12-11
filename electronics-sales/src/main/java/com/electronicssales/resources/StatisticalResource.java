@@ -67,4 +67,11 @@ public class StatisticalResource {
 		toDateOptional.ifPresent(builder::toDate);
 		return () -> ResponseEntity.ok(statisticalService.getImportInvoiceReport(builder.build(), pageable));
 	}
+	
+	@GetMapping("product")
+	public Callable<ResponseEntity<?>> getProductStatistical(
+			Pageable pageable
+	) {
+		return () -> ResponseEntity.ok(statisticalService.getProductStatistical(pageable));
+	}
 }

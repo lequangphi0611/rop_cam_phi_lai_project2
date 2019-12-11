@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.electronicssales.models.ImportInvoiceFetchOption;
 import com.electronicssales.models.ImportInvoiceProjections;
+import com.electronicssales.models.ProductStatisticalProjections;
 import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
 import com.electronicssales.models.RevenueProductStatisticalProjections;
 import com.electronicssales.models.RevenueStatisticalProjections;
@@ -24,5 +25,7 @@ public interface StatisticalService {
 	<T extends RevenueStatisticalProjections> Page<T> getRevenueStatistical(StatisticalType statisticalType, Pageable pageable);
 	
 	Page<ImportInvoiceProjections> getImportInvoiceReport(ImportInvoiceFetchOption option, Pageable pageable);
+	
+	Page<ProductStatisticalProjections> getProductStatistical(Pageable pageable);
 	
 }

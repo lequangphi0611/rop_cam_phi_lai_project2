@@ -16,4 +16,6 @@ public interface ProjectionsContants {
 
 	String IMPORT_INVOICE_MAPPING_NAME = "ImportInvoiceProjectionsMapping";
 	
+	String PRODUCT_STATISTICAL_PROJECTIONS_MAPPING_NAME = "ProductStatisticalProjectionsMapping";
+	
 }

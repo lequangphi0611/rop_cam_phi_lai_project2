@@ -8,6 +8,7 @@ import com.electronicssales.entities.Transaction;
 public interface StatisticalRepository extends 
 	org.springframework.data.repository.Repository<Transaction, Long> ,
 		BaseStatisticalRepository ,
-		RevenueStatisticalRepository {
+		RevenueStatisticalRepository,
+		ProductStatisticalRepository{
 
 }

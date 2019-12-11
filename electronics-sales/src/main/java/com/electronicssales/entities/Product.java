@@ -25,6 +25,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.electronicssales.models.RevenueProductStatisticalProjections;
+import com.electronicssales.models.ProductStatisticalProjections;
 import com.electronicssales.models.ProjectionsContants;
 import com.electronicssales.models.types.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -62,6 +63,22 @@ import lombok.experimental.FieldDefaults;
 						@ColumnResult(name = "quantityProductSold", type = Integer.class),
 						@ColumnResult(name = "revenue", type = Long.class)
 					}
+				)
+			}
+		),
+		@SqlResultSetMapping(
+			name = ProjectionsContants.PRODUCT_STATISTICAL_PROJECTIONS_MAPPING_NAME,
+			classes = {
+				@ConstructorResult(
+						targetClass = ProductStatisticalProjections.class,
+						columns = {
+							@ColumnResult(name = "image", type = byte[].class),
+							@ColumnResult(name = "id", type = Long.class),
+							@ColumnResult(name = "productName", type = String.class),
+							@ColumnResult(name = "quantitySold", type = Integer.class),
+							@ColumnResult(name = "totalDiscount", type = Long.class),
+							@ColumnResult(name = "totalRevenue", type = Long.class)
+						}
 				)
 			}
 		)

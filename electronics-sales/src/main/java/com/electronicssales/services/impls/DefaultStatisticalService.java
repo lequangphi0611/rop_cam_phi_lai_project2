@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.electronicssales.models.ImportInvoiceFetchOption;
 import com.electronicssales.models.ImportInvoiceProjections;
+import com.electronicssales.models.ProductStatisticalProjections;
 import com.electronicssales.models.RevenueOverMonthStatisticalProjections;
 import com.electronicssales.models.RevenueProductStatisticalProjections;
 import com.electronicssales.models.RevenueStatisticalProjections;
@@ -54,5 +55,10 @@ public class DefaultStatisticalService implements StatisticalService {
 	@Override
 	public Page<ImportInvoiceProjections> getImportInvoiceReport(ImportInvoiceFetchOption option, Pageable pageable) {
 		return importInvoiceRepository.getImportInvoices(option, pageable);
+	}
+	
+	@Override
+	public Page<ProductStatisticalProjections> getProductStatistical(Pageable pageable) {
+		return statisticalRepository.getProductStatistical(pageable);
 	}
 }

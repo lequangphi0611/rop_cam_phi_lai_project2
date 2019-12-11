@@ -21,4 +21,8 @@ public enum SqlKeyWords implements EnumCharSequence {
 		this.value = value;
 	}
 	
+	@Override
+	public String toString() {
+		return value;
+	}
 }
