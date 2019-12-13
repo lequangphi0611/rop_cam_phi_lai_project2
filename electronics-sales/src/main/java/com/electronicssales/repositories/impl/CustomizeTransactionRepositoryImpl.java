@@ -127,5 +127,79 @@ public class CustomizeTransactionRepositoryImpl implements CustomizeTransactionR
         final int maxSize = (Integer) countQuery.getSingleResult();
         return new PageImpl<TransactionProjections>(transactions, pageable, maxSize);
     }
+    
+    @Override
+    public Page<TransactionProjections> fetchById(long customerId, TransactionFetchOption option, Pageable pageable) {
+    	pageable = pageable == null || pageable.isUnpaged() ? DEFAULT_PAGEABLE : pageable;
+        // init base sql
+        StringBuilder fetchQueryBuilder = new StringBuilder(BASE_FETCH_ALL_QUERY);
+        // init base count sql
+        StringBuilder countQueryBuilder = new StringBuilder(BASE_COUNT_QUERY);
+
+        //init params
+        Map<String, Object> params = new HashMap<>();
+
+        // build condition
+        List<String> conditions = new ArrayList<>();
+        conditions.add("t.customer_id = :customerId");
+        params.put("customerId", customerId);
+        if(option != null) {
+            Optional<Date> fromDateOptional = Optional.ofNullable(option.getFromDate());
+            Optional<Date> toDateOptional = Optional.ofNullable(option.getToDate());
+            
+            fromDateOptional.ifPresent(value -> {
+                conditions.add(" CAST(created_time as DATE) >= :fromDate ");
+                params.put("fromDate", value);
+            });
+            toDateOptional.ifPresent(value -> {
+                conditions.add(" CAST(created_time as DATE) <= :toDate ");
+                params.put("toDate", value);
+            });  
+        }
+        
+        if(!params.isEmpty()) {
+           StringBuilder conditionsBuilder = new StringBuilder(" WHERE ");
+           conditionsBuilder.append(String.join(" AND ", conditions));
+           fetchQueryBuilder.append(conditionsBuilder);
+           countQueryBuilder.append(conditionsBuilder);
+        }
+
+        // append group sql
+        fetchQueryBuilder.append(GROUP_FETCH_ALL_QUERY);
+
+        // init order by
+        StringBuilder sortBuilder = new StringBuilder(" ORDER BY ");
+        Sort sort = pageable.getSort().isSorted() ? pageable.getSort() : DEFAULT_SORT;
+        List<StringBuilder> orders = new ArrayList<>();
+        sort.stream().forEach(order -> {
+            StringBuilder orderBuilder = new StringBuilder(" ");
+            orderBuilder.append(order.getProperty())
+                .append(" ")
+                .append(order.getDirection().name())
+                .append(" ");
+            orders.add(orderBuilder);
+        });
+
+        sortBuilder.append(String.join(", ", orders));
+
+        fetchQueryBuilder.append(sortBuilder);
+
+        // execute query
+
+        Query fetchAllQuery = entityManager
+            .createNativeQuery(fetchQueryBuilder.toString(), TRANSACTION_PROJECTIONS_MAPPING)
+            .setFirstResult((int) pageable.getOffset())
+            .setMaxResults(pageable.getPageSize());
+
+        Query countQuery = entityManager.createNativeQuery(countQueryBuilder.toString());
+
+
+        params.forEach(fetchAllQuery::setParameter);
+        params.forEach(countQuery::setParameter);
+
+        final List<TransactionProjections> transactions = fetchAllQuery.getResultList();
+        final int maxSize = (Integer) countQuery.getSingleResult();
+        return new PageImpl<TransactionProjections>(transactions, pageable, maxSize);
+    }
 
 }

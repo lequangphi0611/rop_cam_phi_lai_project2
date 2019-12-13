@@ -1,6 +1,7 @@
 package com.electronicssales.resources;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import com.electronicssales.models.TransactionFetchOption;
@@ -38,12 +39,20 @@ public class TransactionResource {
         Date fromDate,
         @RequestParam(value = "toDate", required = false) 
         @DateTimeFormat(pattern = DATE_FORMAT_PATTERN) 
-        Date toDate
+        Date toDate,
+        @RequestParam
+        Optional<Long> customerId
     ) {
         TransactionFetchOption option = new TransactionFetchOption();
         option.setFromDate(fromDate);
         option.setToDate(toDate);
-        return () -> ResponseEntity.ok(this.transactionService.fetchAll(option, pageable));
+        return () -> {
+        	if(customerId.isPresent()) {
+        		return ResponseEntity.ok(this.transactionService.fetchAll(customerId.get(), option, pageable));
+        	}
+        	
+        	return ResponseEntity.ok(this.transactionService.fetchAll(option, pageable));
+        };
     }
 
     @PostMapping

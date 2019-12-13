@@ -31,7 +31,9 @@ public class ProductStatisticalRepositoryImpl implements ProductStatisticalRepos
 			"	WHERE pImage.product_id = p.id) as 'image'",
 			"p.id as id",
 			"p.product_name as productName",
+			"(SELECT SUM(ii.quantity) FROM import_invoices ii WHERE ii.product_id = p.id) as quantityImport",
 			"SUM(td.quantity) as quantitySold",
+			"p.quantity as quantityRemaining",
 			"SUM(CASE td.discount_type\r\n" + 
 			"       WHEN 'PERCENT' THEN (td.price * td.discount_value / 100)\r\n" + 
 			"       WHEN 'AMOUNT' THEN td.discount_value\r\n" + 
@@ -44,11 +46,11 @@ public class ProductStatisticalRepositoryImpl implements ProductStatisticalRepos
 			"     END)) * td.quantity) as totalRevenue"
 	);
 	
-	private static final String COUNT_QUERY = "SELECT COUNT(p.id) FROM products p LEFT JOIN transaction_detaileds td"
-			+ " ON td.product_id = p.id LEFT JOIN transactions t ON td.transaction_id = t.id ";
+	private static final String COUNT_QUERY = "SELECT COUNT(DISTINCT p.id) FROM products p INNER JOIN transaction_detaileds td"
+			+ " ON td.product_id = p.id INNER JOIN transactions t ON td.transaction_id = t.id";
 	
 	private static final List<String> GROUP_FIELD = Arrays.asList(
-			"p.id", "p.product_name"
+			"p.id", "p.product_name", "p.quantity"
 	);
 
 	@Autowired
@@ -62,9 +64,9 @@ public class ProductStatisticalRepositoryImpl implements ProductStatisticalRepos
 				.append(String.join(SqlDelimiters.COMMA_SPACE, FIELD_SELECT))
 				.append(SqlDelimiters.SPACE)
 				.append(SqlKeyWords.FROM)
-				.append(" products p LEFT JOIN transaction_detaileds td ")
+				.append(" products p INNER JOIN transaction_detaileds td ")
 				.append("ON td.product_id = p.id " + 
-						"LEFT JOIN " + 
+						"INNER JOIN " + 
 						"transactions t " + 
 						"ON td.transaction_id = t.id")
 				.append(SqlDelimiters.SPACE);

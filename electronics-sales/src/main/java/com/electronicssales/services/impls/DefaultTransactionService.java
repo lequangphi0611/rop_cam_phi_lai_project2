@@ -81,6 +81,12 @@ public class DefaultTransactionService implements TransactionService {
     public Page<TransactionProjections> fetchAll(TransactionFetchOption option, Pageable pageable) {
         return this.transactionRepository.fetchAll(option, pageable);
     }
+    
+    @Override
+    public Page<TransactionProjections> fetchAll(long customerId, TransactionFetchOption option, Pageable pageable) {
+    	return transactionRepository.fetchById(customerId, option, pageable);
+    }
+    
     @Lazy
     @Component
     private class TransactionMapper implements TwoDimensionalMapper<TransactionDto, Transaction> {

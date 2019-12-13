@@ -19,4 +19,6 @@ public interface TransactionService {
     List<TransactionDetailedProjections> findTransactionDetailedByTransactionId(long transactionId);
 
     Page<TransactionProjections> fetchAll(TransactionFetchOption option, Pageable pageable);
+    
+    Page<TransactionProjections> fetchAll(long customerId, TransactionFetchOption option, Pageable pageable);
 }

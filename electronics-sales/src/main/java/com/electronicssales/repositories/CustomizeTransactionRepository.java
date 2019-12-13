@@ -10,4 +10,6 @@ public interface CustomizeTransactionRepository {
 
     Page<TransactionProjections> fetchAll(TransactionFetchOption option, Pageable pageable);
     
+    Page<TransactionProjections> fetchById(long customerId, TransactionFetchOption option, Pageable pageable);
+    
 }

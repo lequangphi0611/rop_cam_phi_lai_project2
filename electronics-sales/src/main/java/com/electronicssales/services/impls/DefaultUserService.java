@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Lazy
 @Service
@@ -74,7 +75,7 @@ public class DefaultUserService implements UserService {
         }
 
         User userTransient = userDtoToUserMapper.mapping(newUserDto);
-        if(Objects.isNull(newUserDto.getPassword())) {
+        if(!StringUtils.hasText(newUserDto.getPassword())) {
             userTransient.setPassword(userPersisted.getPassword());
         }
         userTransient.getUserInfo().setId(userPersisted.getUserInfo().getId());

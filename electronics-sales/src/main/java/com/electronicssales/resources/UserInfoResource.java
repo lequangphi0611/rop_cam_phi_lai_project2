@@ -31,7 +31,6 @@ public class UserInfoResource {
     @PutMapping("/{id}")
     public Callable<ResponseEntity<?>> update(@RequestBody RequiredUserInfoDto requiredUserInfoDto
         , @PathVariable long id) {
-            System.out.println("vô đay hay k");
         requiredUserInfoDto.setUserInfoId(id);
         return () -> ResponseEntity.ok(userInfoService.save(requiredUserInfoDto));
     }

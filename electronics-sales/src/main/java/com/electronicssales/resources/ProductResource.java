@@ -224,7 +224,7 @@ public class ProductResource {
         return () -> ResponseEntity.ok(productService.getCategoriesBy(productId));
     }
 
-    @RequestMapping(value = "/productName/{productName}")
+    @RequestMapping(value = "/productName/{productName}", method = RequestMethod.HEAD)
     public Callable<ResponseEntity<?>> existsByProductName(@PathVariable String productName) {
         return () -> productService.existsByProductName(productName)
             ? ResponseEntity.ok().build()

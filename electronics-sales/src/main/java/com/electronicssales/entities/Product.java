@@ -75,7 +75,9 @@ import lombok.experimental.FieldDefaults;
 							@ColumnResult(name = "image", type = byte[].class),
 							@ColumnResult(name = "id", type = Long.class),
 							@ColumnResult(name = "productName", type = String.class),
+							@ColumnResult(name = "quantityImport", type = Integer.class),
 							@ColumnResult(name = "quantitySold", type = Integer.class),
+							@ColumnResult(name = "quantityRemaining", type = Integer.class),
 							@ColumnResult(name = "totalDiscount", type = Long.class),
 							@ColumnResult(name = "totalRevenue", type = Long.class)
 						}
