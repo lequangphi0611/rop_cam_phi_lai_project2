@@ -117,7 +117,6 @@ export class EmployeeFormDialogComponent
       this.passwordControl.setValidators([Validators.required, Validators.minLength(6)]);
     }
 
-    console.log(this.passwordControl);
   }
 
   ngAfterViewInit() {

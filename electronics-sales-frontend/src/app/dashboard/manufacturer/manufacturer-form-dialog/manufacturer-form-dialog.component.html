@@ -9,9 +9,16 @@
         >
         <form class='col-8' [formGroup]="manufacturerForm" (submit)="submit()">
           <div class="col-12 p-0">
-            <mat-form-field class="w-100 p-0 m-0 mb-5">
-              <input matInput formControlName="manufacturerName" type="text" placeholder="Nhập tên hãng sản xuất" />
+            <mat-form-field class="w-100">
+              <input matInput #manufacturerNameInput formControlName="manufacturerName" type="text" placeholder="Nhập tên hãng sản xuất" />
             </mat-form-field>
+            <mat-error *ngIf="manufacturerNameControl.touched && manufacturerNameControl.hasError('required')" >
+              Không để trống hãng sản xuất
+            </mat-error>
+
+            <mat-error *ngIf="manufacturerNameControl.hasError('existsName')" >
+              Tên hãng đã tồn tại
+            </mat-error>
           </div>
         </form>
       </div>

@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -167,6 +168,13 @@ public class CategoryResource {
             categoryService.deleteCategoryById(id);
             return new ResponseEntity<>(HttpStatus.OK);
         };
+    }
+    
+    @RequestMapping(value = "categoryName/{categoryName}", method = RequestMethod.HEAD)
+    public Callable<ResponseEntity<?>> existsByCategoryName(@PathVariable("categoryName") String name) {
+    	return () -> this.categoryService.existsByCategoryName(name) 
+    			? ResponseEntity.ok().build() 
+    			: ResponseEntity.badRequest().build();
     }
     
 }

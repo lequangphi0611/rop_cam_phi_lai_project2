@@ -7,10 +7,12 @@ import {
   OnInit,
   Output,
   EventEmitter,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable, Subject, of } from 'rxjs';
-import { map, takeUntil, switchMap, tap } from 'rxjs/operators';
+import { Observable, Subject, of, fromEvent } from 'rxjs';
+import { map, takeUntil, switchMap, tap, debounceTime, filter } from 'rxjs/operators';
 import { CategoryDto } from 'src/app/models/dtos/category.dto';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { CategoryService } from 'src/app/services/category.service';
@@ -52,6 +54,11 @@ export class DCategoryFormComponent
 
   editMode = false;
 
+  @ViewChild('categoryNameInput', {static: true})
+  categoryNameInput: ElementRef;
+
+  categoryNameInputEvent$ = of(null);
+
   constructor(
     private formBuilder: FormBuilder,
     private manufacturerService: ManufacturerService,
@@ -81,6 +88,31 @@ export class DCategoryFormComponent
     this.fetchManufacturers();
     this.fetchParameterTypes();
     this.parent$ = this.categoryService.fetchCategories();
+
+    this.categoryNameInputEvent$ = fromEvent<any>(this.categoryNameInput.nativeElement, 'input')
+    .pipe(map(event => event.target.value));
+    this.subcriptionCheckExistsCategoryName();
+
+  }
+
+  checkExistsCategoryName(categoryName: string): Observable<boolean> {
+    if (this.editMode && this.currenCategory.categoryName.toLowerCase() === categoryName.toLowerCase()) {
+      return of(false);
+    }
+
+    return this.categoryService.existsByName(categoryName);
+  }
+
+  subcriptionCheckExistsCategoryName() {
+    this.categoryNameInputEvent$
+      .pipe(
+        debounceTime(500),
+        filter(value => value && value.trim().length > 0),
+        switchMap(value => this.checkExistsCategoryName(value)),
+        filter(exists => exists)
+      ).subscribe(() => this.categoryNameControl.setErrors({
+        existsName: true
+      }));
   }
 
   fetchManufacturers() {
@@ -143,7 +175,7 @@ export class DCategoryFormComponent
 
   getCategory(): CategoryDto {
     return {
-      categoryName: this.categoryNameControl.value,
+      categoryName: this.categoryNameControl.value.trim(),
       manufacturerIds: this.manufacturerIdsControl.value as number[],
       parameterTypes: this.parameterTypes.value as ParameterTypeDto[],
       parentId: this.parentId,

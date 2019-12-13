@@ -13,12 +13,17 @@
           <div class="col-7 pr-0">
             <mat-form-field class="col-12 m-0 p-0">
               <input
+                #categoryNameInput
                 matInput
                 placeholder="Nhập tên loại sản phẩm"
                 formControlName="categoryName"
               />
               <mat-error *ngIf="categoryNameControl.hasError('required')" >
                 Vui lòng không để trống loại sản phẩm
+              </mat-error>
+
+              <mat-error *ngIf="categoryNameControl.hasError('existsName')" >
+                Tên loại sản phẩm đã tồn tại
               </mat-error>
             </mat-form-field>
           </div>

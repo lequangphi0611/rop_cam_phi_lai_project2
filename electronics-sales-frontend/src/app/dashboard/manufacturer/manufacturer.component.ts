@@ -39,7 +39,7 @@ export class ManufacturerComponent implements OnInit, AfterViewInit, OnDestroy {
   defaultSize = 5;
 
   readonly defautDialogConfig: MatDialogConfig = {
-    autoFocus: true,
+    autoFocus: false,
     disableClose: false
   };
 

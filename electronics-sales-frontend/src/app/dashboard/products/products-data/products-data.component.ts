@@ -8,14 +8,16 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild
+  ViewChild,
+  Input,
+  ElementRef
 } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { finalize, map, takeUntil, tap, filter } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, of, fromEvent } from 'rxjs';
+import { finalize, map, takeUntil, tap, filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ProductSortType } from 'src/app/models/types/product-sort-type.type';
 import { SortType } from 'src/app/models/types/sort-type.type';
 import { ProductService } from 'src/app/services/product.service';
@@ -41,7 +43,12 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   elementSize = 5;
 
+  search$ = new Subject<string>();
+
   maxSize = 0;
+
+  @ViewChild('searchInput', {static: true})
+  searchInput: ElementRef;
 
   readonly defaultFetchOption: FetchProductOption = {
     page: this.pageNumber,
@@ -93,7 +100,6 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.fetchOption
       .pipe(takeUntil(this.unSubscription$))
       .subscribe(fetchOption => {
-        console.log(fetchOption);
         this.fetchMaxSize(fetchOption);
       });
 
@@ -106,6 +112,28 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     this.paginator.page.pipe(tap(() => this.loadProductsPage())).subscribe();
+
+    this.search$.subscribe((v) => {
+      const option: FetchProductOption = {
+        page: this.pageNumber,
+        size: this.elementSize,
+        search: v ? v : ''
+      };
+
+      if (!v || v.trim().length === 0) {
+        option.productSortType = ProductSortType.TIME,
+        option.sortType = SortType.DESC;
+      }
+      this.dataSource.init(option);
+    });
+
+    fromEvent<any>(this.searchInput.nativeElement, 'input')
+      .pipe(
+        map(event => event.target.value),
+        debounceTime(500),
+        distinctUntilChanged()
+      )
+      .subscribe(value => this.search$.next(value));
   }
 
   fetchCategories() {

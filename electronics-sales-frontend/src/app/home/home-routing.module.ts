@@ -63,6 +63,13 @@ const routes: Routes = [
         canActivate: [AuthenticatedGuard],
         loadChildren: () =>
           import('./my-account/my-account.module').then(m => m.MyAccountModule)
+      },
+      {
+        path: 'question-and-answers',
+        loadChildren: () =>
+          import('./question-and-answers/question-and-answers.module').then(
+            m => m.QuestionAndAnswersModule
+          )
       }
     ]
   }

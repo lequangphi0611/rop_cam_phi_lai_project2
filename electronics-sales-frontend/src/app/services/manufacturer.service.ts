@@ -1,8 +1,9 @@
 import { ManufacturerView } from './../models/view-model/manufacturer.view.model';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ManufacturerDto } from '../models/dtos/manufacturer.dto';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +50,14 @@ export class ManufacturerService {
         .set('page', page.toString())
         .set('size', size ? size.toString() : '')
     });
+  }
+
+  existsByName(name: string): Observable<boolean> {
+    return this.http.head<any>(`${ManufacturerService.BASE_REQUEST}/manufacturerName/${name}`)
+      .pipe(
+        map(() => true),
+        catchError(() => of(false)),
+      );
   }
 
 }

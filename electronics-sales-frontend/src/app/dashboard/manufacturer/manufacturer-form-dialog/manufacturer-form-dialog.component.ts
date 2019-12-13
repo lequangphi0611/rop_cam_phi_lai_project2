@@ -1,6 +1,6 @@
-import { switchMap, tap } from 'rxjs/operators';
+import { switchMap, tap, map, filter, debounceTime } from 'rxjs/operators';
 import { ManufacturerView } from './../../../models/view-model/manufacturer.view.model';
-import { BehaviorSubject, pipe, of } from 'rxjs';
+import { BehaviorSubject, pipe, of, Observable, fromEvent } from 'rxjs';
 import { ManufacturerService } from './../../../services/manufacturer.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import {
@@ -11,6 +11,7 @@ import {
   AfterViewInit,
   EventEmitter,
   Output,
+  ElementRef,
 } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ManufacturerDto } from 'src/app/models/dtos/manufacturer.dto';
@@ -22,7 +23,7 @@ import { ChooseImagesComponent } from 'src/app/choose-images/choose-images.compo
   templateUrl: './manufacturer-form-dialog.component.html',
   styleUrls: ['./manufacturer-form-dialog.component.css'],
 })
-export class ManufacturerFormDialogComponent implements OnInit {
+export class ManufacturerFormDialogComponent implements OnInit, AfterViewInit {
   manufacturerForm: FormGroup;
 
   file: File;
@@ -31,6 +32,9 @@ export class ManufacturerFormDialogComponent implements OnInit {
 
   @ViewChild(ChooseImagesComponent, { static: true })
   chooseImages: ChooseImagesComponent;
+
+  @ViewChild('manufacturerNameInput', {static: true})
+  manufacturerNameInput: ElementRef;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -42,6 +46,28 @@ export class ManufacturerFormDialogComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+  }
+
+  ngAfterViewInit() {
+    fromEvent<any>(this.manufacturerNameInput.nativeElement, 'input')
+      .pipe(
+        debounceTime(500),
+        map(event => event.target.value),
+        filter(value => value && value.trim().length > 0),
+        switchMap(value => this.checkExistsManufacturerName(value)),
+        filter(exists => exists)
+      ).subscribe(() => {
+        this.manufacturerNameControl.setErrors({
+          existsName: true,
+        });
+      });
+  }
+
+  checkExistsManufacturerName(manufacturerName: string): Observable<boolean> {
+    if (this.editMode && this.manufacturer.manufacturerName.toLowerCase() === manufacturerName.toLowerCase()) {
+      return of(false);
+    }
+    return this.manufacturerService.existsByName(manufacturerName);
   }
 
   get manufacturer() {
@@ -92,7 +118,7 @@ export class ManufacturerFormDialogComponent implements OnInit {
 
   getManufacturer(): ManufacturerDto {
     return {
-      manufacturerName: this.manufacturerNameControl.value,
+      manufacturerName: this.manufacturerNameControl.value.trim(),
     };
   }
 

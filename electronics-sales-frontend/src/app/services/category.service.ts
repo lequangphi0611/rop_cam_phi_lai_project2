@@ -1,12 +1,13 @@
 import { CategoryProductReceiver } from './../models/category-and-product-receive.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
 import { CategoryDto } from '../models/dtos/category.dto';
 import { ParameterTypeDto } from './../models/dtos/paramter-type.dto';
 import { ManufacturerView } from './../models/view-model/manufacturer.view.model';
 import { hostViewClassName } from '@angular/compiler';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -89,5 +90,14 @@ export class CategoryService {
     return this.http.get<CategoryView[]>(
       `${CategoryService.BASE_REQUEST}/${categoryId}/childrens`
     );
+  }
+
+
+  existsByName(categoryName: string): Observable<boolean> {
+    return this.http.head<any>(`${CategoryService.BASE_REQUEST}/categoryName/${categoryName}`)
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 }

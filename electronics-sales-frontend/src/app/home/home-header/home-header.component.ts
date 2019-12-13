@@ -25,7 +25,7 @@ const SUB_NAV_ITEMS: NavItemData[] = [
   },
   {
     name: 'Hỏi đáp',
-    link: 'questions-answers',
+    link: 'question-and-answers',
   },
 ];
 

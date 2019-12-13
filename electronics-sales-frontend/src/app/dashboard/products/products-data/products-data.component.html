@@ -13,6 +13,11 @@
         </mat-form-field>
       </div>
     </div>
+    <div class="col-3 float-right ">
+      <mat-form-field class="w-100">
+        <input #searchInput matInput placeholder="Tìm kiếm theo tên..." >
+      </mat-form-field>
+    </div>
   </div>
   <div class="col-12 p-0 mt-2">
     <mat-table [dataSource]="dataSource" class="col-12 p-0" [trackBy]="trackById">
