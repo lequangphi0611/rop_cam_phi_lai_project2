@@ -47,7 +47,7 @@
       </div>
 
       <div class="form-group row">
-        <div class="form-group col-6 pl-0">
+        <div class="form-group col-6 pl-0" [class.col-12]="editMode">
           <mat-form-field class="col-12 p-0">
             <mat-label>Tên đăng nhập</mat-label>
             <input formControlName="username" matInput required />
@@ -61,18 +61,22 @@
           </mat-form-field>
         </div>
 
-        <div class="form-group col-6 pr-0 ">
+        <div class="form-group col-6 pr-0 " [class.display-none]="editMode">
           <mat-form-field class="col-12 p-0">
             <mat-label>Mật khẩu</mat-label>
             <input
               formControlName="password"
               type="password"
+              [required]="!editMode"
               matInput
-              required
               #passwordInput
             />
             <mat-error *ngIf="passwordControl.hasError('required')">
               Không để trống mật khẩu
+            </mat-error>
+
+            <mat-error *ngIf="passwordControl.hasError('minlength')">
+              Mật khẩu phải có ít nhất 6 ký tự
             </mat-error>
           </mat-form-field>
         </div>

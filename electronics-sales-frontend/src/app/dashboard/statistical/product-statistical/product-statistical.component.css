@@ -1,0 +1,25 @@
+.mat-cell, .mat-header-cell {
+  padding: 10px !important;
+}
+
+.mat-column-productName {
+  max-width: 300px;
+}
+
+.mat-column-quantityImport,
+.mat-column-quantitySold,
+.mat-column-quantityRemaining,
+.mat-column-totalDiscount,
+.mat-column-totalRevenue {
+  min-width: 100px;
+}
+
+.mat-column-productName img {
+  width: 50px;
+  height: auto;
+
+  object-fit: cover;
+  object-position: center;
+
+  margin-right: 10px;
+}

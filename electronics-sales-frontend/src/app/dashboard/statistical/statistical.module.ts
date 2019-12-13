@@ -8,10 +8,11 @@ import { StatisticalRoutingModule } from './statistical-routing.module';
 import { StatisticalComponent } from './statistical.component';
 import { RevenueStatisticalComponent } from './revenue-statistical/revenue-statistical.component';
 import { ImportInvoiceReportComponent } from './import-invoice-report/import-invoice-report.component';
+import { ProductStatisticalComponent } from './product-statistical/product-statistical.component';
 
 
 @NgModule({
-  declarations: [StatisticalComponent, RevenueStatisticalComponent, ImportInvoiceReportComponent],
+  declarations: [StatisticalComponent, RevenueStatisticalComponent, ImportInvoiceReportComponent, ProductStatisticalComponent],
   imports: [
     CommonModule,
     StatisticalRoutingModule,

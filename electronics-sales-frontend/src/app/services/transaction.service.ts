@@ -101,6 +101,59 @@ export class TransactionService {
         })
       );
   }
+
+  fetchBy(
+    customerId: number,
+    option: TransactionFetchOption = {}
+  ): Observable<Page<TransactionDataView>> {
+    const defaultPageable = { ...DEFAUT_FETCH_OPTION.pageable };
+    const pageable = option.pageable
+      ? { ...defaultPageable, ...option.pageable }
+      : defaultPageable;
+    const { conditions } = option;
+    const { page, size, sort, sortDirection } = pageable;
+
+    const pageableParams = {
+      page: page.toString(),
+      size: size.toString(),
+      sort: `${sort},${sortDirection}`
+    };
+
+    const conditionParams: any = {};
+    if (conditions) {
+      const { fromDate, toDate } = conditions;
+      if (fromDate) {
+        conditionParams.fromDate = formatDate(
+          fromDate,
+          FORMAT_DATE_PATTERN,
+          LOCALE
+        );
+      }
+
+      if (toDate) {
+        conditionParams.toDate = formatDate(
+          toDate,
+          FORMAT_DATE_PATTERN,
+          LOCALE
+        );
+      }
+    }
+
+    return this.http
+      .get<Page<TransactionDataView>>(BASE_REQUEST, {
+        params: {
+          customerId,
+          ...pageableParams,
+          ...conditionParams
+        }
+      })
+      .pipe(
+        map(p => {
+          p.content.forEach(v => (v.createdTime = new Date(v.createdTime)));
+          return p;
+        })
+      );
+  }
 }
 
 export interface TransactionFetchOption {

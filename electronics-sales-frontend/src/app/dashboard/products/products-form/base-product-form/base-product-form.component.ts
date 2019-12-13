@@ -1,10 +1,11 @@
+import { ProductService } from './../../../../services/product.service';
 import { ProductDataView } from './../../products-data/products-data.component';
-import { filter, switchMap, takeUntil, map } from 'rxjs/operators';
+import { filter, switchMap, takeUntil, map, debounceTime } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { CategoryService } from 'src/app/services/category.service';
 import { ManufacturerView } from './../../../../models/view-model/manufacturer.view.model';
 import { CategoryView } from 'src/app/models/view-model/category.view.model';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of, fromEvent } from 'rxjs';
 import {
   Component,
   OnInit,
@@ -12,6 +13,9 @@ import {
   Output,
   EventEmitter,
   Input,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
 } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
 
@@ -23,7 +27,7 @@ import { MatSelectChange } from '@angular/material/select';
     './base-product-form.component.css',
   ],
 })
-export class BaseProductFormComponent implements OnInit, OnDestroy {
+export class BaseProductFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() onChange = new EventEmitter(true);
 
   @Output() onInit = new EventEmitter(true);
@@ -42,9 +46,12 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
 
   @Input() currentProduct$: Observable<ProductDataView>;
 
+  @ViewChild('productNameInput', {static: true}) productNameInput: ElementRef;
+
   constructor(
     private categoryService: CategoryService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private productService: ProductService
   ) {}
 
   ngOnInit() {
@@ -73,6 +80,22 @@ export class BaseProductFormComponent implements OnInit, OnDestroy {
       );
     this.priceControl.setValue(product.price);
     this.manufacturerIdControl.setValue(product.manufacturerId);
+  }
+
+  ngAfterViewInit() {
+    fromEvent<any>(this.productNameInput.nativeElement, 'input')
+      .pipe(
+        map(({target}) => target.value),
+        debounceTime(1000),
+        filter(value => value && value !==  ''),
+        switchMap(value => this.productService.existsByName(value)),
+        filter(exists => exists)
+      )
+      .subscribe(() => {
+        this.productNameControl.setErrors({
+          existsName: true
+        });
+      });
   }
 
   get manufacturerIdControl() {

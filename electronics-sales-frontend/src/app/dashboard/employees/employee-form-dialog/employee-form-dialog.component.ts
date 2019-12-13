@@ -44,7 +44,7 @@ const EMPLOYEE_FORM_BUILDER = {
   firstname: ['', [Validators.required]],
   gender: [Gender.MALE],
   username: ['', [Validators.required]],
-  password: ['', [Validators.required]],
+  password: [''],
   birthday: [null, [Validators.required]],
   email: ['', [Validators.required, Validators.pattern(pattern.email)]],
   phoneNumber: ['', [Validators.required, Validators.pattern(pattern.phone)]],
@@ -113,7 +113,11 @@ export class EmployeeFormDialogComponent
     if (this.employee) {
       this.editMode = true;
       this.setFormValue(this.employee);
+    } else {
+      this.passwordControl.setValidators([Validators.required, Validators.minLength(6)]);
     }
+
+    console.log(this.passwordControl);
   }
 
   ngAfterViewInit() {
@@ -128,6 +132,7 @@ export class EmployeeFormDialogComponent
         filter(value => value != null && (value as string).trim().length > 0)
       )
       .subscribe(value => this.onUsernameControlChange(value));
+
   }
 
   isMale(gender: Gender) {

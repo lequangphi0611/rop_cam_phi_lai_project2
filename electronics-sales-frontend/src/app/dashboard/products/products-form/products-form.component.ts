@@ -120,7 +120,7 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
         this.formBuilder.control(''),
       ]),
       manufacturerId: [null],
-      price: [0, [Validators.required]],
+      price: [null, [Validators.required, Validators.min(1000)]],
       quantity: [0],
     });
   }

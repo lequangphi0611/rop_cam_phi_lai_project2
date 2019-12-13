@@ -1,3 +1,4 @@
+import { ProductsStatisticalView } from './../models/view-model/product-statistical.view';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -112,5 +113,18 @@ export class StatisticalService {
           )
         )
       );
+  }
+
+  getProductStatistical(pageable: Pageable): Observable<Page<ProductsStatisticalView>> {
+    const {page, size, sort, direction} = pageable;
+
+    const params: any = {
+      page: page ? page : '',
+      size: size ? size : '',
+      sort : sort && direction ? `${sort},${direction}` : ''
+    };
+    return this.http.get<Page<ProductsStatisticalView>>(`${STATISTICAL_URL}/product`,
+      {params}
+    );
   }
 }

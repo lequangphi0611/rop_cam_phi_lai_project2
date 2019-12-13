@@ -1,4 +1,4 @@
-import { takeUntil, map } from 'rxjs/operators';
+import { takeUntil, map, filter } from 'rxjs/operators';
 import { Role } from './../../models/types/role.type';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { SideBarItem } from '../dashboard.component';
@@ -27,6 +27,7 @@ export class SideBarItemComponent implements OnInit, OnDestroy {
       .user$
       .pipe(
         takeUntil(this.unscription$),
+        filter(user => user && true),
         map(user => user.role)
       ).subscribe(role => this.role = role);
   }
