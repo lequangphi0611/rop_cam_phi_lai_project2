@@ -125,6 +125,7 @@ export class ProductsDataComponent implements OnInit, OnDestroy, AfterViewInit {
         option.sortType = SortType.DESC;
       }
       this.dataSource.init(option);
+      this.fetchMaxSize(option);
     });
 
     fromEvent<any>(this.searchInput.nativeElement, 'input')

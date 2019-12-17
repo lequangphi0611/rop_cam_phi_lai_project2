@@ -14,7 +14,7 @@ const MY_ACCOUNT_FORM_BUILD_PROPERTY = {
   lastname: [null, [Validators.required]],
   firstname: [null, [Validators.required]],
   gender: [true],
-  username: [null, [Validators.required]],
+  username: [{value : null, disabled: true}, [Validators.required]],
   birthday: [null, [Validators.required]],
   email: [null, [Validators.required, Validators.pattern(pattern.email)]],
   phoneNumber: [null, [Validators.required, Validators.pattern(pattern.phone)]],
@@ -132,6 +132,8 @@ export class UpdateMyAccountComponent implements OnInit, OnDestroy  {
         (result) => this.onSuccess(result),
         (err) => this.onError(err)
       );
+
+
   }
 
   onSuccess(result: User): void {
